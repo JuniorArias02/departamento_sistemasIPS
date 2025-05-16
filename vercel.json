@@ -1,0 +1,9 @@
+{
+	"build": {
+	  "env": {
+		"NODE_OPTIONS": "--no-experimental-fetch"
+	  }
+	}
+  }
+  
+  
