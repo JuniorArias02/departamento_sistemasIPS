@@ -114,7 +114,7 @@ export default function FormularioReactivoVigilancia() {
 				<button
 					type="submit"
 					disabled={loading}
-					className={`w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2`}
+					className={`min-w-[200px] bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2`}
 				>
 					{loading ? (
 						<>
