@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, Loader2 } from "lucide-react";
 import { useApp } from "../../store/AppContext";
 import { crearMedicamento } from "../../services/medicamento";
 import { useNavigate } from "react-router-dom";
@@ -19,12 +19,17 @@ export default function FormularioMedicamentos() {
 		registro_sanitario: "",
 	});
 
+	const [loading, setLoading] = useState(false);
+
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (loading) return; // Evita doble click mientras está cargando
+
+		setLoading(true);
 
 		const datosConUsuario = {
 			...formData,
@@ -57,6 +62,8 @@ export default function FormularioMedicamentos() {
 				title: "Error",
 				text: err.message || "No se pudo registrar el medicamento",
 			});
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -108,10 +115,20 @@ export default function FormularioMedicamentos() {
 
 				<button
 					type="submit"
-					className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer"
+					disabled={loading}
+					className={`bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
 				>
-					<Save size={20} />
-					Registrar
+					{loading ? (
+						<>
+							<Loader2 className="animate-spin" size={20} />
+							Guardando...
+						</>
+					) : (
+						<>
+							<Save size={20} />
+							Registrar
+						</>
+					)}
 				</button>
 			</div>
 		</form>

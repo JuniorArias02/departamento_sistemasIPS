@@ -1,13 +1,13 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, Loader2 } from "lucide-react";
 import { useApp } from "../../store/AppContext";
 import { crearEquipoBioMedico } from "../../services/equipo_biomedico";
 import { useNavigate } from "react-router-dom";
 
 export default function FormularioEquiposBiomedicos() {
 	const { usuario } = useApp();
-	const navigate = useNavigate();  
+	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		nombre_equipo: "",
 		marca: "",
@@ -17,12 +17,17 @@ export default function FormularioEquiposBiomedicos() {
 		clasificacion_riesgo: "",
 	});
 
+	const [loading, setLoading] = useState(false);
+
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (loading) return;
+
+		setLoading(true);
 
 		const datosConUsuario = {
 			...formData,
@@ -53,6 +58,8 @@ export default function FormularioEquiposBiomedicos() {
 				title: "Error",
 				text: err.message || "No se pudo registrar el equipo biomédico",
 			});
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -104,10 +111,20 @@ export default function FormularioEquiposBiomedicos() {
 
 				<button
 					type="submit"
-					className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2"
+					disabled={loading}
+					className={`bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
 				>
-					<Save size={20} />
-					Registrar
+					{loading ? (
+						<>
+							<Loader2 className="animate-spin" size={20} />
+							Guardando...
+						</>
+					) : (
+						<>
+							<Save size={20} />
+							Registrar
+						</>
+					)}
 				</button>
 			</div>
 		</form>
