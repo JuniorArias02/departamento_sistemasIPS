@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { crearDispositivoMedico } from "../../../services/dispositivo_medicos";
+import {
+  crearDispositivoMedico,
+  actualizarDispositivoMedico,
+} from "../../../services/dispositivo_medicos";
 import { useApp } from "../../../store/AppContext";
-import { Save, Loader2,FileDown  } from "lucide-react";
+import { Save, Loader2, FileDown } from "lucide-react";
 import BackPage from "../components/BackPage";
+import { useLocation } from "react-router-dom";
 
 export default function FormularioDispositivoMedicos() {
   const { usuario } = useApp();
+  const location = useLocation();
+
+  const dispositivoEdit = location.state?.dispositivo;
+
+  useEffect(() => {
+    if (dispositivoEdit) {
+      setFormData(dispositivoEdit);
+    }
+  }, [dispositivoEdit]);
 
   const [formData, setFormData] = useState({
     descripcion: "",
@@ -36,39 +49,41 @@ export default function FormularioDispositivoMedicos() {
       ...formData,
       creado_por: usuario?.id,
     };
-
     try {
-      await crearDispositivoMedico(datosConUsuario);
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "Dispositivo registrado correctamente",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      setFormData({
-        descripcion: "",
-        marca: "",
-        serie: "",
-        presentacion_comercial: "",
-        registro_sanitario: "",
-        clasificacion_riesgo: "",
-        vida_util: "",
-        lote: "",
-        fecha_vencimiento: "",
-      });
-    } catch (err) {
-      console.error(err);
+      if (dispositivoEdit?.id) {
+        // Editar
+        await actualizarDispositivoMedico(dispositivoEdit.id, datosConUsuario);
+        Swal.fire({
+          icon: "success",
+          title: "¡Actualizado!",
+          text: "Dispositivo actualizado correctamente",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else {
+        // Crear nuevo
+        await crearDispositivoMedico(datosConUsuario);
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Dispositivo registrado correctamente",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: err.message || "No se pudo registrar el dispositivo",
+        text: error.message,
+        timer: 2000,
+        showConfirmButton: false,
       });
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <form
@@ -103,7 +118,7 @@ export default function FormularioDispositivoMedicos() {
       </div>
 
       <div className="flex justify-between items-center">
-      <BackPage />
+        <BackPage isEdit={!!dispositivoEdit} />
         <button
           type="submit"
           disabled={loading}

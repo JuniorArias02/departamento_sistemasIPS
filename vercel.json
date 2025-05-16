@@ -1,13 +1,13 @@
 {
-	"build": {
-		"env": {
-			"NODE_OPTIONS": "--no-experimental-fetch"
-		}
-	},
-	"rewrites": [
-		{
-			"source": "/(.*)",
-			"destination": "/"
-		}
-	]
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--no-experimental-fetch"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }

@@ -4,8 +4,8 @@ export const LOGIN = `${URL_PATH}controllers/auth/login.php`;
 // crear
 export const CREAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/formulario/crear_dispositivo_medico.php`;
 export const CREAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/formulario/crear_equipo_biomedico.php`;
-export const CREAR_MEDICAMENTO = `${URL_PATH}controllers/formulario/crear_medicamento.php`; 
-export const CREAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/formulario/crear_reactivo_vigilancia.php`; 
+export const CREAR_MEDICAMENTO = `${URL_PATH}controllers/formulario/crear_medicamento.php`;
+export const CREAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/formulario/crear_reactivo_vigilancia.php`;
 // contar
 export const CONTAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/contar/contar_dispositivos_medicos.php`;
 export const CONTAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/contar/contar_equipos_biomedicos.php`;
@@ -15,7 +15,7 @@ export const CONTAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/contar/contar_
 export const LISTAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/listar/listar_dispositivos_medicos.php`;
 export const LISTAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/listar/listar_equipos_biomedicos.php`;
 export const LISTAR_MEDICAMENTO = `${URL_PATH}controllers/listar/listar_medicamentos.php`;
-export const LISTAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/listar/listar_reactivos_vigilancias.php`; 
+export const LISTAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/listar/listar_reactivos_vigilancias.php`;
 //elimianr
 export const ELIMINAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/eliminar/eliminar_dispositivo_medico.php`;
 export const ELIMINAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/eliminar/eliminar_equipo_biomedico.php`;

@@ -1,5 +1,10 @@
-import axios from "axios"
-import { CREAR_DISPOSITIVO_MEDICO, LISTAR_DISPOSITIVO_MEDICO,ELIMINAR_DISPOSITIVO_MEDICO,EXPORTAR_DISPOSITIVO_MEDICO } from "../const/url"
+import axios from "axios";
+import {
+  CREAR_DISPOSITIVO_MEDICO,
+  LISTAR_DISPOSITIVO_MEDICO,
+  ELIMINAR_DISPOSITIVO_MEDICO,
+  EXPORTAR_DISPOSITIVO_MEDICO,
+} from "../const/url";
 
 // const API_URL = CREAR_DISPOSITIVO_MEDICO;
 
@@ -10,18 +15,39 @@ export const crearDispositivoMedico = async (datos) => {
     return response.data;
   } catch (error) {
     console.error("Error al crear dispositivo:", error);
-    throw new Error(error?.response?.data?.mensaje || "Error al crear el dispositivo");
+    throw new Error(
+      error?.response?.data?.mensaje || "Error al crear el dispositivo",
+    );
+  }
+};
+
+export const actualizarDispositivoMedico = async (id, datos) => {
+  try {
+    const response = await axios.post(CREAR_DISPOSITIVO_MEDICO, {
+      id,
+      ...datos,
+    });
+    console.log("Respuesta del servidor:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear dispositivo:", error);
+    throw new Error(
+      error?.response?.data?.mensaje || "Error al crear el dispositivo",
+    );
   }
 };
 
 export const listarDispositivosMedicos = async () => {
   try {
-    const response = await axios.get(LISTAR_DISPOSITIVO_MEDICO)
+    const response = await axios.get(LISTAR_DISPOSITIVO_MEDICO);
     return response.data;
   } catch (error) {
-    throw new Error(error?.response?.data?.mensaje || "Error al listar los dispositivos médicos");
+    throw new Error(
+      error?.response?.data?.mensaje ||
+        "Error al listar los dispositivos médicos",
+    );
   }
-}
+};
 
 export const eliminarDispositivoMedico = async (id) => {
   try {
@@ -32,22 +58,23 @@ export const eliminarDispositivoMedico = async (id) => {
     return response.data;
   } catch (error) {
     console.error("Error al eliminar dispositivo:", error);
-    throw new Error(error?.response?.data?.mensaje || "Error al eliminar el dispositivo");
+    throw new Error(
+      error?.response?.data?.mensaje || "Error al eliminar el dispositivo",
+    );
   }
 };
-
 
 export const exportarDispositivosMedicos = async () => {
   try {
     const response = await axios.get(EXPORTAR_DISPOSITIVO_MEDICO, {
-      responseType: 'blob',
+      responseType: "blob",
     });
 
     // Crear link para descargar el archivo Excel
     const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute('download', 'dispositivos_medicos.xlsx'); // nombre del archivo
+    link.setAttribute("download", "dispositivos_medicos.xlsx"); // nombre del archivo
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -55,6 +82,8 @@ export const exportarDispositivosMedicos = async () => {
     return true; // o lo que quieras devolver
   } catch (error) {
     console.error("Error al exportar dispositivos:", error);
-    throw new Error(error?.response?.data?.mensaje || "Error al exportar dispositivos");
+    throw new Error(
+      error?.response?.data?.mensaje || "Error al exportar dispositivos",
+    );
   }
 };

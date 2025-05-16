@@ -1,5 +1,10 @@
 import axios from "axios";
-import { CONTAR_REACTIVO_VIGILANCIA,CONTAR_DISPOSITIVO_MEDICO,CONTAR_EQUIPO_BIOMEDICO,CONTAR_MEDICAMENTO } from "../const/url";
+import {
+  CONTAR_REACTIVO_VIGILANCIA,
+  CONTAR_DISPOSITIVO_MEDICO,
+  CONTAR_EQUIPO_BIOMEDICO,
+  CONTAR_MEDICAMENTO,
+} from "../const/url";
 
 export const obtenerTotalDispositivoMedicoc = async () => {
   const res = await axios.get(CONTAR_DISPOSITIVO_MEDICO);

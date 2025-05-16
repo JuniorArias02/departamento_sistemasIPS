@@ -1,7 +1,6 @@
 import { Ghost } from "lucide-react";
 import BackPage from "./paginaCliente/components/BackPage";
 
-
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-800 p-8 text-center">
@@ -11,7 +10,7 @@ export default function NotFound() {
       <p className="mb-6 text-gray-600">
         La página que estás buscando no existe o fue movida.
       </p>
-	  <BackPage texto="Volver al inicio" />
+      <BackPage texto="Volver al inicio" />
     </div>
   );
 }
