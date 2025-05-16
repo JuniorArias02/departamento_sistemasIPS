@@ -1,13 +1,13 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Save, ArrowLeft, Loader2 } from "lucide-react";
-import { useApp } from "../../store/AppContext";
-import { crearEquipoBioMedico } from "../../services/equipo_biomedico";
-import { useNavigate } from "react-router-dom";
+import { Save, Loader2 } from "lucide-react";
+import { useApp } from "../../../store/AppContext";
+import { crearEquipoBioMedico } from "../../../services/equipo_biomedico";
+import BackPage from "../components/BackPage";
 
 export default function FormularioEquiposBiomedicos() {
 	const { usuario } = useApp();
-	const navigate = useNavigate();
+	
 	const [formData, setFormData] = useState({
 		nombre_equipo: "",
 		marca: "",
@@ -63,10 +63,6 @@ export default function FormularioEquiposBiomedicos() {
 		}
 	};
 
-	const handleBack = () => {
-		navigate("/dashboard");
-	};
-
 	return (
 		<form
 			onSubmit={handleSubmit}
@@ -100,15 +96,7 @@ export default function FormularioEquiposBiomedicos() {
 			</div>
 
 			<div className="flex justify-between">
-				<button
-					type="button"
-					onClick={handleBack}
-					className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2"
-				>
-					<ArrowLeft size={20} />
-					Volver
-				</button>
-
+			<BackPage />
 				<button
 					type="submit"
 					disabled={loading}

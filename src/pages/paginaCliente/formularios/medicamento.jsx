@@ -1,72 +1,69 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { Save, ArrowLeft, Loader2 } from "lucide-react";
-import { useApp } from "../../store/AppContext";
-import { crearReactivoVigilancia } from "../../services/reactivo_vigilancia";
-import { useNavigate } from "react-router-dom";
+import { useApp } from "../../../store/AppContext";
+import { crearMedicamento } from "../../../services/medicamento";
+import BackPage from "../components/BackPage";
 
-export default function FormularioReactivoVigilancia() {
+export default function FormularioMedicamentos() {
 	const { usuario } = useApp();
-	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
-		nombre: "",
-		marca: "",
-		presentacion_comercial: "",
-		registro_sanitario: "",
-		clasificacion_riesgo: "",
-		vida_util: "",
-		fecha_vencimiento: "",
+		principio_activo: "",
+		forma_farmaceutica: "",
+		concentracion: "",
 		lote: "",
+		fecha_vencimiento: "",
+		presentacion_comercial: "",
+		unidad_medida: "",
+		registro_sanitario: "",
 	});
+
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const [loading, setLoading] = useState(false);
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (loading) return; // evita doble click si ya está cargando
+		if (loading) return; // Evita doble click mientras está cargando
 
 		setLoading(true);
+
 		const datosConUsuario = {
 			...formData,
 			creado_por: usuario?.id,
 		};
 
 		try {
-			await crearReactivoVigilancia(datosConUsuario);
+			await crearMedicamento(datosConUsuario);
 			Swal.fire({
 				icon: "success",
 				title: "¡Éxito!",
-				text: "Reactivo registrado correctamente",
+				text: "Medicamento registrado correctamente",
 				timer: 2000,
 				showConfirmButton: false,
 			});
 			setFormData({
-				nombre: "",
-				marca: "",
-				presentacion_comercial: "",
-				registro_sanitario: "",
-				clasificacion_riesgo: "",
-				vida_util: "",
-				fecha_vencimiento: "",
+				principio_activo: "",
+				forma_farmaceutica: "",
+				concentracion: "",
 				lote: "",
+				fecha_vencimiento: "",
+				presentacion_comercial: "",
+				unidad_medida: "",
+				registro_sanitario: "",
 			});
 		} catch (err) {
 			console.error(err);
 			Swal.fire({
 				icon: "error",
 				title: "Error",
-				text: err.message || "No se pudo registrar el reactivo",
+				text: err.message || "No se pudo registrar el medicamento",
 			});
 		} finally {
 			setLoading(false);
 		}
-	};
-	const handleBack = () => {
-		navigate("/dashboard");
 	};
 
 	return (
@@ -75,7 +72,7 @@ export default function FormularioReactivoVigilancia() {
 			className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded-2xl space-y-6"
 		>
 			<h2 className="text-2xl font-semibold text-center text-gray-800">
-				Registrar Reactivo de Vigilancia
+				Registrar Medicamento
 			</h2>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -102,19 +99,12 @@ export default function FormularioReactivoVigilancia() {
 			</div>
 
 			<div className="flex justify-between">
-				<button
-					type="button"
-					onClick={handleBack}
-					className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2"
-				>
-					<ArrowLeft size={20} />
-					Volver
-				</button>
+				<BackPage />
 
 				<button
 					type="submit"
 					disabled={loading}
-					className={`min-w-[200px] bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2`}
+					className={`bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
 				>
 					{loading ? (
 						<>
@@ -124,7 +114,7 @@ export default function FormularioReactivoVigilancia() {
 					) : (
 						<>
 							<Save size={20} />
-							Guardar
+							Registrar
 						</>
 					)}
 				</button>
