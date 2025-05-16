@@ -6,7 +6,8 @@ import {
 	obtenerTotalMedicamentos,
 	obtenerTotalReactivosVigilancia,
 } from "../../services/dashboard_services";
-import { Database, Microscope, Pill, FlaskConical } from "lucide-react";
+import { Database, Microscope, Pill, FlaskConical, Eye } from "lucide-react";
+
 
 
 export default function Dashboard() {
@@ -87,10 +88,24 @@ export default function Dashboard() {
 				{opciones.map((op, i) => (
 					<div
 						key={i}
-						onClick={() => navigate(op.ruta)}
-						className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border hover:border-blue-300 transition-all duration-200 cursor-pointer group"
+						className="relative bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border hover:border-blue-300 transition-all duration-200 cursor-pointer group"
 					>
-						<div className="flex flex-col items-center justify-center space-y-3">
+						{/* Botón "Ver" top right */}
+						<button
+							onClick={(e) => {
+								e.stopPropagation(); // para que no dispare el onClick del card
+								navigate(op.ruta);
+							}}
+							className="absolute top-4 right-4 flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-semibold text-sm bg-blue-100 px-3 py-1 rounded-full shadow-sm transition cursor-pointer"
+						>
+							<Eye className="h-4 w-4" />
+							<span>Ver</span>
+						</button>
+
+						<div
+							onClick={() => navigate(op.ruta)}
+							className="flex flex-col items-center justify-center space-y-3"
+						>
 							<div className="bg-blue-50 p-4 rounded-full group-hover:scale-110 transition">
 								{iconos[i]}
 							</div>
@@ -104,6 +119,7 @@ export default function Dashboard() {
 						</div>
 					</div>
 				))}
+
 			</div>
 		</div>
 
