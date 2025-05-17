@@ -63,7 +63,6 @@ export const exportarEquiposBiomedicos = async () => {
       responseType: "blob",
     });
 
-    // Crear link para descargar el archivo Excel
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = url;

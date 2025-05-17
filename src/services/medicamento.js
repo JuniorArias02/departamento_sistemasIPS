@@ -63,8 +63,6 @@ export const exportarMedicamentos = async () => {
     const response = await axios.get(EXPORTAR_MEDICAMENTO, {
       responseType: "blob",
     });
-
-    // Crear link para descargar el archivo Excel
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = url;
@@ -73,7 +71,7 @@ export const exportarMedicamentos = async () => {
     link.click();
     link.remove();
 
-    return true; // o lo que quieras devolver
+    return true;
   } catch (error) {
     console.error("Error al exportar dispositivos:", error);
     throw new Error(

@@ -8,6 +8,7 @@ import { useApp } from "../../../store/AppContext";
 import { Save, Loader2, FileDown } from "lucide-react";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function FormularioDispositivoMedicos() {
   const { usuario } = useApp();
@@ -86,17 +87,26 @@ export default function FormularioDispositivoMedicos() {
   };
 
   return (
-    <form
+    <motion.form
       onSubmit={handleSubmit}
       className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded-2xl space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
       <h2 className="text-2xl font-semibold text-center text-black">
         Formulario Dispositivo Médico
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Object.keys(formData).map((campo) => (
-          <div key={campo} className="flex flex-col gap-1">
+        {Object.keys(formData).map((campo, i) => (
+					<motion.div
+						key={campo}
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: i * 0.05 }}
+						className="flex flex-col gap-1"
+					>
             <label
               htmlFor={campo}
               className="text-sm font-medium text-gray-700 capitalize"
@@ -113,7 +123,7 @@ export default function FormularioDispositivoMedicos() {
               className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder={campo.replace(/_/g, " ")}
             />
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -137,6 +147,6 @@ export default function FormularioDispositivoMedicos() {
           )}
         </button>
       </div>
-    </form>
+    </motion.form>
   );
 }
