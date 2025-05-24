@@ -5,8 +5,9 @@ import {
 	obtenerTotalEquipoBiomedico,
 	obtenerTotalMedicamentos,
 	obtenerTotalReactivosVigilancia,
+	obtenerTotalInventario
 } from "../../services/dashboard_services";
-import { Database, Microscope, Pill, FlaskConical, Eye } from "lucide-react";
+import { Database, Microscope, Pill, FlaskConical, Eye,ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
 
 
@@ -18,6 +19,7 @@ export default function Dashboard() {
 		<Microscope className="h-10 w-10 text-green-600" />,
 		<Pill className="h-10 w-10 text-purple-600" />,
 		<FlaskConical className="h-10 w-10 text-pink-600" />,
+		<ClipboardList className="h-10 w-10 text-yellow-600" />,
 	];
 
 	const [totales, setTotales] = useState({
@@ -25,16 +27,19 @@ export default function Dashboard() {
 		equipos: 0,
 		medicamentos: 0,
 		reactivos: 0,
+		inventario:0,
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [dispo, equipo, medi, reactivo] = await Promise.all([
+				const [dispo, equipo, medi, reactivo,inventario] = await Promise.all([
 					obtenerTotalDispositivoMedicoc(),
 					obtenerTotalEquipoBiomedico(),
 					obtenerTotalMedicamentos(),
 					obtenerTotalReactivosVigilancia(),
+					obtenerTotalInventario(),
+					
 				]);
 
 				setTotales({
@@ -42,6 +47,7 @@ export default function Dashboard() {
 					equipos: equipo,
 					medicamentos: medi,
 					reactivos: reactivo,
+					inventario: inventario,
 				});
 			} catch (error) {
 				console.error("Error al cargar totales", error);
@@ -80,6 +86,12 @@ export default function Dashboard() {
 			verRuta: "/dashboard/view_reactivos_vigilancia",
 			total: totales.reactivos,
 		},
+		{
+			titulo: "Inventarios Generales",
+			ruta: "/dashboard/form_inventario",
+			verRuta: "/dashboard/view_inventarios",
+			total: totales.inventario,
+		}
 	];
 
 	return (

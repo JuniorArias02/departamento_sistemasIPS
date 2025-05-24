@@ -25,15 +25,7 @@ export default function FormularioLogin() {
     try {
       const data = await loginUsuario(formData);
       login(data);
-      // Swal.fire({
-      //   icon: "success",
-      //   title: "¡Bienvenido!",
-      //   text: "Has iniciado sesión correctamente",
-      //   timer: 1500,
-      //   showConfirmButton: false,
-      // }).then(() => {
         navigate("/dashboard");
-      // });
     } catch (error) {
       Swal.fire({
         icon: "error",

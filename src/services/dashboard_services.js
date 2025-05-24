@@ -4,6 +4,7 @@ import {
   CONTAR_DISPOSITIVO_MEDICO,
   CONTAR_EQUIPO_BIOMEDICO,
   CONTAR_MEDICAMENTO,
+  CONTAR_INVENTARIO
 } from "../const/url";
 
 export const obtenerTotalDispositivoMedicoc = async () => {
@@ -23,5 +24,10 @@ export const obtenerTotalMedicamentos = async () => {
 
 export const obtenerTotalReactivosVigilancia = async () => {
   const res = await axios.get(CONTAR_REACTIVO_VIGILANCIA);
+  return res.data.total;
+};
+
+export const obtenerTotalInventario = async () => {
+  const res = await axios.get(CONTAR_INVENTARIO);
   return res.data.total;
 };

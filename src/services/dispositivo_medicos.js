@@ -76,7 +76,6 @@ export const exportarDispositivosMedicos = async () => {
     document.body.appendChild(link);
     link.click();
     link.remove();
-
     return true;
   } catch (error) {
     console.error("Error al exportar dispositivos:", error);
