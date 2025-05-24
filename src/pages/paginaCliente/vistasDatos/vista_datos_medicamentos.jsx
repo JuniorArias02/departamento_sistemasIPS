@@ -15,6 +15,7 @@ export default function VistaDatosMedicamentos() {
 	const navigate = useNavigate();
 	const [medicamentos, setMedicamentos] = useState([]);
 	const [loadingExport, setLoadingExport] = useState(false);
+	
 	const fetchData = async () => {
 		try {
 			const data = await listarMedicamentos();
