@@ -97,18 +97,11 @@ export default function VistaDatosInventarios() {
 			const filtros = {};
 
 			if (filtroTexto) {
-				if (filtroTexto.length > 3) {
-					filtros.codigo = filtroTexto;
-					filtros.serial = filtroTexto;
-				} else {
-					filtros.codigo = filtroTexto;
-				}
+				filtros.filtroTexto = filtroTexto;
 			}
-
 			if (filtroSede) {
 				filtros.sede_nombre = filtroSede;
 			}
-
 			let data;
 			// Si no hay filtros, cargar todo
 			if (Object.keys(filtros).length === 0) {
@@ -154,7 +147,7 @@ export default function VistaDatosInventarios() {
 				<div className="flex flex-col sm:flex-row gap-4 mb-4">
 					<input
 						type="text"
-						placeholder="Código o Serial"
+						placeholder="Código, Serial O Dependencia"
 						className="border px-3 py-2 rounded w-full sm:w-1/3"
 						value={filtroTexto}
 						onChange={(e) => setFiltroTexto(e.target.value)}
@@ -169,7 +162,7 @@ export default function VistaDatosInventarios() {
 
 					<button
 						onClick={handleBuscar}
-						className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+						className="bg-[#2b5879] text-white px-4 py-2 rounded hover:bg-[#013459] cursor-pointer transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Buscar
 					</button>
