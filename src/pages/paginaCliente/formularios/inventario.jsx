@@ -55,7 +55,8 @@ export default function FormularioInventario() {
 	}, []);
 
 	const handleChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
+		const { name, value } = e.target;
+		setFormData({ ...formData, [name]: value.toUpperCase() });
 	};
 
 	const handleSubmit = async (e) => {
