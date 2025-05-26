@@ -25,7 +25,7 @@ export default function FormularioLogin() {
     try {
       const data = await loginUsuario(formData);
       login(data);
-        navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -80,20 +80,23 @@ export default function FormularioLogin() {
             required
             disabled={loading}
           />
-          <button
-            type="button"
-            onClick={() => setVerContrasena(!verContrasena)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600 transition"
-            disabled={loading}
-          >
-            {verContrasena ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+          <div className="absolute inset-y-0 right-3 flex items-center">
+            <button
+              type="button"
+              onClick={() => setVerContrasena(!verContrasena)}
+              className="absolute right-3 top-[38px] text-gray-500 hover:text-blue-600 transition cursor-pointer"
+              disabled={loading}
+            >
+              {verContrasena ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
+
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? "Cargando..." : "Entrar"}
         </button>
