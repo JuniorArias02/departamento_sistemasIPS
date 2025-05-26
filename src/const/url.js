@@ -32,5 +32,6 @@ export const EXPORTAR_EQUIPO_BIOMEDICO = `${URL_PATH}export/exportar_equipos_bio
 export const EXPORTAR_MEDICAMENTO = `${URL_PATH}export/exportar_medicamentos.php`;
 export const EXPORTAR_REACTIVO_VIGILANCIA = `${URL_PATH}export/exportar_reactivos_vigilancias.php`;
 export const EXPORTAR_INVENTARIO = `${URL_PATH}export/exportar_inventarios.php`;
+export const EXPORTAR_INVENTARIO_JSON = `${URL_PATH}export/json_exportar_inventario.php`;
 //buscar
 export const BUSCAR_INVENTARIO = `${URL_PATH}controllers/buscar/buscar_inventario.php`;

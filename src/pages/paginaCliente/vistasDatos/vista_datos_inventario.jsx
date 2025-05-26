@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarInventarios, eliminarInventario, exportarInventarios, buscarInventario } from "../../../services/inventario";
+import { listarInventarios, eliminarInventario, buscarInventario,exportarInventariosCliente } from "../../../services/inventario";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
 import { Download } from "lucide-react";
@@ -69,7 +69,7 @@ export default function VistaDatosInventarios() {
 	const handleExportar = async () => {
 		setLoadingExport(true);
 		try {
-			await exportarInventarios();
+			await exportarInventariosCliente();
 			Swal.fire({
 				icon: "success",
 				title: "Exportado",

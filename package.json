@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",
     "axios": "^1.9.0",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.12.1",
     "lucide": "^0.510.0",
     "lucide-react": "^0.510.0",
@@ -19,7 +20,8 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0",
     "sweetalert2": "^11.21.0",
-    "tailwindcss": "^4.1.6"
+    "tailwindcss": "^4.1.6",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
