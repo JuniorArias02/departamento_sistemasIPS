@@ -35,3 +35,12 @@ export const EXPORTAR_INVENTARIO = `${URL_PATH}export/exportar_inventarios.php`;
 export const EXPORTAR_INVENTARIO_JSON = `${URL_PATH}export/json_exportar_inventario.php`;
 //buscar
 export const BUSCAR_INVENTARIO = `${URL_PATH}controllers/buscar/buscar_inventario.php`;
+
+// usuarios
+export const CREAR_USUARIO = `${URL_PATH}controllers/usuario/crear_usuario.php`;
+export const LISTAR_USUARIOS = `${URL_PATH}controllers/usuario/listar_usuarios.php`;
+export const ACTUALIZAR_USUARIO = `${URL_PATH}controllers/usuario/editar_usuario.php`;
+export const OBTENER_USUARIO = `${URL_PATH}controllers/usuario/obtener_usuario.php`;
+export const ELIMINAR_USUARIO = `${URL_PATH}controllers/usuario/eliminar_usuario.php`;
+// rol
+export const LISTAR_ROL = `${URL_PATH}controllers/listar/listar_rol.php`;

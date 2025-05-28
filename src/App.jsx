@@ -16,6 +16,11 @@ import VistaDatosEquiposBiomedicos from "./pages/paginaCliente/vistasDatos/vista
 import VistaDatosMedicamentos from "./pages/paginaCliente/vistasDatos/vista_datos_medicamentos";
 import VistaDatosReactivosVigilancia from "./pages/paginaCliente/vistasDatos/vista_datos_reactivos_vigilancias";
 import VistaDatosInventarios from "./pages/paginaCliente/vistasDatos/vista_datos_inventario";
+
+// VISTA ADMINISTRADOR
+import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
+import { ADMINISTRADOR } from "./const/variable_entorno";
+import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
 import NotFound from "./pages/404";
 function App() {
   const { usuario } = useApp();
@@ -30,6 +35,8 @@ function App() {
         }
       />
 
+
+
       {/* Rutas protegidas */}
       <Route
         element={
@@ -39,6 +46,23 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* Rutas SOLO para administrador */}
+        {usuario?.rol === ADMINISTRADOR && (
+          <Route
+            path="/dashboard/view_usuarios"
+            element={<VistaDatosUsuarios />}
+          />
+        )}
+
+        {usuario?.rol === ADMINISTRADOR && (
+          <Route
+            path="/dashboard/form_usuarios"
+            element={<FormularioUsuarios />}
+          />
+        )}
+
+
 
         {/* formularios */}
         <Route

@@ -3,7 +3,7 @@ import { useApp } from "../../../store/AppContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useState } from "react";
-
+import { ADMINISTRADOR } from "../../../const/variable_entorno";
 export default function Navbar() {
   const navigate = useNavigate();
   const { usuario, logout } = useApp();
@@ -41,6 +41,16 @@ export default function Navbar() {
 
         {/* Menú escritorio */}
         <div className="hidden sm:flex items-center space-x-6">
+          {usuario?.rol === ADMINISTRADOR && (
+            <button
+              onClick={() => navigate("/dashboard/view_usuarios")}
+              className="hover:bg-blue-600 px-2 py-1 rounded transition cursor-pointer"
+            >
+              Ver Usuarios
+            </button>
+          )}
+
+
           <span className="capitalize">
             {usuario?.nombre_completo || "Usuario"}
           </span>
@@ -69,6 +79,21 @@ export default function Navbar() {
           <li className="capitalize">
             {usuario?.nombre_completo || "Usuario"}
           </li>
+          {usuario?.rol === ADMINISTRADOR && (
+            <li>
+              <button
+                onClick={() => {
+                  navigate("/dashboard/view_usuarios");
+                  setMenuAbierto(false);
+                }}
+                className="w-full text-left px-2 py-1 hover:bg-blue-600 rounded transition cursor-pointer"
+              >
+                Ver Usuarios
+              </button>
+            </li>
+          )}
+
+
           <li>
             <button
               onClick={handleLogout}
