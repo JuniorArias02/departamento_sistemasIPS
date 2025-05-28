@@ -88,7 +88,10 @@ export default function FormularioUsuarios() {
 				});
 				navigate("/dashboard/view_usuarios");
 			} else {
-				await CrearUsuario(formData);
+				await CrearUsuario({
+					...formData,
+					id_usuario_creador: usuarioContext.id,
+				});
 				Swal.fire({
 					icon: "success",
 					title: "¡Usuario creado!",

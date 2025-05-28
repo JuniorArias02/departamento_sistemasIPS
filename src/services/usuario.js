@@ -48,12 +48,13 @@ export const eliminarUsuario = async (id_usuario_editor, id_usuario_objetivo) =>
       id_usuario_editor,
       id_usuario_objetivo
     });
-    return res.data; // respuesta ya parseada
+    return res.data;
   } catch (error) {
     console.error('Error al eliminar usuario:', error);
     return { success: false, message: error.message };
   }
 };
+
 
 
 export const listarUsuariosAdmin = async (userId) => {
