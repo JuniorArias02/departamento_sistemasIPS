@@ -45,7 +45,7 @@ export default function FormularioUsuarios() {
 			if (usuarioEdit) {
 				try {
 					const data = await obtenerUsuario(usuarioContext.id, usuarioEdit.id);
-					console.log("Datos del usuario a editar:", data);
+					// console.log("Datos del usuario a editar:", data);
 					setFormData({
 						nombre_completo: data.nombre_completo,
 						usuario: data.usuario,

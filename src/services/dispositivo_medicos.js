@@ -11,7 +11,7 @@ import {
 export const crearDispositivoMedico = async (datos) => {
   try {
     const response = await axios.post(CREAR_DISPOSITIVO_MEDICO, datos);
-    console.log("Respuesta del servidor:", response.data);
+    // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear dispositivo:", error);
@@ -27,7 +27,7 @@ export const actualizarDispositivoMedico = async (id, datos) => {
       id,
       ...datos,
     });
-    console.log("Respuesta del servidor:", response.data);
+    // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear dispositivo:", error);
@@ -54,7 +54,7 @@ export const eliminarDispositivoMedico = async (id) => {
     const response = await axios.delete(ELIMINAR_DISPOSITIVO_MEDICO, {
       data: { id },
     });
-    console.log("Dispositivo eliminado:", response.data);
+    // console.log("Dispositivo eliminado:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al eliminar dispositivo:", error);

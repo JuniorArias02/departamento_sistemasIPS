@@ -4,7 +4,7 @@ import { CREAR_USUARIO, LISTAR_USUARIOS,OBTENER_USUARIO,ACTUALIZAR_USUARIO,ELIMI
 export const CrearUsuario = async (datos) => {
   try {
     const response = await axios.post(CREAR_USUARIO, datos);
-    console.log("Respuesta del servidor:", response.data);
+      // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear usuario:", error);
@@ -30,8 +30,8 @@ export const obtenerUsuario = async (id_usuario_editor, id_usuario_objetivo) => 
 export const actualizarUsuario = async (datos) => {
   try {
     const response = await axios.post(ACTUALIZAR_USUARIO, datos);
-    console.log("Respuesta del servidor:", response.data);
-	console.log("Datos enviados:", datos);
+    // console.log("Respuesta del servidor:", response.data);
+	// console.log("Datos enviados:", datos);
     return response.data;
   } catch (error) {
     console.error("Error al editar usuario:", error);

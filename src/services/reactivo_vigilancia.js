@@ -11,7 +11,7 @@ import {
 export const crearReactivoVigilancia = async (datos) => {
   try {
     const response = await axios.post(CREAR_REACTIVO_VIGILANCIA, datos);
-    console.log("Respuesta del servidor:", response.data);
+    // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear dispositivo:", error);
@@ -27,7 +27,7 @@ export const actualizarReactivoVigilancia = async (id, datos) => {
       id,
       ...datos,
     });
-    console.log("Respuesta del servidor:", response.data);
+    // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear dispositivo:", error);
