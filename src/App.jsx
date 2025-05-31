@@ -21,6 +21,7 @@ import VistaDatosInventarios from "./pages/paginaCliente/vistasDatos/vista_datos
 import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
 import { ADMINISTRADOR } from "./const/variable_entorno";
 import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
+import DashboardAdmin from "./pages/paginaAdministrador/DashboardAdmin";
 import NotFound from "./pages/404";
 function App() {
   const { usuario } = useApp();
@@ -31,11 +32,17 @@ function App() {
       <Route
         path="/"
         element={
-          usuario ? <Navigate to="/dashboard" replace /> : <FormularioLogin />
+          usuario ? (
+            usuario.rol === ADMINISTRADOR ? (
+              <Navigate to="/dashboardAdmin" replace />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          ) : (
+            <FormularioLogin />
+          )
         }
       />
-
-
 
       {/* Rutas protegidas */}
       <Route
@@ -45,6 +52,7 @@ function App() {
           </RutaPrivada>
         }
       >
+        <Route path="/dashboardAdmin" element={<DashboardAdmin />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Rutas SOLO para administrador */}

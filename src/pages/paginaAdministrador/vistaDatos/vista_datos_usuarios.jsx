@@ -64,7 +64,7 @@ export default function VistaDatosUsuarios() {
 		>
 			{/* Encabezado */}
 			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-				<BackPage />
+				<BackPage rol={usuarioContext?.rol} />
 				<h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center sm:text-left">
 					Usuarios registrados
 				</h1>

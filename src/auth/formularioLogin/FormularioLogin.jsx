@@ -4,7 +4,7 @@ import { useApp } from "../../store/AppContext";
 import Swal from "sweetalert2";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { validarRutas } from "../../secure/validarRutas";
 export default function FormularioLogin() {
   const navigate = useNavigate();
   const { login } = useApp();
@@ -25,7 +25,7 @@ export default function FormularioLogin() {
     try {
       const data = await loginUsuario(formData);
       login(data);
-      navigate("/dashboard");
+      validarRutas(data, navigate);
     } catch (error) {
       Swal.fire({
         icon: "error",

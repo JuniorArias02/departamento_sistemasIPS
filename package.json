@@ -19,6 +19,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0",
+    "recharts": "^2.15.3",
     "sweetalert2": "^11.21.0",
     "tailwindcss": "^4.1.6",
     "xlsx": "^0.18.5"
@@ -32,6 +33,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "tailwind-scrollbar": "^4.0.2",
     "vite": "^6.3.5"
   }
 }

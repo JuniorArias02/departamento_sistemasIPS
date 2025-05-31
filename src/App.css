@@ -4,3 +4,14 @@
   padding: 2rem;
   text-align: center;
 }
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+html {
+  scroll-behavior: smooth;
+}

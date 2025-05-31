@@ -44,3 +44,10 @@ export const OBTENER_USUARIO = `${URL_PATH}controllers/usuario/obtener_usuario.p
 export const ELIMINAR_USUARIO = `${URL_PATH}controllers/usuario/eliminar_usuario.php`;
 // rol
 export const LISTAR_ROL = `${URL_PATH}controllers/listar/listar_rol.php`;
+
+// grafica
+export const GRAFICA_INVENTARIO = `${URL_PATH}controllers/grafica/grafica_inventario.php`;
+export const GRAFICA_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/grafica/grafica_dispositivo_medico.php`;
+export const GRAFICA_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/grafica/grafica_equipo_biomedico.php`;
+export const GRAFICA_MEDICAMENTO = `${URL_PATH}controllers/grafica/grafica_medicamento.php`;
+export const GRAFICA_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/grafica/grafica_reactivo.php`;

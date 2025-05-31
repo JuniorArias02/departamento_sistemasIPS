@@ -1,18 +1,23 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { ADMINISTRADOR } from "../../../const/variable_entorno";
 export default function BackPage({
   to = "/dashboard",
   texto = "Volver",
   isEdit = false,
+  rol = null,
 }) {
   const navigate = useNavigate();
 
   const handleBack = () => {
     if (isEdit) {
-      navigate(-1); // retrocede si está en edición
+      navigate(-1);
     } else {
-      navigate(to); // va a la ruta por defecto
+      if (rol === ADMINISTRADOR) {
+        navigate("/dashboardAdmin");
+      } else {
+        navigate(to);
+      }
     }
   };
 
