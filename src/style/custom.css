@@ -1,3 +1,35 @@
 .bg-custom-blue-1 {
   background-color: #013459;
 }
+
+@keyframes hammering {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  } 
+  50% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+
+.hammering-animation {
+  animation: hammering 1.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
+}

@@ -14,10 +14,11 @@ export const AppProvider = ({ children }) => {
     setCargando(false); // ya terminó de verificar
   }, []);
 
-  const login = (data) => {
-    setUsuario(data.usuario);
-    localStorage.setItem("usuario", JSON.stringify(data.usuario));
+  const login = (usuario) => {
+    setUsuario(usuario);
+    localStorage.setItem("usuario", JSON.stringify(usuario));
   };
+
 
   const logout = () => {
     setUsuario(null);

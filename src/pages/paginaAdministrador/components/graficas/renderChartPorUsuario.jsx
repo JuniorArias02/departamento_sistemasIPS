@@ -39,56 +39,58 @@ export const ChartPorUsuario = ({ data, title }) => {
       <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center">{title}</h2>
 
       {/* Filtros de fecha responsive */}
-      <div className="flex flex-col sm:flex-row items-center sm:justify-center gap-4 mb-4 w-full">
-        <label className="text-sm font-medium flex flex-col sm:flex-row items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row items-center sm:justify-center gap-4 mb-4 w-full max-w-md mx-auto">
+        <label className="text-sm font-medium flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-auto">
           Desde:
           <input
             type="date"
             value={desde}
             onChange={e => setDesde(e.target.value)}
-            className="border rounded px-2 py-1 mt-1 sm:mt-0 sm:ml-2"
+            className="border rounded px-2 py-1 mt-1 sm:mt-0 sm:ml-2 w-full sm:w-auto"
           />
         </label>
-        <label className="text-sm font-medium flex flex-col sm:flex-row items-start sm:items-center">
+        <label className="text-sm font-medium flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-auto">
           Hasta:
           <input
             type="date"
             value={hasta}
             onChange={e => setHasta(e.target.value)}
-            className="border rounded px-2 py-1 mt-1 sm:mt-0 sm:ml-2"
+            className="border rounded px-2 py-1 mt-1 sm:mt-0 sm:ml-2 w-full sm:w-auto"
           />
         </label>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={dataPivoteada} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="fecha" type="category" />
-          <YAxis />
-          <Tooltip
-            labelFormatter={label =>
-              new Date(label).toLocaleDateString("es-CO", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              })
-            }
-          />
-          <Legend />
-          {usuarios.map((usuario, index) => (
-            <Line
-              key={usuario}
-              type="monotone"
-              dataKey={usuario}
-              stroke={colors[index % colors.length]}
-              dot={false}
-              connectNulls
-              animationDuration={1500}
+      <div className="w-full" style={{ minHeight: 300, height: 300 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={dataPivoteada} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="fecha" type="category" />
+            <YAxis />
+            <Tooltip
+              labelFormatter={label =>
+                new Date(label).toLocaleDateString("es-CO", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })
+              }
             />
-          ))}
-          <Brush dataKey="fecha" height={30} stroke="#8884d8" />
-        </LineChart>
-      </ResponsiveContainer>
+            <Legend />
+            {usuarios.map((usuario, index) => (
+              <Line
+                key={usuario}
+                type="monotone"
+                dataKey={usuario}
+                stroke={colors[index % colors.length]}
+                dot={false}
+                connectNulls
+                animationDuration={1500}
+              />
+            ))}
+            <Brush dataKey="fecha" height={30} stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </section>
   );
 };

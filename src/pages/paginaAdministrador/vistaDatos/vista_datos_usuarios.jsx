@@ -65,12 +65,13 @@ export default function VistaDatosUsuarios() {
 			{/* Encabezado */}
 			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
 				<BackPage rol={usuarioContext?.rol} />
-				<h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center sm:text-left">
+				<h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center sm:text-left flex-1">
 					Usuarios registrados
 				</h1>
 				<button
 					onClick={() => navigate("/dashboard/form_usuarios")}
 					className="bg-[#5a8aad] hover:bg-[#013459] text-white font-medium px-4 py-2.5 rounded-lg shadow transition duration-200 w-full sm:w-auto"
+					style={{ minWidth: '150px' }} // que no sea muy chiquito en móvil
 				>
 					+ Nuevo usuario
 				</button>
@@ -97,16 +98,16 @@ export default function VistaDatosUsuarios() {
 								<td className="px-4 py-3 border-b">{u.usuario}</td>
 								<td className="px-4 py-3 border-b capitalize">{u.rol}</td>
 								<td className="px-4 py-3 border-b">
-									<div className="flex flex-wrap justify-center gap-2">
+									<div className="flex flex-wrap justify-center gap-2 sm:justify-start">
 										<button
 											onClick={() => handleEditar(u)}
-											className="text-blue-600 hover:text-blue-800 font-semibold"
+											className="text-blue-600 hover:text-blue-800 font-semibold whitespace-nowrap"
 										>
 											Editar
 										</button>
 										<button
 											onClick={() => handleEliminar(u.id)}
-											className="text-red-600 hover:text-red-800 font-semibold"
+											className="text-red-600 hover:text-red-800 font-semibold whitespace-nowrap"
 										>
 											Eliminar
 										</button>
@@ -118,5 +119,6 @@ export default function VistaDatosUsuarios() {
 				</table>
 			</div>
 		</motion.div>
+
 	);
 }

@@ -23,6 +23,11 @@ import { ADMINISTRADOR } from "./const/variable_entorno";
 import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
 import DashboardAdmin from "./pages/paginaAdministrador/DashboardAdmin";
 import NotFound from "./pages/404";
+import NotAvailable from "./pages/NotAvailable";
+
+// rutas de admin
+import RutaSoloAdmin from "./secure/RutaSoloAdmin";
+
 function App() {
   const { usuario } = useApp();
 
@@ -52,25 +57,41 @@ function App() {
           </RutaPrivada>
         }
       >
-        <Route path="/dashboardAdmin" element={<DashboardAdmin />} />
+        <Route
+          path="/dashboardAdmin"
+          element={
+            <RutaSoloAdmin>
+              <DashboardAdmin />
+            </RutaSoloAdmin>
+          }
+        />
+
+        <Route path="/dashboardAdmin/crear_formulario" element={
+          <RutaSoloAdmin>
+            <NotAvailable />
+          </RutaSoloAdmin>
+        } />
+
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Rutas SOLO para administrador */}
-        {usuario?.rol === ADMINISTRADOR && (
-          <Route
-            path="/dashboard/view_usuarios"
-            element={<VistaDatosUsuarios />}
-          />
-        )}
+        <Route
+          path="/dashboard/view_usuarios"
+          element={
+            <RutaSoloAdmin>
+              <VistaDatosUsuarios />
+            </RutaSoloAdmin>
+          }
+        />
 
-        {usuario?.rol === ADMINISTRADOR && (
-          <Route
-            path="/dashboard/form_usuarios"
-            element={<FormularioUsuarios />}
-          />
-        )}
-
-
+        <Route
+          path="/dashboard/form_usuarios"
+          element={
+            <RutaSoloAdmin>
+              <FormularioUsuarios />
+            </RutaSoloAdmin>
+          }
+        />
 
         {/* formularios */}
         <Route
@@ -120,6 +141,7 @@ function App() {
 
       </Route>
       <Route path="/404" element={<NotFound />} />
+
 
       {/* Ruta por defecto */}
 

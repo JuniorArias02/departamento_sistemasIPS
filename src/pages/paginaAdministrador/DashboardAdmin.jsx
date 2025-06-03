@@ -47,25 +47,27 @@ export default function DashboardAdmin() {
 
 		fetchData();
 	}, []);
-
 	if (loading) {
 		return (
-			<div className="min-h-screen flex justify-center items-center">
-				<p className="text-gray-500 text-xl">Cargando datos...</p>
+			<div className="min-h-screen flex flex-col justify-center items-center gap-6 bg-gray-50">
+				<div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin drop-shadow-lg"></div>
+				<p className="text-gray-700 text-lg font-semibold animate-pulse">Cargando datos...</p>
 			</div>
 		);
 	}
 
+
+
 	return (
-		<main className="bg-gray-100 flex-1 flex flex-col items-center select-none w-full p-4">
+		<main className="bg-gray-100 flex-1 flex flex-col items-center select-none w-full">
 			{/* <h1 className="text-3xl font-bold mb-6">Dashboard del Administrador</h1> */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-7xl">
 
-				<ChartPorUsuario data={inventario} title="Inventario por Usuario" />
-				<ChartPorUsuario data={dispositivoMedico} title="Dispositivos Médicos por Usuario" />
-				<ChartPorUsuario data={equipoBiomedico} title="Equipos Biomédicos por Usuario" />
-				<ChartPorUsuario data={medicamento} title="Medicamentos por Usuario" />
-				<ChartPorUsuario data={reactivo} title="Reactivos por Usuario" />
+				<ChartPorUsuario data={inventario} title="Inventario" />
+				<ChartPorUsuario data={dispositivoMedico} title="Dispositivos Médicos" />
+				<ChartPorUsuario data={equipoBiomedico} title="Equipos Biomédicos" />
+				<ChartPorUsuario data={medicamento} title="Medicamentos" />
+				<ChartPorUsuario data={reactivo} title="Reactivos" />
 			</div>
 		</main>
 	);

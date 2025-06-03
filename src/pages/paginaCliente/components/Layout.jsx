@@ -8,30 +8,28 @@ import { useState } from "react";
 
 export default function Layout() {
   const { usuario } = useApp();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* NAVBAR y SIDEBAR en la misma fila */}
-      <div className="flex">
-        {/* Sidebar */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="min-h-screen flex">
+      {/* Sidebar fijo a la izquierda */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
+      {/* Contenedor principal */}
+      <div className="flex flex-col flex-1 h-screen overflow-hidden">
+        {/* Navbar fijo arriba */}
+        <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
-        {/* Navbar */}
-        <div className={`flex-1 transition-all duration-300`}>
-          <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
-          {/* CONTENIDO principal */}
-          <div className="flex flex-1">
-            <main className="flex-1 overflow-y-auto h-[calc(106.2vh-4rem-3rem)] transition-all duration-300 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent">
-              <Outlet />
-            </main>
-          </div>
-        </div>
+        {/* Main con scroll solo aquí */}
+        <main className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent">
+          <Outlet />
+        </main>
+
+        {/* Footer fijo abajo */}
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
+
 }

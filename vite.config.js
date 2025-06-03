@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: [
-      'ireland-keys-videos-ti.trycloudflare.com',
+      'speak-pasta-dow-sample.trycloudflare.com',
       // agrega más si quieres
     ]
   }
