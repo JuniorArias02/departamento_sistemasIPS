@@ -30,7 +30,7 @@ export default function VistaDatosDispositivosMedicos() {
 	}, []);
 
 	const handleEditar = (item) => {
-		navigate("/dashboard/form_dispositivo_medicos	", {
+		navigate("/dashboard/form_dispositivo_medic os	", {
 			state: { dispositivo: item },
 		});
 	};

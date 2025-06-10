@@ -1,15 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useApp } from "../store/AppContext";
-import { ADMINISTRADOR } from "../const/variable_entorno";
-
+import { ADMINISTRADOR, COORDINADOR, GERENCIA } from "../const/variable_entorno";
+import { PERMISOS } from "./permisos/permisos";
 export default function RutaSoloAdmin({ children }) {
-  const { usuario } = useApp();
+  const { permisos } = useApp();
 
-  // Si no es admin, manda al 404
-  if (usuario?.rol !== ADMINISTRADOR) {
+  if (!permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN)) {
     return <Navigate to="/404" replace />;
   }
 
-  
   return children;
 }

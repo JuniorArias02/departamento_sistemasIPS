@@ -2,15 +2,11 @@ import { LogOut, Menu, X } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useState } from "react";
-import { ADMINISTRADOR } from "../../../const/variable_entorno";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { PERMISOS } from "../../../secure/permisos/permisos";
 export default function Navbar({ toggleSidebar, sidebarOpen }) {
   const navigate = useNavigate();
-  const { usuario, logout } = useApp();
-
-
+  const { usuario, logout, permisos } = useApp();
   const handleLogout = () => {
     Swal.fire({
       title: "¿Quieres cerrar sesión?",
@@ -32,7 +28,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
     <>
       <nav className="bg-custom-blue-1 text-white px-4 py-3 shadow-md flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          {usuario?.rol === ADMINISTRADOR && toggleSidebar && (
+          {permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
             <button
               onClick={toggleSidebar}
               className="transition-transform duration-300 z-50"

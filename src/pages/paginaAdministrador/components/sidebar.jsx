@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { ADMINISTRADOR } from "../../../const/variable_entorno";
-import { ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye } from "lucide-react";
+import { ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit } from "lucide-react";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "../../../hook/useMobile";
+import { PERMISOS } from "../../../secure/permisos/permisos";
+import Swal from "sweetalert2";
+import { mostrarAlertaSinPermiso } from "../../../hook/useError";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const navigate = useNavigate();
-	const { usuario, logout } = useApp();
+	const { usuario, permisos, logout } = useApp();
 	const [menuUsuariosOpen, setMenuUsuariosOpen] = useState(false);
 	const [menuFormulariosOpen, setMenuFormulariosOpen] = useState(false);
+	const [menuRolesOpen, setMenuRolesOpen] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
-
 	const variants = {
 		open: {
 			x: 0,
@@ -76,7 +78,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 				<h2 className="text-lg font-semibold mb-4 text-center">Menú</h2>
 				<ul className="space-y-4">
-					{usuario?.rol === ADMINISTRADOR && (
+					{permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
 							<li>
 								<button
@@ -90,7 +92,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							<li>
 								<button
-									onClick={() => setMenuUsuariosOpen(!menuUsuariosOpen)}
+									onClick={() => {
+										if (permisos.includes(PERMISOS.MENU_ITEM_USUARIOS)) {
+											setMenuUsuariosOpen(!menuUsuariosOpen);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
 									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
 								>
 									<Users size={18} />
@@ -99,7 +107,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								</button>
 
 								<AnimatePresence>
-									{menuUsuariosOpen && (
+									{menuUsuariosOpen && permisos.includes(PERMISOS.VER_DATOS_USUARIOS) && (
 										<motion.ul
 											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
 											initial="hidden"
@@ -109,14 +117,96 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										>
 											<li>
 												<button
-													onClick={() => navigate("/dashboard/view_usuarios")}
+													onClick={() => {
+														if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
+															navigate("/dashboard/view_usuarios");
+														} else {
+															mostrarAlertaSinPermiso();
+														}
+													}}
 													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 												>
 													<Eye size={16} />
 													Ver Usuarios
 												</button>
-
 											</li>
+
+										</motion.ul>
+									)}
+								</AnimatePresence>
+							</li>
+							<li>
+								<button
+									onClick={() => {
+										if (permisos.includes(PERMISOS.MENU_ITEM_ROLES)) {
+											setMenuRolesOpen(!menuRolesOpen);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
+									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
+								>
+									<Shield size={18} />
+									Gestión de Roles
+									{menuRolesOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+								</button>
+
+								<AnimatePresence>
+									{menuRolesOpen && permisos.includes(PERMISOS.ACCESO_MODULO_ROLES) && (
+										<motion.ul
+											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
+											initial="hidden"
+											animate="visible"
+											exit="hidden"
+											variants={subMenuVariants}
+										>
+											{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
+												<li>
+													<button
+														onClick={() => navigate("/dashboardAdmin/roles/view_vista_datos_roles")}
+														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+													>
+														<List size={16} />
+														Listado de Roles
+													</button>
+												</li>
+											)}
+
+											{permisos.includes(PERMISOS.CREAR_ROLES) && (
+												<li>
+													<button
+														onClick={() => navigate("/dashboard/roles/crear")}
+														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+													>
+														<PlusCircle size={16} />
+														Crear Nuevo Rol
+													</button>
+												</li>
+											)}
+
+											{permisos.includes(PERMISOS.ASIGNAR_PERMISOS) && (
+												<li>
+													<button
+														onClick={() => navigate("/dashboard/roles/asignar-permisos")}
+														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+													>
+														<LockKeyhole size={16} />
+														Asignar Permisos
+													</button>
+												</li>
+											)}
+
+											{permisos.includes(PERMISOS.EDITAR_ROLES) && (
+												<li>
+													<button
+														onClick={() => navigate("/dashboard/roles/editar")}
+														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+													>
+														<Edit size={16} />
+														Editar Roles
+													</button>
+												</li>
+											)}
 										</motion.ul>
 									)}
 								</AnimatePresence>
@@ -153,8 +243,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											</li>
 											<li>
 												<button
-												onClick={() => navigate("/dashboardAdmin/crear_formulario")}
-												className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2">
+													onClick={() => navigate("/dashboardAdmin/crear_formulario")}
+													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2">
 													<PlusSquare size={16} />
 													Crear Formulario
 												</button>

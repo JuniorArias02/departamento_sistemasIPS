@@ -10,13 +10,14 @@ import FormularioEquiposBiomedicos from "./pages/paginaCliente/formularios/equip
 import FormularioMedicamentos from "./pages/paginaCliente/formularios/medicamento";
 import FormularioReactivoVigilancia from "./pages/paginaCliente/formularios/reactivo_vigilancia";
 import FormularioInventario from "./pages/paginaCliente/formularios/inventario";
+import FormularioMantenimientoFreezer from "./pages/paginaCliente/formularios/mantenimiento_freezer";
 // vistaDatos
 import VistaDatosDispositivosMedicos from "./pages/paginaCliente/vistasDatos/vista_datos_dispositivos_medicos";
 import VistaDatosEquiposBiomedicos from "./pages/paginaCliente/vistasDatos/vista_datos_equipos_biomedicos";
 import VistaDatosMedicamentos from "./pages/paginaCliente/vistasDatos/vista_datos_medicamentos";
 import VistaDatosReactivosVigilancia from "./pages/paginaCliente/vistasDatos/vista_datos_reactivos_vigilancias";
 import VistaDatosInventarios from "./pages/paginaCliente/vistasDatos/vista_datos_inventario";
-
+import VistaDatosMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/vista_datos_mantenimientos_freezer";
 // VISTA ADMINISTRADOR
 import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
 import { ADMINISTRADOR } from "./const/variable_entorno";
@@ -24,12 +25,14 @@ import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsu
 import DashboardAdmin from "./pages/paginaAdministrador/DashboardAdmin";
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
+import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
 
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
+import { PERMISOS } from "./secure/permisos/permisos";
 
 function App() {
-  const { usuario } = useApp();
+  const { usuario, permisos } = useApp();
 
   return (
     <Routes>
@@ -38,7 +41,7 @@ function App() {
         path="/"
         element={
           usuario ? (
-            usuario.rol === ADMINISTRADOR ? (
+            permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN) ? (
               <Navigate to="/dashboardAdmin" replace />
             ) : (
               <Navigate to="/dashboard" replace />
@@ -72,6 +75,15 @@ function App() {
           </RutaSoloAdmin>
         } />
 
+        {/* modulos de roles  */}
+       <Route path="/dashboardAdmin/roles/view_vista_datos_roles" element={
+          <RutaSoloAdmin>
+            <VistaDatosRoles />
+          </RutaSoloAdmin>
+        } />
+
+
+
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Rutas SOLO para administrador */}
@@ -83,6 +95,16 @@ function App() {
             </RutaSoloAdmin>
           }
         />
+
+        <Route
+          path="/dashboard/view_mantenimiento_freezer"
+          element={
+            <RutaSoloAdmin>
+              <VistaDatosMantenimientoFreezer />
+            </RutaSoloAdmin>
+          }
+        />
+
 
         <Route
           path="/dashboard/form_usuarios"
@@ -114,6 +136,11 @@ function App() {
         <Route
           path="/dashboard/form_inventario"
           element={<FormularioInventario />}
+        />
+
+        <Route
+          path="/dashboard/form_mantenimiento_freezer"
+          element={<FormularioMantenimientoFreezer />}
         />
 
         {/* vistaDatos */}

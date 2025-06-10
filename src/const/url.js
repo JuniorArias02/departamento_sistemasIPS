@@ -20,6 +20,7 @@ export const LISTAR_MEDICAMENTO = `${URL_PATH}controllers/listar/listar_medicame
 export const LISTAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/listar/listar_reactivos_vigilancias.php`;
 export const LISTAR_INVENTARIO = `${URL_PATH}controllers/listar/listar_inventarios.php`;
 export const LISTAR_SEDES = `${URL_PATH}controllers/listar/listar_sedes.php`;
+export const LISTAR_COORDINADORES = `${URL_PATH}controllers/listar/listar_coordinadores.php`;
 //elimianr
 export const ELIMINAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/eliminar/eliminar_dispositivo_medico.php`;
 export const ELIMINAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/eliminar/eliminar_equipo_biomedico.php`;
@@ -51,3 +52,6 @@ export const GRAFICA_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/grafica/grafic
 export const GRAFICA_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/grafica/grafica_equipo_biomedico.php`;
 export const GRAFICA_MEDICAMENTO = `${URL_PATH}controllers/grafica/grafica_medicamento.php`;
 export const GRAFICA_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/grafica/grafica_reactivo.php`;
+
+// rol
+export const OBTENER_ROL = `${URL_PATH}controllers/rol/rol/obtener_rol.php`;

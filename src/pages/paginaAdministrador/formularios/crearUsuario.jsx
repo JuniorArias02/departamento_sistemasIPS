@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { Save, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario";
-import { listarRoles } from "../../../services/rol";
+import { listarRoles } from "../../../services/rolServices";
 import { useApp } from "../../../store/AppContext";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { useLocation } from "react-router-dom";

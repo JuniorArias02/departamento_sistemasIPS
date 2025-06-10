@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-	obtenerTotalDispositivoMedicoc,
-	obtenerTotalEquipoBiomedico,
-	obtenerTotalMedicamentos,
-	obtenerTotalReactivosVigilancia,
 	obtenerTotalInventario
 } from "../../services/dashboard_services";
-import { Database, Microscope, Pill, FlaskConical, Eye, ClipboardList } from "lucide-react";
+import { obtenerTotalMantenimientoFreezer } from "../../services/mantenimiento_freezer";
+import { Database, Microscope, Pill, FlaskConical, Eye, ClipboardList,Wrench  } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContadorAnimado } from "../../hook/useContadorAnimado";
 
@@ -15,30 +12,22 @@ export default function Dashboard() {
 	const navigate = useNavigate();
 
 	const [totales, setTotales] = useState({
-		dispositivos: 0,
-		equipos: 0,
-		medicamentos: 0,
-		reactivos: 0,
 		inventario: 0,
+		mantenimientoFreezer: 0
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [dispo, equipo, medi, reactivo, inventario] = await Promise.all([
-					obtenerTotalDispositivoMedicoc(),
-					obtenerTotalEquipoBiomedico(),
-					obtenerTotalMedicamentos(),
-					obtenerTotalReactivosVigilancia(),
+				const [inventario, mantenimientoFreezer] = await Promise.all([
 					obtenerTotalInventario(),
+					obtenerTotalMantenimientoFreezer()
 				]);
 
 				setTotales({
-					dispositivos: dispo,
-					equipos: equipo,
-					medicamentos: medi,
-					reactivos: reactivo,
 					inventario: inventario,
+					mantenimientoFreezer: mantenimientoFreezer
+
 				});
 			} catch (error) {
 				console.error("Error al cargar totales", error);
@@ -52,43 +41,22 @@ export default function Dashboard() {
 
 	const opciones = [
 		{
-			titulo: "Dispositivos Médicos",
-			ruta: "/dashboard/form_dispositivo_medicos",
-			verRuta: "/dashboard/view_dispositivos_medicos",
-			total: totales.dispositivos,
-		},
-		{
-			titulo: "Equipos Biomédicos",
-			ruta: "/dashboard/form_equipo_biomedicos",
-			verRuta: "/dashboard/view_equipos_biomedicos",
-			total: totales.equipos,
-		},
-		{
-			titulo: "Medicamentos",
-			ruta: "/dashboard/form_medicamento",
-			verRuta: "/dashboard/view_medicamentos",
-			total: totales.medicamentos,
-		},
-		{
-			titulo: "Reactivos y Vigilancia",
-			ruta: "/dashboard/form_reactivo_vigilancia",
-			verRuta: "/dashboard/view_reactivos_vigilancia",
-			total: totales.reactivos,
-		},
-		{
 			titulo: "Inventarios Generales",
 			ruta: "/dashboard/form_inventario",
 			verRuta: "/dashboard/view_inventarios",
 			total: totales.inventario,
 		},
+		{
+			titulo: "Mantenimiento Freezer",
+			ruta: "/dashboard/form_mantenimiento_freezer",
+			verRuta: "/dashboard/view_mantenimiento_freezer",
+			total: totales.mantenimientoFreezer,
+		}
 	];
 
 	const iconos = [
-		<Database className="h-10 w-10 text-blue-600" />,
-		<Microscope className="h-10 w-10 text-green-600" />,
-		<Pill className="h-10 w-10 text-purple-600" />,
-		<FlaskConical className="h-10 w-10 text-pink-600" />,
 		<ClipboardList className="h-10 w-10 text-yellow-600" />,
+		<Wrench className="h-10 w-10 text-red-600" />
 	];
 
 	// Aquí usas el hook para animar el total de cada opción
