@@ -1,8 +1,9 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ADMINISTRADOR } from "../../../const/variable_entorno";
+import { RUTAS } from "../../../const/routers/routers";
 export default function BackPage({
-  to = "/dashboard",
+  to = RUTAS.DASHBOARD,
   texto = "Volver",
   isEdit = false,
   rol = null,
@@ -14,7 +15,7 @@ export default function BackPage({
       navigate(-1);
     } else {
       if (rol === ADMINISTRADOR) {
-        navigate("/dashboardAdmin");
+        navigate(RUTAS.ADMIN.ROOT);
       } else {
         navigate(to);
       }

@@ -5,24 +5,15 @@ import FormularioLogin from "./auth/formularioLogin/FormularioLogin";
 import Layout from "./pages/paginaCliente/components/Layout";
 import Dashboard from "./pages/paginaCliente/Dashboard";
 // formularios
-import FormularioDispositivoMedicos from "./pages/paginaCliente/formularios/dispositivos_medicos";
-import FormularioEquiposBiomedicos from "./pages/paginaCliente/formularios/equipos_biomedicos";
-import FormularioMedicamentos from "./pages/paginaCliente/formularios/medicamento";
-import FormularioReactivoVigilancia from "./pages/paginaCliente/formularios/reactivo_vigilancia";
 import FormularioInventario from "./pages/paginaCliente/formularios/inventario";
 import FormularioMantenimientoFreezer from "./pages/paginaCliente/formularios/mantenimiento_freezer";
 // vistaDatos
-import VistaDatosDispositivosMedicos from "./pages/paginaCliente/vistasDatos/vista_datos_dispositivos_medicos";
-import VistaDatosEquiposBiomedicos from "./pages/paginaCliente/vistasDatos/vista_datos_equipos_biomedicos";
-import VistaDatosMedicamentos from "./pages/paginaCliente/vistasDatos/vista_datos_medicamentos";
-import VistaDatosReactivosVigilancia from "./pages/paginaCliente/vistasDatos/vista_datos_reactivos_vigilancias";
 import VistaDatosInventarios from "./pages/paginaCliente/vistasDatos/vista_datos_inventario";
 import VistaDatosMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/vista_datos_mantenimientos_freezer";
 // VISTA ADMINISTRADOR
 import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
-import { ADMINISTRADOR } from "./const/variable_entorno";
 import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
-import DashboardAdmin from "./pages/paginaAdministrador/DashboardAdmin";
+import DashboardAdmin from "./pages/paginaAdministrador/vistaDatos/DashboardAdmin";
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
@@ -31,6 +22,7 @@ import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
 
+import { RUTAS } from "./const/routers/routers";
 function App() {
   const { usuario, permisos } = useApp();
 
@@ -38,13 +30,13 @@ function App() {
     <Routes>
       {/* Login */}
       <Route
-        path="/"
+        path={RUTAS.LOGIN}
         element={
           usuario ? (
             permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN) ? (
-              <Navigate to="/dashboardAdmin" replace />
+              <Navigate to={RUTAS.ADMIN.ROOT} replace />
             ) : (
-              <Navigate to="/dashboard" replace />
+              <Navigate to={RUTAS.DASHBOARD} replace />
             )
           ) : (
             <FormularioLogin />
@@ -61,7 +53,7 @@ function App() {
         }
       >
         <Route
-          path="/dashboardAdmin"
+          path={RUTAS.ADMIN.ROOT}
           element={
             <RutaSoloAdmin>
               <DashboardAdmin />
@@ -69,26 +61,24 @@ function App() {
           }
         />
 
-        <Route path="/dashboardAdmin/crear_formulario" element={
-          <RutaSoloAdmin>
-            <NotAvailable />
-          </RutaSoloAdmin>
-        } />
-
         {/* modulos de roles  */}
-       <Route path="/dashboardAdmin/roles/view_vista_datos_roles" element={
+        <Route path={RUTAS.ADMIN.ROLES.VISTA_DATOS} element={
           <RutaSoloAdmin>
             <VistaDatosRoles />
           </RutaSoloAdmin>
         } />
 
+        <Route path={RUTAS.PAGINA_CONSTRUCCION} element={
+          <RutaSoloAdmin>
+            <NotAvailable />
+          </RutaSoloAdmin>
+        } />
 
-
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path={RUTAS.DASHBOARD} element={<Dashboard />} />
 
         {/* Rutas SOLO para administrador */}
         <Route
-          path="/dashboard/view_usuarios"
+          path={RUTAS.ADMIN.USUARIOS.ROOT}
           element={
             <RutaSoloAdmin>
               <VistaDatosUsuarios />
@@ -97,7 +87,7 @@ function App() {
         />
 
         <Route
-          path="/dashboard/view_mantenimiento_freezer"
+          path={RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS}
           element={
             <RutaSoloAdmin>
               <VistaDatosMantenimientoFreezer />
@@ -107,7 +97,7 @@ function App() {
 
 
         <Route
-          path="/dashboard/form_usuarios"
+          path={RUTAS.ADMIN.USUARIOS.CREAR_USUARIO}
           element={
             <RutaSoloAdmin>
               <FormularioUsuarios />
@@ -117,64 +107,33 @@ function App() {
 
         {/* formularios */}
         <Route
-          path="/dashboard/form_dispositivo_medicos"
-          element={<FormularioDispositivoMedicos />}
-        />
-        <Route
-          path="/dashboard/form_equipo_biomedicos"
-          element={<FormularioEquiposBiomedicos />}
-        />
-        <Route
-          path="/dashboard/form_medicamento"
-          element={<FormularioMedicamentos />}
-        />
-        <Route
-          path="/dashboard/form_reactivo_vigilancia"
-          element={<FormularioReactivoVigilancia />}
-        />
-
-        <Route
-          path="/dashboard/form_inventario"
+          path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}
           element={<FormularioInventario />}
         />
 
         <Route
-          path="/dashboard/form_mantenimiento_freezer"
+          path={RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO}
           element={<FormularioMantenimientoFreezer />}
         />
 
         {/* vistaDatos */}
         <Route
-          path="/dashboard/view_dispositivos_medicos"
-          element={<VistaDatosDispositivosMedicos />}
-        />
-        <Route
-          path="/dashboard/view_equipos_biomedicos"
-          element={<VistaDatosEquiposBiomedicos />}
-        />
-        <Route
-          path="/dashboard/view_medicamentos"
-          element={<VistaDatosMedicamentos />}
-        />
-        <Route
-          path="/dashboard/view_reactivos_vigilancia"
-          element={<VistaDatosReactivosVigilancia />}
-        />
-        <Route
-          path="/dashboard/view_inventarios"
+          path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}
           element={<VistaDatosInventarios />}
         />
-        {/* error 404 */}
 
       </Route>
-      <Route path="/404" element={<NotFound />} />
+
+      {/* RUTAS DE ERROES DE PAGINA */}
+      <Route path={RUTAS.ERROR_404} element={<NotFound />} />
+
 
 
       {/* Ruta por defecto */}
 
       <Route
         path="*"
-        element={<Navigate to={usuario ? "/404" : "/"} replace />}
+        element={<Navigate to={usuario ? RUTAS.ERROR_404 : RUTAS.LOGIN} replace />}
       />
     </Routes>
   );

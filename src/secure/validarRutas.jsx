@@ -1,9 +1,7 @@
-import { ADMINISTRADOR } from "../const/variable_entorno";
+import { RUTAS } from "../const/routers/routers";
+import { PERMISOS } from "./permisos/permisos";
 
-export const validarRutas = (usuario, navigate) => {
-  if (usuario.rol === ADMINISTRADOR) {
-    navigate("/dashboardAdmin");
-  } else {
-    navigate("/dashboard");
-  }
+export const validarRutas = (navigate, permisos) => {
+  const tieneAccesoAdmin = permisos?.includes(PERMISOS.INGRESAR_DASHBOARDADMIN);
+  navigate(tieneAccesoAdmin ? RUTAS.ADMIN.ROOT : RUTAS.DASHBOARD);
 };

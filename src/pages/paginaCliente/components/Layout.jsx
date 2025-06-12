@@ -22,7 +22,7 @@ export default function Layout() {
         <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
         {/* Main con scroll solo aquí */}
-        <main className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent">
+        <main className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent bg-gray-100">
           <Outlet />
         </main>
 

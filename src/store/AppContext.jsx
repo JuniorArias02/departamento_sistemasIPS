@@ -8,6 +8,7 @@ export const AppProvider = ({ children }) => {
   const [permisos, setPermisos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
+  // Recuperar sesión al cargar la app
   useEffect(() => {
     const user = localStorage.getItem("usuario");
     const userPermisos = localStorage.getItem("permisos");
@@ -20,12 +21,12 @@ export const AppProvider = ({ children }) => {
     setCargando(false);
   }, []);
 
-  const login = async (usuario) => {
+  // Función de login modificada para recibir permisos
+  const login = async (usuario, permisosObtenidos) => {
     setUsuario(usuario);
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-
-    const permisosObtenidos = await obtenerPermisos(usuario.id);
     setPermisos(permisosObtenidos);
+    
+    localStorage.setItem("usuario", JSON.stringify(usuario));
     localStorage.setItem("permisos", JSON.stringify(permisosObtenidos));
   };
 

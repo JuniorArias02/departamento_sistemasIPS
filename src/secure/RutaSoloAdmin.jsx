@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useApp } from "../store/AppContext";
-import { ADMINISTRADOR, COORDINADOR, GERENCIA } from "../const/variable_entorno";
 import { PERMISOS } from "./permisos/permisos";
 export default function RutaSoloAdmin({ children }) {
   const { permisos } = useApp();

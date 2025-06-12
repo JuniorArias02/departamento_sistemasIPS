@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit } from "lucide-react";
+import { Wrench, ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "../../../hook/useMobile";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import Swal from "sweetalert2";
 import { mostrarAlertaSinPermiso } from "../../../hook/useError";
+import { RUTAS } from "../../../const/routers/routers";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuUsuariosOpen, setMenuUsuariosOpen] = useState(false);
 	const [menuFormulariosOpen, setMenuFormulariosOpen] = useState(false);
 	const [menuRolesOpen, setMenuRolesOpen] = useState(false);
+	const [nuevosFormularios, setNuevosFormularios] = useState(0);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
 	const variants = {
@@ -35,10 +37,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 		visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
 	};
 
+
+	useEffect(() => {
+		const fetchNuevosFormularios = async () => {
+			setNuevosFormularios(3);
+		};
+
+		fetchNuevosFormularios();
+	}, []);
+
+
 	const handleLogout = () => {
 		logout();
 		setSidebarOpen(false);
-		navigate("/");
+		navigate(RUTAS.LOGIN);
 	};
 
 	return (
@@ -82,7 +94,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						<>
 							<li>
 								<button
-									onClick={() => navigate("/dashboardAdmin")}
+									onClick={() => navigate(RUTAS.ADMIN.ROOT)}
 									className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 flex items-center gap-2 cursor-pointer"
 								>
 									<Home size={18} />
@@ -107,7 +119,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								</button>
 
 								<AnimatePresence>
-									{menuUsuariosOpen && permisos.includes(PERMISOS.VER_DATOS_USUARIOS) && (
+									{menuUsuariosOpen && permisos.includes(PERMISOS.ACCESO_MODULO_USUARIO) && (
 										<motion.ul
 											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
 											initial="hidden"
@@ -119,7 +131,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												<button
 													onClick={() => {
 														if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
-															navigate("/dashboard/view_usuarios");
+															navigate(RUTAS.ADMIN.USUARIOS.ROOT);
 														} else {
 															mostrarAlertaSinPermiso();
 														}
@@ -128,6 +140,21 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												>
 													<Eye size={16} />
 													Ver Usuarios
+												</button>
+											</li>
+											<li>
+												<button
+													onClick={() => {
+														if (permisos.includes(PERMISOS.AGREGAR_USUARIO)) {
+															navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO);
+														} else {
+															mostrarAlertaSinPermiso();
+														}
+													}}
+													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+												>
+													<UserPlus size={16} />
+													Crear Usuario
 												</button>
 											</li>
 
@@ -163,7 +190,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate("/dashboardAdmin/roles/view_vista_datos_roles")}
+														onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<List size={16} />
@@ -175,7 +202,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.CREAR_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate("/dashboard/roles/crear")}
+														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<PlusCircle size={16} />
@@ -187,7 +214,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.ASIGNAR_PERMISOS) && (
 												<li>
 													<button
-														onClick={() => navigate("/dashboard/roles/asignar-permisos")}
+														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<LockKeyhole size={16} />
@@ -199,7 +226,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.EDITAR_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate("/dashboard/roles/editar")}
+														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<Edit size={16} />
@@ -233,7 +260,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										>
 											<li>
 												<button
-													onClick={() => navigate("/dashboard")}
+													onClick={() => navigate(RUTAS.DASHBOARD)}
 													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 												>
 													<List size={16} />
@@ -243,7 +270,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											</li>
 											<li>
 												<button
-													onClick={() => navigate("/dashboardAdmin/crear_formulario")}
+													onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
 													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2">
 													<PlusSquare size={16} />
 													Crear Formulario
@@ -253,6 +280,25 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										</motion.ul>
 									)}
 								</AnimatePresence>
+							</li>
+
+							<li>
+								<button
+									onClick={() => navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS)}
+									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer group"
+								>
+									<div className="flex items-center gap-2">
+										<Wrench size={18} className="group-hover:text-white" />
+										<span className="group-hover:text-white">Mantenimientos IPS</span>
+									</div>
+
+									{/* Notificación dinámica */}
+									{nuevosFormularios > 0 && (
+										<span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+											{nuevosFormularios}
+										</span>
+									)}
+								</button>
 							</li>
 						</>
 					)}

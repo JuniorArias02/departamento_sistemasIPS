@@ -23,7 +23,6 @@ export default function FormularioMantenimientoFreezer() {
 
 	const handleRemoveImage = () => {
 		setFormData({ ...formData, imagen: "" });
-		// Limpiar el input file para permitir nueva selección
 		const fileInput = document.getElementById('imagen');
 		if (fileInput) fileInput.value = '';
 	};

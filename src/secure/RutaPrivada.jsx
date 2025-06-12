@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useApp } from "../store/AppContext";
+import { RUTAS } from "../const/routers/routers";
 
 export default function RutaPrivada({ children }) {
   const { usuario, cargando } = useApp();
@@ -15,7 +16,7 @@ if (cargando) {
 
 
   if (!usuario) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={RUTAS.LOGIN} replace />;
   }
 
   return children;

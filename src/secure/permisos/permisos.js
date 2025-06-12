@@ -1,10 +1,13 @@
 export const PERMISOS = {
+	// usuarios
+	MENU_ITEM_USUARIOS: "menu_item_usuario",
+	ACCESO_MODULO_USUARIO: "acceso_modulo_usuario",
 	AGREGAR_USUARIO: "agregar_usuario",
 	EDITAR_USUARIO: "editar_usuario",
 	ELIMINAR_USUARIO: "eliminar_usuario",
 	ACTUALIZAR_USUARIO: "actualizar_usuario",
 	VER_DATOS_USUARIOS: "ver_datos_usuarios",
-	MENU_ITEM_USUARIOS: "menu_item_usuario",
+	// SISTEMAS
 	INGRESAR_DASHBOARDADMIN: "ingresar_dashboardAdmin",
 	VER_DATOS_INVENTARIO: "ver_datos_inventario",
 	AGREGAR_INVENTARIO: "agregar_inventario",
@@ -12,6 +15,7 @@ export const PERMISOS = {
 	ELIMINAR_INVENTARIO: "eliminar_inventario",
 	EXPORTAR_INVENTARIO: "exportar_inventario",
 	INGRESAR_SIDEBAR_ADMIN: "ingresar_sidebarAdmin",
+	// roles
 	MENU_ITEM_ROLES: "menu_item_roles",
 	ACCESO_MODULO_ROLES: "acceso_modulo_roles",
 	VER_LISTADO_ROLES: "ver_listado_roles",

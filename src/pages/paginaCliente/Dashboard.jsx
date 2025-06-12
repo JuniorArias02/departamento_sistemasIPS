@@ -4,9 +4,10 @@ import {
 	obtenerTotalInventario
 } from "../../services/dashboard_services";
 import { obtenerTotalMantenimientoFreezer } from "../../services/mantenimiento_freezer";
-import { Database, Microscope, Pill, FlaskConical, Eye, ClipboardList,Wrench  } from "lucide-react";
+import { Database, Microscope, Pill, FlaskConical, Eye, ClipboardList, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContadorAnimado } from "../../hook/useContadorAnimado";
+import { RUTAS } from "../../const/routers/routers";
 
 export default function Dashboard() {
 	const navigate = useNavigate();
@@ -42,14 +43,14 @@ export default function Dashboard() {
 	const opciones = [
 		{
 			titulo: "Inventarios Generales",
-			ruta: "/dashboard/form_inventario",
-			verRuta: "/dashboard/view_inventarios",
+			ruta: RUTAS.USER.INVENTARIO.CREAR_INVENTARIO,
+			verRuta: RUTAS.USER.INVENTARIO.VER_INVENTARIO,
 			total: totales.inventario,
 		},
 		{
 			titulo: "Mantenimiento Freezer",
-			ruta: "/dashboard/form_mantenimiento_freezer",
-			verRuta: "/dashboard/view_mantenimiento_freezer",
+			ruta: RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO,
+			verRuta: RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS,
 			total: totales.mantenimientoFreezer,
 		}
 	];

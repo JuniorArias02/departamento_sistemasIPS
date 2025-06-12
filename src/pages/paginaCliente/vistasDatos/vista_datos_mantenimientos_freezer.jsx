@@ -61,7 +61,7 @@ export default function VistaDatosMantenimientoFreezer() {
 
 			<div className="text-center">
 				<h1 className="text-3xl font-bold text-gray-800">
-					IPS CLINICAL HOUSE 
+					IPS CLINICAL HOUSE
 				</h1>
 				<p className="text-gray-600 mt-2">
 					Listado de todos los mantenimientos registrados
@@ -89,9 +89,7 @@ export default function VistaDatosMantenimientoFreezer() {
 										{item.esta_revisado ? 'Revisado' : 'Pendiente'}
 									</span>
 								</div>
-
 								<p className="text-gray-600 mt-2 line-clamp-2">{item.descripcion}</p>
-
 								<div className="mt-4 space-y-2">
 									<div className="flex items-center text-sm text-gray-500">
 										<Warehouse className="mr-2" />
@@ -106,17 +104,16 @@ export default function VistaDatosMantenimientoFreezer() {
 										<span>{new Date(item.fecha_creacion).toLocaleDateString()}</span>
 									</div>
 								</div>
-
 								<div className="mt-6 flex justify-between">
 									<button
 										onClick={() => handleVerDetalle(item.id)}
-										className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors flex items-center"
+										className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors flex items-center cursor-pointer"
 									>
 										<Eye className="mr-1" /> Ver
 									</button>
 									<button
 										onClick={() => handleEditar(item.id)}
-										className="px-3 py-1 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center"
+										className="px-3 py-1 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center cursor-pointer"
 									>
 										<Edit className="mr-1" /> Editar
 									</button>

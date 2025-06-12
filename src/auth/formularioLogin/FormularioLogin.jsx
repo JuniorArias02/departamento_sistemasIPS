@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { Eye, EyeOff, Smile } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { validarRutas } from "../../secure/validarRutas";
+import { obtenerPermisos } from "../../services/permisos";
 export default function FormularioLogin() {
   const navigate = useNavigate();
   const { login } = useApp();
@@ -25,16 +26,15 @@ export default function FormularioLogin() {
 
     try {
       const data = await loginUsuario(formData);
-      login(data.usuario);  // data.usuario es el objeto usuario
-      validarRutas(data.usuario, navigate);
+      const permisosObtenidos = await obtenerPermisos(data.usuario.id);
+      login(data.usuario, permisosObtenidos);
+      validarRutas(navigate, permisosObtenidos);
+
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: 
-          typeof error === "string"
-            ? error
-            : "Error en el inicio de sesión",
+        text: typeof error === "string" ? error : "Error en el inicio de sesión",
       });
     } finally {
       setLoading(false);

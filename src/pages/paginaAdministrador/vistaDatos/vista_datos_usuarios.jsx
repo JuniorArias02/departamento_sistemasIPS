@@ -5,6 +5,7 @@ import { listarUsuariosAdmin, eliminarUsuario } from "../../../services/usuario"
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import BackPage from "../../paginaCliente/components/BackPage";
+import { RUTAS } from "../../../const/routers/routers";
 export default function VistaDatosUsuarios() {
 	const [usuarios, setUsuarios] = useState([]);
 	const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function VistaDatosUsuarios() {
 	}, [usuarioContext?.id]);
 
 	const handleEditar = (item) => {
-		navigate("/dashboard/form_usuarios", {
+		navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO, {
 			state: { usuarios: item },
 		});
 	};
@@ -69,7 +70,7 @@ export default function VistaDatosUsuarios() {
 					Usuarios registrados
 				</h1>
 				<button
-					onClick={() => navigate("/dashboard/form_usuarios")}
+					onClick={() => navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)}
 					className="bg-[#5a8aad] hover:bg-[#013459] text-white font-medium px-4 py-2.5 rounded-lg shadow transition duration-200 w-full sm:w-auto"
 					style={{ minWidth: '150px' }} // que no sea muy chiquito en móvil
 				>

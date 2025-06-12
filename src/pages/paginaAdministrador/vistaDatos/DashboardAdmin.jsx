@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {
 	obtenerGraficaInventario,
-} from "../../services/dashboardAdmin_services";
-import { ChartPorUsuario } from "./components/graficas/renderChartPorUsuario";
-import { formatearFechas } from "../../hook/formatearFecha";
+} from "../../../services/dashboardAdmin_services";
+import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
+import { formatearFechas } from "../../../hook/formatearFecha";
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [loading, setLoading] = useState(true);
