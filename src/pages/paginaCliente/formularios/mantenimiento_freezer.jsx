@@ -5,7 +5,7 @@ import { useApp } from "../../../store/AppContext";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { crearMantenimientoFreezer, actualizarMantenimientoFreezer, listarCoordinadores } from "../../../services/mantenimiento_freezer";
+import { crearMantenimientoFreezer, actualizarEstadoMantenimiento, listarCoordinadores } from "../../../services/mantenimiento_freezer";
 import { listarSedes } from "../../../services/sedes";
 export default function FormularioMantenimientoFreezer() {
 	const { usuario } = useApp();
@@ -108,7 +108,7 @@ export default function FormularioMantenimientoFreezer() {
 
 		try {
 			if (mantenimientoEdit?.id) {
-				await actualizarMantenimientoFreezer(mantenimientoEdit.id, datosConUsuario);
+				await actualizarEstadoMantenimiento(mantenimientoEdit.id, datosConUsuario);
 				Swal.fire({
 					icon: "success",
 					title: "¡Actualizado!",

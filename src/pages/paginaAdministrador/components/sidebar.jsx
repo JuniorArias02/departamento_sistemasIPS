@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { Wrench, ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
+import { Wrench, BellIcon, ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "../../../hook/useMobile";
@@ -9,7 +9,8 @@ import { PERMISOS } from "../../../secure/permisos/permisos";
 import Swal from "sweetalert2";
 import { mostrarAlertaSinPermiso } from "../../../hook/useError";
 import { RUTAS } from "../../../const/routers/routers";
-
+import { fetchNotificacionesPendientes } from "../../../services/mantenimiento_freezer";
+import { NotificationBadge } from "./NotificationBadge";
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const navigate = useNavigate();
 	const { usuario, permisos, logout } = useApp();
@@ -17,6 +18,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuFormulariosOpen, setMenuFormulariosOpen] = useState(false);
 	const [menuRolesOpen, setMenuRolesOpen] = useState(false);
 	const [nuevosFormularios, setNuevosFormularios] = useState(0);
+	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
 	const variants = {
@@ -37,15 +39,30 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 		visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
 	};
 
+	useEffect(() => {
+		if (nuevosFormularios > 0) {
+			setAnimarCampana(true);
+			const timeout = setTimeout(() => setAnimarCampana(false), 600);
+			return () => clearTimeout(timeout);
+		}
+	}, [nuevosFormularios]);
 
 	useEffect(() => {
 		const fetchNuevosFormularios = async () => {
-			setNuevosFormularios(3);
+			if (usuario?.id) {
+				try {
+					const pendientes = await fetchNotificacionesPendientes(usuario.id);
+					setNuevosFormularios(pendientes);
+				} catch (error) {
+					console.error("Error al obtener nuevos formularios:", error);
+					setNuevosFormularios(0);
+				}
+			}
 		};
-
 		fetchNuevosFormularios();
-	}, []);
-
+		const interval = setInterval(fetchNuevosFormularios, 3000); 
+		return () => clearInterval(interval);
+	}, [usuario?.id]);
 
 	const handleLogout = () => {
 		logout();
@@ -282,22 +299,21 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								</AnimatePresence>
 							</li>
 
-							<li>
+							<li className="relative">
 								<button
 									onClick={() => navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS)}
 									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer group"
 								>
-									<div className="flex items-center gap-2">
-										<Wrench size={18} className="group-hover:text-white" />
-										<span className="group-hover:text-white">Mantenimientos IPS</span>
+									{/* Campana con animación */}
+									<div className={`relative h-6 w-6 flex items-center justify-center ${animarCampana ? "animate-bell" : ""}`}>
+										<BellIcon size={20} className="text-gray-400 group-hover:text-white" />
+										<NotificationBadge count={nuevosFormularios} />
 									</div>
 
-									{/* Notificación dinámica */}
-									{nuevosFormularios > 0 && (
-										<span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-											{nuevosFormularios}
-										</span>
-									)}
+									{/* Texto + wrench */}
+									<div className="flex items-center gap-2 ml-2">
+										<span className="group-hover:text-white">Mantenimientos IPS</span>
+									</div>
 								</button>
 							</li>
 						</>

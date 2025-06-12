@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: [
-      'speak-pasta-dow-sample.trycloudflare.com',
+      'broke-bikini-pipes-beauty.trycloudflare.com',
       // agrega más si quieres
     ]
   }

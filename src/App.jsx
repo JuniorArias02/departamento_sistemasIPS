@@ -17,6 +17,7 @@ import DashboardAdmin from "./pages/paginaAdministrador/vistaDatos/DashboardAdmi
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
+import DetalleMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/matenimiento_freezer/ver_detalles_mantenimiento";
 
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
@@ -65,6 +66,12 @@ function App() {
         <Route path={RUTAS.ADMIN.ROLES.VISTA_DATOS} element={
           <RutaSoloAdmin>
             <VistaDatosRoles />
+          </RutaSoloAdmin>
+        } />
+
+        <Route path={RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES} element={
+          <RutaSoloAdmin>
+            <DetalleMantenimientoFreezer />
           </RutaSoloAdmin>
         } />
 

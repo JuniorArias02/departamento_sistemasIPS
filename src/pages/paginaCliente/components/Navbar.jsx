@@ -4,9 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { PERMISOS } from "../../../secure/permisos/permisos";
+import { RUTAS } from "../../../const/routers/routers";
+
 export default function Navbar({ toggleSidebar, sidebarOpen }) {
   const navigate = useNavigate();
   const { usuario, logout, permisos } = useApp();
+
   const handleLogout = () => {
     Swal.fire({
       title: "¿Quieres cerrar sesión?",
@@ -19,7 +22,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
-        navigate("/");
+        navigate(RUTAS.LOGIN);
       }
     });
   };
@@ -34,7 +37,6 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
               className="transition-transform duration-300 z-50"
               title={sidebarOpen ? "Cerrar menú" : "Abrir menú"}
             >
-
               <div
                 className={`transform transition-transform duration-300 ${sidebarOpen ? "rotate-180" : "rotate-0"
                   }`}
@@ -42,7 +44,6 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
                 {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
               </div>
             </button>
-
           )}
 
           <div className="font-bold text-lg sm:text-xl">
@@ -51,21 +52,17 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
         </div>
 
         <div className="hidden sm:flex items-center space-x-6">
-          {/* Solo mostrar nombre usuario si el sidebar está cerrado */}
-          <AnimatePresence>
-            {!sidebarOpen && (
-              <motion.span
-                className="capitalize"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {usuario?.nombre_completo || "Usuario"}
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {/* Nombre del usuario siempre visible */}
+          <motion.span
+            className="capitalize"
+            initial={{ opacity: 1, x: 0 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {usuario?.nombre_completo || "Usuario"}
+          </motion.span>
 
+          {/* Botón de salir siempre visible */}
           <button
             onClick={handleLogout}
             className="flex items-center space-x-1 hover:bg-blue-600 px-2 py-1 rounded transition"

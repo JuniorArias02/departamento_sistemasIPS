@@ -9,7 +9,7 @@
   }
   25% {
     transform: rotate(-15deg);
-  } 
+  }
   50% {
     transform: rotate(15deg);
   }
@@ -18,18 +18,62 @@
   }
 }
 
-
 .hammering-animation {
   animation: hammering 1.5s ease-in-out infinite;
   transform-origin: bottom center;
 }
 
-
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 .animate-shake {
   animation: shake 0.3s ease-in-out;
+}
+
+@keyframes ping-once {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-ping-once {
+  animation: ping-once 0.5s ease-in-out;
+}
+@keyframes bell {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-bell {
+  animation: bell 0.6s ease-in-out;
 }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { listarMantenimientosFreezer } from "../../../services/mantenimiento_freezer";
+import { listarMantenimientosFreezer, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_freezer"; // Asegúrate de importar la función de actualización
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "../../../store/AppContext";
+import { RUTAS } from "../../../const/routers/routers";
 import {
 	Eye,
 	Edit,
@@ -14,7 +15,6 @@ import {
 	CheckCircle,
 	Clock
 } from 'lucide-react';
-
 
 export default function VistaDatosMantenimientoFreezer() {
 	const navigate = useNavigate();
@@ -39,14 +39,70 @@ export default function VistaDatosMantenimientoFreezer() {
 		fetchData();
 	}, [usuario.id]);
 
-	const handleVerDetalle = (id) => {
-		navigate(`/dashboard/mantenimiento-freezer/detalle/${id}`);
+	const handleVerDetalle = (mantenimiento) => {
+		navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES,{
+			state: { mantenimientos: mantenimiento }
+		});
 	};
 
-	const handleEditar = (id) => {
-		navigate(`/dashboard/mantenimiento-freezer/editar/${id}`);
-	};
+	const handleToggleRevisado = async (id, estaRevisadoActual) => {
+		const nuevoEstado = !estaRevisadoActual;
+		const estadoTexto = nuevoEstado ? "revisado" : "pendiente";
+		const { isConfirmed } = await Swal.fire({
+			title: `¿Marcar como ${estadoTexto}?`,
+			text: `Estás a punto de cambiar el estado a ${estadoTexto}`,
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: `Sí, marcar como ${estadoTexto}`,
+			cancelButtonText: 'Cancelar'
+		});
 
+		if (!isConfirmed) return;
+
+		try {
+			// Mostrar loader mientras se procesa
+			Swal.fire({
+				title: 'Actualizando estado...',
+				allowOutsideClick: false,
+				didOpen: () => {
+					Swal.showLoading();
+				}
+			});
+
+			await actualizarEstadoMantenimiento(id, {
+				esta_revisado: nuevoEstado ? 1 : 0,
+				usuario_id: usuario.id
+			});
+
+			// Actualizar estado local optimizado
+			setMantenimientos(prev => prev.map(item =>
+				item.id === id ? {
+					...item,
+					esta_revisado: nuevoEstado,
+					revisado_por: nuevoEstado ? usuario.id : null,
+					fecha_revisado: nuevoEstado ? new Date().toISOString() : null,
+					nombre_revisor: nuevoEstado ? usuario.nombre_completo : null
+				} : item
+			));
+
+			// Notificación de éxito
+			Swal.fire(
+				'¡Actualizado!',
+				`El estado se cambió a ${estadoTexto} correctamente.`,
+				'success'
+			);
+		} catch (error) {
+			console.error('Error:', error);
+			Swal.fire(
+				'Error',
+				error.response?.data?.message ||
+				'Ocurrió un error al actualizar el estado',
+				'error'
+			);
+		}
+	};
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-64">
@@ -80,9 +136,9 @@ export default function VistaDatosMantenimientoFreezer() {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.3 }}
-							className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+							className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative ${item.esta_revisado ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}
 						>
-							<div className={`p-5 ${item.esta_revisado ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}>
+							<div className="p-5">
 								<div className="flex justify-between items-start">
 									<h3 className="text-xl font-semibold text-gray-800 truncate">{item.titulo}</h3>
 									<span className={`px-2 py-1 text-xs rounded-full ${item.esta_revisado ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
@@ -106,16 +162,27 @@ export default function VistaDatosMantenimientoFreezer() {
 								</div>
 								<div className="mt-6 flex justify-between">
 									<button
-										onClick={() => handleVerDetalle(item.id)}
+										onClick={() => handleVerDetalle(item)}
 										className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors flex items-center cursor-pointer"
 									>
 										<Eye className="mr-1" /> Ver
 									</button>
 									<button
-										onClick={() => handleEditar(item.id)}
-										className="px-3 py-1 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center cursor-pointer"
+										onClick={() => handleToggleRevisado(item.id, item.esta_revisado)}
+										className={`px-3 py-1 rounded-md transition-colors flex items-center cursor-pointer ${item.esta_revisado
+											? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
+											: "bg-green-100 text-green-600 hover:bg-green-200"
+											}`}
 									>
-										<Edit className="mr-1" /> Editar
+										{item.esta_revisado ? (
+											<>
+												<Clock className="mr-1" /> Marcar pendiente
+											</>
+										) : (
+											<>
+												<CheckCircle className="mr-1" /> Marcar revisado
+											</>
+										)}
 									</button>
 								</div>
 							</div>

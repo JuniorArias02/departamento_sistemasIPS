@@ -31,6 +31,7 @@ export const RUTAS = {
     MANTENIMIENTO_FREEZER: {
       CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento_freezer`,
       VISTA_DATOS: `${DASHBOARD}/mantenimiento_freezer`,
+      VER_DETALLES: `${DASHBOARD}/mantenimiento_freezer/detalles`,
     },
   }
 };
