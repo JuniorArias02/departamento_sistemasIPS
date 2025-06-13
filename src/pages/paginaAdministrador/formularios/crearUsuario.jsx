@@ -9,6 +9,7 @@ import { useApp } from "../../../store/AppContext";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { RUTAS } from "../../../const/routers/routers";
 
 export default function FormularioUsuarios() {
 	const { usuario: usuarioContext } = useApp();
@@ -86,7 +87,7 @@ export default function FormularioUsuarios() {
 					timer: 2000,
 					showConfirmButton: false,
 				});
-				navigate("/dashboard/view_usuarios");
+				navigate(RUTAS.ADMIN.USUARIOS.ROOT);
 			} else {
 				await CrearUsuario({
 					...formData,
