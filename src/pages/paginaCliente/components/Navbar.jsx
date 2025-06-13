@@ -32,18 +32,25 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
       <nav className="bg-custom-blue-1 text-white px-4 py-3 shadow-md flex justify-between items-center">
         <div className="flex items-center space-x-4">
           {permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
-            <button
+            <motion.button
               onClick={toggleSidebar}
-              className="transition-transform duration-300 z-50"
+              className="z-50"
               title={sidebarOpen ? "Cerrar menú" : "Abrir menú"}
+              whileTap={{ scale: 0.95 }} // Efecto al hacer clic
             >
-              <div
-                className={`transform transition-transform duration-300 ${sidebarOpen ? "rotate-180" : "rotate-0"
-                  }`}
+              <motion.div
+                animate={{
+                  rotate: sidebarOpen ? 180 : 0
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 15
+                }}
               >
                 {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-              </div>
-            </button>
+              </motion.div>
+            </motion.button>
           )}
 
           <div className="font-bold text-lg sm:text-xl">

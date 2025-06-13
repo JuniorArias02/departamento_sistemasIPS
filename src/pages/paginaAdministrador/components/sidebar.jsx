@@ -60,7 +60,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			}
 		};
 		fetchNuevosFormularios();
-		const interval = setInterval(fetchNuevosFormularios, 3000); 
+		const interval = setInterval(fetchNuevosFormularios, 3000);
 		return () => clearInterval(interval);
 	}, [usuario?.id]);
 
@@ -80,17 +80,48 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			)}
 			<motion.aside
 				className={`
-          bg-[#013459] text-white h-screen shadow-md z-40 transition-all duration-100 ease-in-out overflow-hidden
-          ${isMobile
+    bg-[#013459] text-white h-screen shadow-md z-40 overflow-hidden
+    ${isMobile
 						? "fixed top-0 left-0 w-64 p-4"
-						: sidebarOpen
-							? "relative w-64 p-4"
-							: "relative w-0 p-0"
+						: "relative"
 					}
-        `}
+  `}
 				initial="closed"
 				animate={sidebarOpen ? "open" : "closed"}
-				variants={variants}
+				variants={{
+					open: {
+						width: "16rem", // 64 * 0.25rem = 16rem (equivalente a w-64)
+						paddingLeft: "1rem",
+						paddingRight: "1rem",
+						paddingTop: "1rem",
+						paddingBottom: "1rem",
+						transition: {
+							type: "spring",
+							damping: 20,
+							stiffness: 200,
+							mass: 0.5,
+							bounce: 0.25
+						}
+					},
+					closed: {
+						width: "0rem",
+						paddingLeft: "0rem",
+						paddingRight: "0rem",
+						paddingTop: "0rem",
+						paddingBottom: "0rem",
+						transition: {
+							type: "spring",
+							damping: 25,
+							stiffness: 200,
+							mass: 0.5,
+							bounce: 0
+						}
+					}
+				}}
+				style={{
+					originX: 0,
+					willChange: "transform, width, padding"
+				}}
 			>
 				{/* Perfil usuario */}
 				<div className="flex items-center space-x-3 mb-6 p-2 rounded bg-[#085286] transition cursor-context-menu ">
@@ -111,7 +142,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						<>
 							<li>
 								<button
-									onClick={() => navigate(RUTAS.ADMIN.ROOT)}
+									onClick={() => {
+										navigate(RUTAS.ADMIN.ROOT);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
+
 									className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 flex items-center gap-2 cursor-pointer"
 								>
 									<Home size={18} />
@@ -149,6 +184,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 													onClick={() => {
 														if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
 															navigate(RUTAS.ADMIN.USUARIOS.ROOT);
+															setTimeout(() => setSidebarOpen(false), 150);
 														} else {
 															mostrarAlertaSinPermiso();
 														}
@@ -164,6 +200,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 													onClick={() => {
 														if (permisos.includes(PERMISOS.AGREGAR_USUARIO)) {
 															navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO);
+															setTimeout(() => setSidebarOpen(false), 150);
 														} else {
 															mostrarAlertaSinPermiso();
 														}
@@ -207,7 +244,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
+														onClick={() => {
+															navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS);
+															setTimeout(() => setSidebarOpen(false), 150);
+														}
+														}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<List size={16} />
@@ -219,7 +260,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.CREAR_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+														onClick={() => {
+															navigate(RUTAS.PAGINA_CONSTRUCCION);
+															setTimeout(() => setSidebarOpen(false), 150);
+														}}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<PlusCircle size={16} />
@@ -231,7 +275,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.ASIGNAR_PERMISOS) && (
 												<li>
 													<button
-														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+														onClick={() => {
+															navigate(RUTAS.PAGINA_CONSTRUCCION);
+															setTimeout(() => setSidebarOpen(false), 150);
+														}}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<LockKeyhole size={16} />
@@ -243,7 +290,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											{permisos.includes(PERMISOS.EDITAR_ROLES) && (
 												<li>
 													<button
-														onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+														onClick={() => {
+															navigate(RUTAS.PAGINA_CONSTRUCCION);
+															setTimeout(() => setSidebarOpen(false), 150);
+														}}
 														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 													>
 														<Edit size={16} />
@@ -277,7 +327,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										>
 											<li>
 												<button
-													onClick={() => navigate(RUTAS.DASHBOARD)}
+													onClick={() => {
+														navigate(RUTAS.DASHBOARD);
+														setTimeout(() => setSidebarOpen(false), 150);
+													}}
 													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
 												>
 													<List size={16} />
@@ -287,7 +340,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											</li>
 											<li>
 												<button
-													onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+													onClick={() => {
+														navigate(RUTAS.PAGINA_CONSTRUCCION);
+														setTimeout(() => setSidebarOpen(false), 150);
+													}}
 													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2">
 													<PlusSquare size={16} />
 													Crear Formulario
@@ -301,7 +357,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							<li className="relative">
 								<button
-									onClick={() => navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS)}
+									onClick={() => {
+										navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
 									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer group"
 								>
 									{/* Campana con animación */}
