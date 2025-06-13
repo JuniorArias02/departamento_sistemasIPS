@@ -27,6 +27,7 @@ export const RUTAS = {
     INVENTARIO: {
       CREAR_INVENTARIO: `${DASHBOARD}/crear_inventario`,
       VER_INVENTARIO: `${DASHBOARD}/inventarios`,
+      ACTUALIZAR_INVENTARIO: `${DASHBOARD}/inventarios/actualizar`,
     },
     MANTENIMIENTO_FREEZER: {
       CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento_freezer`,

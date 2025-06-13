@@ -5,6 +5,7 @@ import BackPage from "../components/BackPage";
 import { Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { RUTAS } from "../../../const/routers/routers";
 
 export default function VistaDatosInventarios() {
 	const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function VistaDatosInventarios() {
 	}, []);
 
 	const handleEditar = (item) => {
-		navigate("/dashboard/form_inventario", {
+		navigate(RUTAS.USER.INVENTARIO.ACTUALIZAR_INVENTARIO, {
 			state: { inventario: item },
 		});
 	};
