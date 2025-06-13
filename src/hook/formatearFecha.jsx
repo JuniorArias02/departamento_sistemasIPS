@@ -1,5 +1,8 @@
 export const formatearFechas = (data) =>
-  data.map(item => ({
-    ...item,
-    fecha: new Date(item.fecha).toISOString().split("T")[0], // 🔥 Formato: YYYY-MM-DD
-  }));
+  data.map(item => {
+    const fechaStr = item.fecha.split("T")[0]; // solo agarra "2025-06-12"
+    return {
+      ...item,
+      fecha: fechaStr,
+    };
+  });

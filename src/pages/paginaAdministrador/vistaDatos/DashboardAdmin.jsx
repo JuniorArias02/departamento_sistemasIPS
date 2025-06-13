@@ -39,7 +39,7 @@ export default function DashboardAdmin() {
 
 
 	return (
-		<main className="bg-gray-100 flex-1 flex flex-col items-center select-none w-full">
+		<main className="bg-gray-100 flex-1 flex flex-col items-center select-none w-full pt-10">
 			{/* <h1 className="text-3xl font-bold mb-6">Dashboard del Administrador</h1> */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-7xl">
 				<ChartPorUsuario data={inventario} title="Inventario" />

@@ -9,24 +9,35 @@ export const ChartPorUsuario = ({ data, title }) => {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
 
+  // Función para normalizar fechas a objetos Date en zona Colombia
+  const normalizarFecha = (fechaStr) => {
+    const [year, month, day] = fechaStr.split('-').map(Number);
+    return new Date(year, month - 1, day); // Se mantiene local
+  };
+
   const dataFiltrada = data.filter(item => {
-    if (!desde && !hasta) return true;
-    const fecha = new Date(item.fecha);
-    const fDesde = desde ? new Date(desde) : null;
-    const fHasta = hasta ? new Date(hasta) : null;
-    return (!fDesde || fecha >= fDesde) && (!fHasta || fecha <= fHasta);
+    const fechaItem = normalizarFecha(item.fecha);
+    const fDesde = desde ? normalizarFecha(desde) : null;
+    const fHasta = hasta ? normalizarFecha(hasta) : null;
+
+    return (!fDesde || fechaItem >= fDesde) && (!fHasta || fechaItem <= fHasta);
   }).map(item => ({
     ...item,
-    fecha: new Date(item.fecha).toISOString().split("T")[0],
+    fecha: item.fecha,
+    total: Number(item.total)
   }));
 
   const usuarios = [...new Set(dataFiltrada.map(d => d.nombre_completo))];
-  const fechasUnicas = [...new Set(dataFiltrada.map(d => d.fecha))].sort();
+
+  const fechasUnicas = [...new Set(dataFiltrada.map(d => d.fecha))]
+    .sort((a, b) => normalizarFecha(a) - normalizarFecha(b));
 
   const dataPivoteada = fechasUnicas.map(fecha => {
     const item = { fecha };
     usuarios.forEach(usuario => {
-      const registro = dataFiltrada.find(d => d.fecha === fecha && d.nombre_completo === usuario);
+      const registro = dataFiltrada.find(d =>
+        d.fecha === fecha && d.nombre_completo === usuario
+      );
       item[usuario] = registro ? registro.total : null;
     });
     return item;
@@ -62,18 +73,25 @@ export const ChartPorUsuario = ({ data, title }) => {
 
       <div className="w-full" style={{ minHeight: 300, height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={dataPivoteada} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <LineChart
+            data={dataPivoteada}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="fecha" type="category" />
+            <XAxis
+              dataKey="fecha"
+              tickFormatter={(fecha) => {
+                const [year, month, day] = fecha.split('-');
+                return `${day}/${month}`;
+              }}
+            />
             <YAxis />
             <Tooltip
-              labelFormatter={label =>
-                new Date(label).toLocaleDateString("es-CO", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })
-              }
+              labelFormatter={fecha => {
+                const [year, month, day] = fecha.split('-');
+                return `${day}/${month}/${year}`;
+              }}
+              formatter={(value) => [`${value} unidades`, value]}
             />
             <Legend />
             {usuarios.map((usuario, index) => (
@@ -82,12 +100,22 @@ export const ChartPorUsuario = ({ data, title }) => {
                 type="monotone"
                 dataKey={usuario}
                 stroke={colors[index % colors.length]}
-                dot={false}
+                strokeWidth={2}
+                dot={{ r: 3 }}
+                activeDot={{ r: 5 }}
                 connectNulls
-                animationDuration={1500}
+                animationDuration={1000}
               />
             ))}
-            <Brush dataKey="fecha" height={30} stroke="#8884d8" />
+            <Brush
+              dataKey="fecha"
+              height={30}
+              stroke="#8884d8"
+              tickFormatter={(fecha) => {
+                const [year, month, day] = fecha.split('-');
+                return `${day}/${month}`;
+              }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
