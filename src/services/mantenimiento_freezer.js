@@ -24,7 +24,6 @@ export const actualizarEstadoMantenimiento = async (id, datos) => {
 		const response = await axios.post(ACTUALIZAR_ESTADO_MANTENIMIENTO_FREEZER, { id, ...datos });
 		return response.data;
 	} catch (error) {
-		console.error("Error al actualizar mantenimiento:", error);
 		throw new Error(
 			error?.response?.data?.mensaje || "Error al actualizar el mantenimiento freezer",
 		);
