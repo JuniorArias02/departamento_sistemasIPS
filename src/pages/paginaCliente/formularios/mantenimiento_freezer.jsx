@@ -162,7 +162,7 @@ export default function FormularioMantenimientoFreezer() {
 			className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded-2xl space-y-6"
 		>
 			<h2 className="text-2xl font-semibold text-center text-gray-800">
-				{mantenimientoEdit ? "Editar" : "Registrar"} Mantenimiento de Freezer
+				{mantenimientoEdit ? "Editar" : "Registrar"} Mantenimiento IPS
 			</h2>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -189,10 +189,12 @@ export default function FormularioMantenimientoFreezer() {
 							onChange={handleChange}
 							className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							placeholder={campo.replace(/_/g, " ")}
-							required
+							required={["titulo", "dependencia"].includes(campo)}
 						/>
 					</motion.div>
 				))}
+
+				
 
 				{/* Selector de sede (vacío como solicitaste) */}
 				<motion.div

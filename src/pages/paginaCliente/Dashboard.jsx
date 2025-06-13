@@ -48,7 +48,7 @@ export default function Dashboard() {
 			total: totales.inventario,
 		},
 		{
-			titulo: "Mantenimiento Freezer",
+			titulo: "Mantenimientos IPS",
 			ruta: RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO,
 			verRuta: RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS,
 			total: totales.mantenimientoFreezer,
