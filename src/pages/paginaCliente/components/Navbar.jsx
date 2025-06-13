@@ -49,12 +49,13 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
           <div className="font-bold text-lg sm:text-xl">
             Departamento De Sistemas 💻
           </div>
+
         </div>
 
-        <div className="hidden sm:flex items-center space-x-6">
-          {/* Nombre del usuario siempre visible */}
+        <div className="flex items-center space-x-4">
+          {/* Nombre del usuario solo en pantallas grandes */}
           <motion.span
-            className="capitalize"
+            className="hidden sm:inline capitalize"
             initial={{ opacity: 1, x: 0 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
@@ -62,7 +63,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
             {usuario?.nombre_completo || "Usuario"}
           </motion.span>
 
-          {/* Botón de salir siempre visible */}
+          {/* Botón de salir visible siempre */}
           <button
             onClick={handleLogout}
             className="flex items-center space-x-1 hover:bg-blue-600 px-2 py-1 rounded transition"
@@ -72,6 +73,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
             <span>Salir</span>
           </button>
         </div>
+
       </nav>
     </>
   );
