@@ -55,7 +55,7 @@ export default function DetalleMantenimientoFreezer() {
 
 			<div className="bg-white rounded-xl shadow-lg overflow-hidden">
 				{/* Header */}
-				<div className="bg-blue-600 px-6 py-4">
+				<div className="bg-[#013459] px-6 py-4">
 					<div className="flex justify-between items-center">
 						<h1 className="text-2xl font-bold text-white">{item.titulo}</h1>
 						<span className={`px-3 py-1 rounded-full text-sm font-medium ${item.esta_revisado
