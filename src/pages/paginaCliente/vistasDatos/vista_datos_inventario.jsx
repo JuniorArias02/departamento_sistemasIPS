@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { listarInventarios, eliminarInventario, buscarInventario,exportarInventariosCliente } from "../../../services/inventario";
+import { listarInventarios, eliminarInventario, buscarInventario, exportarInventariosCliente } from "../../../services/inventario";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { Download } from "lucide-react";
+import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, RefreshCw, ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { RUTAS } from "../../../const/routers/routers";
@@ -118,195 +118,226 @@ export default function VistaDatosInventarios() {
 
 
 	return (
-		<div className="w-full max-w-none mx-auto p-6 bg-white space-y-6">
-			{/* Botón volver */}
-			<BackPage />
+		<div className="w-full max-w-none mx-auto p-6 bg-white rounded-2xl shadow-sm space-y-6">
+			{/* Header superior */}
+			<div className="flex justify-between items-center mb-6">
+				<BackPage className="text-neutral-600 hover:text-indigo-600 transition-colors" />
+				<div className="flex gap-3">
+					<button
+						onClick={handleExportar}
+						disabled={loadingExport}
+						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+					>
+						{loadingExport ? (
+							<Loader2 className="w-5 h-5 animate-spin" />
+						) : (
+							<Download size={20} />
+						)}
+						<span>Exportar Excel</span>
+					</button>
+				</div>
+			</div>
 
 			{/* Encabezado */}
-			<div className="text-center">
-				<h1 className="text-2xl font-bold text-gray-800">Inventarios</h1>
-				<p className="text-gray-600">
-					Aquí puedes ver los datos y gestionar los inventarios.
+			<div className="text-center mb-8">
+				<h1 className="text-3xl font-bold text-neutral-800 bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 text-transparent">
+					Gestión de Inventarios
+				</h1>
+				<p className="text-neutral-500 mt-2">
+					Visualiza y administra todos los activos tecnológicos de la organización
 				</p>
 			</div>
 
-			{/* Botón Exportar */}
-			<div className="flex justify-end mb-2">
-				<button
-					onClick={handleExportar}
-					disabled={loadingExport}
-					className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-				>
-					<Download size={20} />
-					{loadingExport ? "Exportando..." : "Exportar Excel"}
-				</button>
-			</div>
+			{/* Filtros avanzados */}
+			<div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200 mb-6">
+				<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+					<div className="relative">
+						<Search className="absolute left-3 top-3.5 w-4 h-4 text-neutral-400" />
+						<input
+							type="text"
+							placeholder="Buscar por código, serial..."
+							className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+							value={filtroTexto}
+							onChange={(e) => setFiltroTexto(e.target.value)}
+						/>
+					</div>
 
-			{/* Tabla */}
-			<div className="overflow-x-auto">
-				{/* Buscador */}
-				<div className="flex flex-col sm:flex-row gap-4 mb-4">
-					<input
-						type="text"
-						placeholder="Código, Serial O Dependencia"
-						className="border px-3 py-2 rounded w-full sm:w-1/3"
-						value={filtroTexto}
-						onChange={(e) => setFiltroTexto(e.target.value)}
-					/>
-					<input
-						type="text"
-						placeholder="Nombre de sede"
-						className="border px-3 py-2 rounded w-full sm:w-1/3"
-						value={filtroSede}
-						onChange={(e) => setFiltroSede(e.target.value)}
-					/>
+					<div className="relative">
+						<Building2 className="absolute left-3 top-3.5 w-4 h-4 text-neutral-400" />
+						<input
+							type="text"
+							placeholder="Filtrar por sede"
+							className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+							value={filtroSede}
+							onChange={(e) => setFiltroSede(e.target.value)}
+						/>
+					</div>
+
+					<select className="px-4 py-2.5 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white">
+						<option>Filtrar por dependencia</option>
+						{/* Opciones aquí */}
+					</select>
 
 					<button
 						onClick={handleBuscar}
-						className="bg-[#2b5879] text-white px-4 py-2 rounded hover:bg-[#013459] cursor-pointer transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md"
 					>
-						Buscar
+						<Search size={18} />
+						<span>Buscar</span>
 					</button>
 				</div>
+			</div>
 
-				<div className="overflow-x-auto w-full">
-					<table className="min-w-[900px] w-full text-sm sm:text-base">
-						<motion.thead
-							initial={{ opacity: 0, y: -10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4 }}
-							className="bg-gray-100 text-center"
-						>
+			{/* Tabla moderna */}
+			<div className="overflow-hidden rounded-xl border border-neutral-200 shadow-xs">
+				<div className="overflow-x-auto">
+					<table className="w-full text-left">
+						<thead className="bg-gradient-to-r from-indigo-50 to-violet-50 text-neutral-700">
 							<tr>
-								<th className="px-4 py-2">Código</th>
-								<th className="px-4 py-2">Nombre</th>
-								<th className="px-4 py-2">Dependencia</th>
-								<th className="px-4 py-2">Responsable</th>
-								<th className="px-4 py-2">Marca</th>
-								<th className="px-4 py-2">Modelo</th>
-								<th className="px-4 py-2">Serial</th>
-								<th className="px-4 py-2">Sede</th>
-								<th className="px-4 py-2">Acciones</th>
+								<th className="px-6 py-4 font-semibold">Código</th>
+								<th className="px-6 py-4 font-semibold">Activo</th>
+								<th className="px-6 py-4 font-semibold">Dependencia</th>
+								<th className="px-6 py-4 font-semibold">Responsable</th>
+								<th className="px-6 py-4 font-semibold">Marca/Modelo</th>
+								<th className="px-6 py-4 font-semibold">Serial</th>
+								<th className="px-6 py-4 font-semibold">Sede</th>
+								<th className="px-6 py-4 font-semibold text-right">Acciones</th>
 							</tr>
-						</motion.thead>
+						</thead>
 
-						<tbody className="text-center">
+						<tbody className="divide-y divide-neutral-200">
 							{inventariosPagina.map((item, i) => (
 								<motion.tr
 									key={item.id}
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ delay: i * 0.05 }}
-									className="border-t hover:bg-gray-100 cursor-pointer transition-colors duration-300"
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.3, delay: i * 0.03 }}
+									className="hover:bg-neutral-50/80 transition-colors"
 								>
-									<td className="px-4 py-2">{item.codigo}</td>
-									<td className="px-4 py-2">{item.nombre}</td>
-									<td className="px-4 py-2">{item.dependencia}</td>
-									<td className="px-4 py-2">{item.responsable}</td>
-									<td className="px-4 py-2">{item.marca}</td>
-									<td className="px-4 py-2">{item.modelo}</td>
-									<td className="px-4 py-2">{item.serial}</td>
-									<td className="px-4 py-2">{item.sede_nombre || item.sede_nombre}</td>
-									<td className="px-4 py-2 flex flex-col sm:flex-row sm:space-x-2 justify-center items-center space-y-2 sm:space-y-0">
-										<button
-											onClick={() => handleEditar(item)}
-											className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 cursor-pointer"
-										>
-											Editar
-										</button>
-										<button
-											onClick={() => handleEliminar(item.id)}
-											className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 cursor-pointer"
-										>
-											Eliminar
-										</button>
+									<td className="px-6 py-4 font-medium text-indigo-600">{item.codigo}</td>
+									<td className="px-6 py-4">{item.nombre}</td>
+									<td className="px-6 py-4 text-neutral-600">{item.dependencia}</td>
+									<td className="px-6 py-4">
+										<div className="flex items-center gap-2">
+											<div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+												<User size={16} />
+											</div>
+											<span>{item.responsable}</span>
+										</div>
+									</td>
+									<td className="px-6 py-4">
+										<div>
+											<div className="font-medium">{item.marca}</div>
+											<div className="text-sm text-neutral-500">{item.modelo}</div>
+										</div>
+									</td>
+									<td className="px-6 py-4 font-mono text-sm">{item.serial}</td>
+									<td className="px-6 py-4">
+										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
+											{item.sede_nombre}
+										</span>
+									</td>
+									<td className="px-6 py-4 text-right">
+										<div className="flex justify-end gap-2">
+											<button
+												onClick={() => handleEditar(item)}
+												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
+												title="Editar"
+											>
+												<Pencil size={18} />
+											</button>
+											<button
+												onClick={() => handleEliminar(item.id)}
+												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+												title="Eliminar"
+											>
+												<Trash2 size={18} />
+											</button>
+										</div>
 									</td>
 								</motion.tr>
 							))}
 
 							{inventarios.length === 0 && (
 								<tr>
-									<td colSpan="9" className="text-center py-4 text-gray-500">
-										No hay inventarios registrados.
+									<td colSpan="8" className="px-6 py-12 text-center">
+										<div className="flex flex-col items-center justify-center gap-3 text-neutral-400">
+											<PackageSearch size={48} strokeWidth={1} />
+											<div className="text-lg">No se encontraron inventarios</div>
+											<button className="mt-3 text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+												<RefreshCw size={16} />
+												<span>Recargar datos</span>
+											</button>
+										</div>
 									</td>
 								</tr>
 							)}
 						</tbody>
 					</table>
-
 				</div>
-				<div className="flex justify-center gap-2 mt-4 flex-wrap">
+			</div>
+
+			{/* Paginación mejorada */}
+			<div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+				<div className="text-sm text-neutral-500">
+					Mostrando <span className="font-medium">{inventariosPagina.length}</span> de{' '}
+					<span className="font-medium">{inventarios.length}</span> resultados
+				</div>
+
+				<div className="flex gap-1">
 					<button
 						disabled={paginaActual === 1}
 						onClick={() => setPaginaActual(1)}
-						className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
 					>
-						« Primero
+						<ChevronsLeft size={18} />
 					</button>
 
 					<button
 						disabled={paginaActual === 1}
 						onClick={() => setPaginaActual(paginaActual - 1)}
-						className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
 					>
-						‹ Anterior
+						<ChevronLeft size={18} />
 					</button>
 
-					{/* Mostrar botón 1 si no está cerca */}
-					{paginaActual > 3 && (
-						<>
-							<button
-								onClick={() => setPaginaActual(1)}
-								className="px-3 py-1 rounded bg-gray-200"
-							>
-								1
-							</button>
-							{paginaActual > 4 && <span className="px-2">...</span>}
-						</>
-					)}
+					{Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+						let pageNum;
+						if (totalPaginas <= 5) {
+							pageNum = i + 1;
+						} else if (paginaActual <= 3) {
+							pageNum = i + 1;
+						} else if (paginaActual >= totalPaginas - 2) {
+							pageNum = totalPaginas - 4 + i;
+						} else {
+							pageNum = paginaActual - 2 + i;
+						}
 
-					{/* Botones alrededor de la página actual */}
-					{[paginaActual - 1, paginaActual, paginaActual + 1].map(
-						(num) =>
-							num > 0 && num <= totalPaginas && (
-								<button
-									key={num}
-									onClick={() => setPaginaActual(num)}
-									className={`px-3 py-1 rounded ${paginaActual === num ? "bg-blue-600 text-white" : "bg-gray-200"
-										}`}
-								>
-									{num}
-								</button>
-							)
-					)}
-
-					{/* Mostrar último botón si no está cerca */}
-					{paginaActual < totalPaginas - 2 && (
-						<>
-							{paginaActual < totalPaginas - 3 && <span className="px-2">...</span>}
+						return (
 							<button
-								onClick={() => setPaginaActual(totalPaginas)}
-								className="px-3 py-1 rounded bg-gray-200"
+								key={pageNum}
+								onClick={() => setPaginaActual(pageNum)}
+								className={`w-10 h-10 rounded-lg ${paginaActual === pageNum ? 'bg-indigo-600 text-white' : 'border border-neutral-200 hover:bg-neutral-100'} transition-colors`}
 							>
-								{totalPaginas}
+								{pageNum}
 							</button>
-						</>
-					)}
+						);
+					})}
 
 					<button
 						disabled={paginaActual === totalPaginas}
 						onClick={() => setPaginaActual(paginaActual + 1)}
-						className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
 					>
-						Siguiente ›
+						<ChevronRight size={18} />
 					</button>
 
 					<button
 						disabled={paginaActual === totalPaginas}
 						onClick={() => setPaginaActual(totalPaginas)}
-						className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
 					>
-						Último »
+						<ChevronsRight size={18} />
 					</button>
 				</div>
 			</div>

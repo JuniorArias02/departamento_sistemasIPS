@@ -40,7 +40,7 @@ export default function VistaDatosMantenimientoFreezer() {
 	}, [usuario.id]);
 
 	const handleVerDetalle = (mantenimiento) => {
-		navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES,{
+		navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES, {
 			state: { mantenimientos: mantenimiento }
 		});
 	};
@@ -112,21 +112,30 @@ export default function VistaDatosMantenimientoFreezer() {
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto p-6 space-y-6">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 			<BackPage />
 
-			<div className="text-center">
-				<h1 className="text-3xl font-bold text-gray-800">
+			{/* Encabezado mejorado */}
+			<header className="text-center space-y-3">
+				<h1 className="text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
 					IPS CLINICAL HOUSE
 				</h1>
-				<p className="text-gray-600 mt-2">
-					Listado de todos los mantenimientos registrados
+				<p className="text-lg text-gray-600">
+					Listado de mantenimientos registrados
 				</p>
-			</div>
+				<div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-300 mx-auto rounded-full"></div>
+			</header>
 
+			{/* Estado vacío */}
 			{mantenimientos.length === 0 ? (
-				<div className="text-center py-12">
-					<p className="text-gray-500 text-lg">No hay mantenimientos registrados</p>
+				<div className="text-center py-16 bg-gray-50 rounded-xl">
+					<ClipboardList className="mx-auto h-12 w-12 text-gray-400" />
+					<h3 className="mt-4 text-lg font-medium text-gray-900">
+						No hay mantenimientos registrados
+					</h3>
+					<p className="mt-1 text-gray-500">
+						Cuando registres mantenimientos aparecerán aquí
+					</p>
 				</div>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -135,52 +144,85 @@ export default function VistaDatosMantenimientoFreezer() {
 							key={item.id}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
+							whileHover={{ y: -5 }}
 							transition={{ duration: 0.3 }}
-							className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative ${item.esta_revisado ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}
+							className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 relative border-t-4 ${item.esta_revisado
+									? 'border-green-500'
+									: 'border-yellow-500'
+								}`}
 						>
-							<div className="p-5">
+							<div className="p-6">
+								{/* Encabezado de tarjeta */}
 								<div className="flex justify-between items-start">
-									<h3 className="text-xl font-semibold text-gray-800 truncate">{item.titulo}</h3>
-									<span className={`px-2 py-1 text-xs rounded-full ${item.esta_revisado ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-										{item.esta_revisado ? 'Revisado' : 'Pendiente'}
+									<h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+										{item.titulo}
+									</h3>
+									<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.esta_revisado
+											? 'bg-green-100 text-green-800'
+											: 'bg-yellow-100 text-yellow-800'
+										}`}>
+										{item.esta_revisado ? '✓ Revisado' : '⌛ Pendiente'}
 									</span>
 								</div>
-								<p className="text-gray-600 mt-2 line-clamp-2">{item.descripcion}</p>
-								<div className="mt-4 space-y-2">
-									<div className="flex items-center text-sm text-gray-500">
-										<Warehouse className="mr-2" />
-										<span>{item.nombre_sede || 'Sin sede'}</span>
+
+								{/* Descripción */}
+								<p className="mt-3 text-gray-600 line-clamp-3">
+									{item.descripcion}
+								</p>
+
+								{/* Metadatos */}
+								<div className="mt-4 space-y-3">
+									<div className="flex items-start">
+										<Warehouse className="flex-shrink-0 h-4 w-4 text-gray-400 mt-0.5 mr-2" />
+										<span className="text-sm text-gray-600">
+											{item.nombre_sede || 'Sede no especificada'}
+										</span>
 									</div>
-									<div className="flex items-center text-sm text-gray-500">
-										<User className="mr-2" />
-										<span>{item.nombre_receptor_completo || 'Sin receptor'}</span>
+									<div className="flex items-start">
+										<User className="flex-shrink-0 h-4 w-4 text-gray-400 mt-0.5 mr-2" />
+										<span className="text-sm text-gray-600">
+											{item.nombre_receptor_completo || 'Receptor no asignado'}
+										</span>
 									</div>
-									<div className="flex items-center text-sm text-gray-500">
-										<Calendar className="mr-2" />
-										<span>{new Date(item.fecha_creacion).toLocaleDateString()}</span>
+									<div className="flex items-start">
+										<Calendar className="flex-shrink-0 h-4 w-4 text-gray-400 mt-0.5 mr-2" />
+										<span className="text-sm text-gray-600">
+											{new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
+												day: 'numeric',
+												month: 'long',
+												year: 'numeric'
+											})}
+										</span>
 									</div>
 								</div>
-								<div className="mt-6 flex justify-between">
+
+								{/* Acciones */}
+								<div className="mt-6 flex justify-between space-x-3">
 									<button
 										onClick={() => handleVerDetalle(item)}
-										className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors flex items-center cursor-pointer"
+										className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+										aria-label={`Ver detalles de ${item.titulo}`}
 									>
-										<Eye className="mr-1" /> Ver
+										<Eye className="mr-1.5 h-4 w-4" />
+										Detalles
 									</button>
+
 									<button
 										onClick={() => handleToggleRevisado(item.id, item.esta_revisado)}
-										className={`px-3 py-1 rounded-md transition-colors flex items-center cursor-pointer ${item.esta_revisado
-											? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-											: "bg-green-100 text-green-600 hover:bg-green-200"
+										className={`inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${item.esta_revisado
+												? "text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-500"
+												: "text-green-700 bg-green-100 hover:bg-green-200 focus:ring-green-500"
 											}`}
 									>
 										{item.esta_revisado ? (
 											<>
-												<Clock className="mr-1" /> Marcar pendiente
+												<Clock className="mr-1.5 h-4 w-4" />
+												Pendiente
 											</>
 										) : (
 											<>
-												<CheckCircle className="mr-1" /> Marcar revisado
+												<CheckCircle className="mr-1.5 h-4 w-4" />
+												Revisado
 											</>
 										)}
 									</button>

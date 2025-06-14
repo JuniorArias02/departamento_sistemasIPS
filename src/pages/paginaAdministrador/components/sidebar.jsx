@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { Wrench, BellIcon, ChevronDown, ChevronUp, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
+import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
+import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "../../../hook/useMobile";
@@ -11,6 +12,9 @@ import { mostrarAlertaSinPermiso } from "../../../hook/useError";
 import { RUTAS } from "../../../const/routers/routers";
 import { fetchNotificacionesPendientes } from "../../../services/mantenimiento_freezer";
 import { NotificationBadge } from "./NotificationBadge";
+import { SidebarCollapsible } from "./ux/SidebarCollapsible";
+import { SidebarItem } from "./ux/SidebarItem";
+import { SidebarSubItem } from "./ux/SidebarSubItem";
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const navigate = useNavigate();
 	const { usuario, permisos, logout } = useApp();
@@ -73,322 +77,251 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	return (
 		<>
 			{isMobile && sidebarOpen && (
-				<div
-					className="fixed inset-0 bg-[#05050529] bg-opacity-50 z-30"
+				<motion.div
+					className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.2 }}
 					onClick={() => setSidebarOpen(false)}
 				/>
 			)}
+
 			<motion.aside
 				className={`
-    bg-[#013459] text-white h-screen shadow-md z-40 overflow-hidden
-    ${isMobile
-						? "fixed top-0 left-0 w-64 p-4"
-						: "relative"
-					}
+    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
+    ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
   `}
 				initial="closed"
 				animate={sidebarOpen ? "open" : "closed"}
 				variants={{
 					open: {
-						width: "16rem", // 64 * 0.25rem = 16rem (equivalente a w-64)
-						paddingLeft: "1rem",
-						paddingRight: "1rem",
-						paddingTop: "1rem",
-						paddingBottom: "1rem",
-						transition: {
-							type: "spring",
-							damping: 20,
-							stiffness: 200,
-							mass: 0.5,
-							bounce: 0.25
-						}
-					},
-					closed: {
-						width: "0rem",
-						paddingLeft: "0rem",
-						paddingRight: "0rem",
-						paddingTop: "0rem",
-						paddingBottom: "0rem",
+						width: "18rem",
 						transition: {
 							type: "spring",
 							damping: 25,
 							stiffness: 200,
-							mass: 0.5,
-							bounce: 0
+							mass: 0.5
+						}
+					},
+					closed: {
+						width: isMobile ? "0rem" : "5rem",
+						transition: {
+							type: "spring",
+							damping: 30,
+							stiffness: 200,
+							mass: 0.5
 						}
 					}
 				}}
 				style={{
-					originX: 0,
-					willChange: "transform, width, padding"
+					willChange: "transform, width"
 				}}
 			>
 				{/* Perfil usuario */}
-				<div className="flex items-center space-x-3 mb-6 p-2 rounded bg-[#085286] transition cursor-context-menu ">
-					<img
-						src={avatarSrc}
-						alt="Avatar"
-						className="w-12 h-12 rounded-full object-cover"
-					/>
-					<div>
-						<p className="font-semibold">{usuario?.nombre_completo || "Usuario"}</p>
-						<p className="text-sm text-gray-300">{usuario?.rol}</p>
+				<motion.div
+					className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4"
+					whileHover={{ scale: 1.02 }}
+					transition={{ type: "spring", stiffness: 400 }}
+				>
+					<div className="relative">
+						<img
+							src={avatarSrc}
+							alt="Avatar"
+							className="w-12 h-12 rounded-full object-cover border-2 border-white/20"
+						/>
+						<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-indigo-900"></div>
 					</div>
-				</div>
+					<motion.div
+						animate={sidebarOpen ? "open" : "closed"}
+						variants={{
+							open: { opacity: 1, x: 0 },
+							closed: { opacity: 0, x: -20 }
+						}}
+						transition={{ duration: 0.2 }}
+						className="overflow-hidden"
+					>
+						<p className="font-semibold text-white/90">{usuario?.nombre_completo || "Usuario"}</p>
+						<p className="text-xs text-white/60">{usuario?.rol}</p>
+					</motion.div>
+				</motion.div>
 
-				<h2 className="text-lg font-semibold mb-4 text-center">Menú</h2>
-				<ul className="space-y-4">
+				{/* Menú principal */}
+				<ul className="space-y-1 px-3">
 					{permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
-							<li>
-								<button
-									onClick={() => {
-										navigate(RUTAS.ADMIN.ROOT);
-										setTimeout(() => setSidebarOpen(false), 150);
-									}}
+							{/* Ítems del menú */}
+							<SidebarItem
+								icon={<Home size={20} />}
+								text="Inicio"
+								onClick={() => {
+									navigate(RUTAS.ADMIN.ROOT);
+									setTimeout(() => setSidebarOpen(false), 150);
+								}}
+								sidebarOpen={sidebarOpen}
+								isActive={location.pathname === RUTAS.ADMIN.ROOT}
+							/>
 
-									className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 flex items-center gap-2 cursor-pointer"
-								>
-									<Home size={18} />
-									Inicio
-								</button>
-							</li>
+							{/* Menú Usuarios */}
+							<SidebarCollapsible
+								icon={<Users size={20} />}
+								text="Usuarios"
+								isOpen={menuUsuariosOpen}
+								onClick={() => permisos.includes(PERMISOS.MENU_ITEM_USUARIOS)
+									? setMenuUsuariosOpen(!menuUsuariosOpen)
+									: mostrarAlertaSinPermiso()}
+								sidebarOpen={sidebarOpen}
+								badge={5} // Ejemplo de notificación
+							>
+								<SidebarSubItem
+									icon={<Eye size={16} />}
+									text="Ver Usuarios"
+									onClick={() => permisos.includes(PERMISOS.VER_DATOS_USUARIOS)
+										? navigate(RUTAS.ADMIN.USUARIOS.ROOT)
+										: mostrarAlertaSinPermiso()}
+									isActive={location.pathname === RUTAS.ADMIN.USUARIOS.ROOT}
+								/>
+								<SidebarSubItem
+									icon={<UserPlus size={16} />}
+									text="Crear Usuario"
+									onClick={() => permisos.includes(PERMISOS.AGREGAR_USUARIO)
+										? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
+										: mostrarAlertaSinPermiso()}
+								/>
+							</SidebarCollapsible>
 
-							<li>
-								<button
-									onClick={() => {
-										if (permisos.includes(PERMISOS.MENU_ITEM_USUARIOS)) {
-											setMenuUsuariosOpen(!menuUsuariosOpen);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
-									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
-								>
-									<Users size={18} />
-									Usuarios
-									{menuUsuariosOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-								</button>
+							{/* Menú Roles */}
+							<SidebarCollapsible
+								icon={<Shield size={20} />}
+								text="Gestión de Roles"
+								isOpen={menuRolesOpen}
+								onClick={() => permisos.includes(PERMISOS.MENU_ITEM_ROLES)
+									? setMenuRolesOpen(!menuRolesOpen)
+									: mostrarAlertaSinPermiso()}
+								sidebarOpen={sidebarOpen}
+							>
+								{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
+									<SidebarSubItem
+										icon={<List size={16} />}
+										text="Listado de Roles"
+										onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
+										isActive={location.pathname === RUTAS.ADMIN.ROLES.VISTA_DATOS}
+									/>
+								)}
+								{permisos.includes(PERMISOS.CREAR_ROLES) && (
+									<SidebarSubItem
+										icon={<PlusCircle size={16} />}
+										text="Crear Nuevo Rol"
+										onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+									/>
+								)}
+							</SidebarCollapsible>
 
-								<AnimatePresence>
-									{menuUsuariosOpen && permisos.includes(PERMISOS.ACCESO_MODULO_USUARIO) && (
-										<motion.ul
-											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
-											initial="hidden"
-											animate="visible"
-											exit="hidden"
-											variants={subMenuVariants}
-										>
-											<li>
-												<button
-													onClick={() => {
-														if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
-															navigate(RUTAS.ADMIN.USUARIOS.ROOT);
-															setTimeout(() => setSidebarOpen(false), 150);
-														} else {
-															mostrarAlertaSinPermiso();
-														}
-													}}
-													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-												>
-													<Eye size={16} />
-													Ver Usuarios
-												</button>
-											</li>
-											<li>
-												<button
-													onClick={() => {
-														if (permisos.includes(PERMISOS.AGREGAR_USUARIO)) {
-															navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO);
-															setTimeout(() => setSidebarOpen(false), 150);
-														} else {
-															mostrarAlertaSinPermiso();
-														}
-													}}
-													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-												>
-													<UserPlus size={16} />
-													Crear Usuario
-												</button>
-											</li>
+							{/* Menú Formularios */}
+							<SidebarCollapsible
+								icon={<FileText size={20} />}
+								text="Formularios"
+								isOpen={menuFormulariosOpen}
+								onClick={() => setMenuFormulariosOpen(!menuFormulariosOpen)}
+								sidebarOpen={sidebarOpen}
+							>
+								<SidebarSubItem
+									icon={<List size={16} />}
+									text="Ver Formularios"
+									onClick={() => navigate(RUTAS.DASHBOARD)}
+								/>
+								<SidebarSubItem
+									icon={<PlusSquare size={16} />}
+									text="Crear Formulario"
+									onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+								/>
+							</SidebarCollapsible>
 
-										</motion.ul>
-									)}
-								</AnimatePresence>
-							</li>
-							<li>
-								<button
-									onClick={() => {
-										if (permisos.includes(PERMISOS.MENU_ITEM_ROLES)) {
-											setMenuRolesOpen(!menuRolesOpen);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
-									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
-								>
-									<Shield size={18} />
-									Gestión de Roles
-									{menuRolesOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-								</button>
-
-								<AnimatePresence>
-									{menuRolesOpen && permisos.includes(PERMISOS.ACCESO_MODULO_ROLES) && (
-										<motion.ul
-											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
-											initial="hidden"
-											animate="visible"
-											exit="hidden"
-											variants={subMenuVariants}
-										>
-											{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
-												<li>
-													<button
-														onClick={() => {
-															navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS);
-															setTimeout(() => setSidebarOpen(false), 150);
-														}
-														}
-														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-													>
-														<List size={16} />
-														Listado de Roles
-													</button>
-												</li>
-											)}
-
-											{permisos.includes(PERMISOS.CREAR_ROLES) && (
-												<li>
-													<button
-														onClick={() => {
-															navigate(RUTAS.PAGINA_CONSTRUCCION);
-															setTimeout(() => setSidebarOpen(false), 150);
-														}}
-														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-													>
-														<PlusCircle size={16} />
-														Crear Nuevo Rol
-													</button>
-												</li>
-											)}
-
-											{permisos.includes(PERMISOS.ASIGNAR_PERMISOS) && (
-												<li>
-													<button
-														onClick={() => {
-															navigate(RUTAS.PAGINA_CONSTRUCCION);
-															setTimeout(() => setSidebarOpen(false), 150);
-														}}
-														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-													>
-														<LockKeyhole size={16} />
-														Asignar Permisos
-													</button>
-												</li>
-											)}
-
-											{permisos.includes(PERMISOS.EDITAR_ROLES) && (
-												<li>
-													<button
-														onClick={() => {
-															navigate(RUTAS.PAGINA_CONSTRUCCION);
-															setTimeout(() => setSidebarOpen(false), 150);
-														}}
-														className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-													>
-														<Edit size={16} />
-														Editar Roles
-													</button>
-												</li>
-											)}
-										</motion.ul>
-									)}
-								</AnimatePresence>
-							</li>
-
-							<li>
-								<button
-									onClick={() => setMenuFormulariosOpen(!menuFormulariosOpen)}
-									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
-								>
-									<FileText size={18} />
-									Formularios
-									{menuFormulariosOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-								</button>
-
-								<AnimatePresence>
-									{menuFormulariosOpen && (
-										<motion.ul
-											className="ml-4 mt-2 space-y-2 text-sm overflow-hidden"
-											initial="hidden"
-											animate="visible"
-											exit="hidden"
-											variants={subMenuVariants}
-										>
-											<li>
-												<button
-													onClick={() => {
-														navigate(RUTAS.DASHBOARD);
-														setTimeout(() => setSidebarOpen(false), 150);
-													}}
-													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2"
-												>
-													<List size={16} />
-													<span>Ver Formularios</span>
-												</button>
-
-											</li>
-											<li>
-												<button
-													onClick={() => {
-														navigate(RUTAS.PAGINA_CONSTRUCCION);
-														setTimeout(() => setSidebarOpen(false), 150);
-													}}
-													className="w-full text-left px-2 py-1 rounded hover:bg-blue-700 cursor-pointer flex items-center gap-2">
-													<PlusSquare size={16} />
-													Crear Formulario
-												</button>
-
-											</li>
-										</motion.ul>
-									)}
-								</AnimatePresence>
-							</li>
-
-							<li className="relative">
-								<button
-									onClick={() => {
-										navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS);
-										setTimeout(() => setSidebarOpen(false), 150);
-									}}
-									className="w-full flex justify-between items-center text-left px-3 py-2 rounded hover:bg-blue-600 transition cursor-pointer group"
-								>
-									{/* Campana con animación */}
-									<div className={`relative h-6 w-6 flex items-center justify-center ${animarCampana ? "animate-bell" : ""}`}>
-										<BellIcon size={20} className="text-gray-400 group-hover:text-white" />
-										<NotificationBadge count={nuevosFormularios} />
+							{/* Ítem con notificación */}
+							<SidebarItem
+								icon={
+									<div className={`relative ${animarCampana ? "animate-bell" : ""}`}>
+										<Bell size={20} />
+										{nuevosFormularios > 0 && (
+											<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+												{nuevosFormularios}
+											</span>
+										)}
 									</div>
-
-									{/* Texto + wrench */}
-									<div className="flex items-center gap-2 ml-2">
-										<span className="group-hover:text-white">Mantenimientos IPS</span>
-									</div>
-								</button>
-							</li>
+								}
+								text="Mantenimientos IPS"
+								onClick={() => {
+									navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS);
+									setTimeout(() => setSidebarOpen(false), 150);
+								}}
+								sidebarOpen={sidebarOpen}
+								isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO_FREEZER.ROOT)}
+							/>
 						</>
 					)}
 
-					<li>
+					{/* Cerrar sesión */}
+					<motion.li
+						className="mt-6"
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}
+					>
 						<button
 							onClick={handleLogout}
-							className="w-full flex items-center space-x-2 px-3 py-2 rounded hover:bg-red-600 transition text-left cursor-pointer"
+							className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-red-600/30 text-red-400 hover:text-red-200 transition-colors group"
 							title="Cerrar sesión"
 						>
-							<LogOut size={18} />
-							<span>Cerrar Sesión</span>
+							<LogOut size={20} className="group-hover:rotate-180 transition-transform" />
+							{sidebarOpen && (
+								<motion.span
+									initial={{ opacity: 0, x: -10 }}
+									animate={{ opacity: 1, x: 0 }}
+									className="font-medium"
+								>
+									Cerrar Sesión
+								</motion.span>
+							)}
 						</button>
-					</li>
+					</motion.li>
 				</ul>
+
+				{/* Versión colapsada (mini sidebar) */}
+				{!sidebarOpen && !isMobile && (
+					<div className="absolute inset-0 flex flex-col items-center pt-32 space-y-6">
+						{/* Íconos solo */}
+						<button
+							onClick={() => setSidebarOpen(true)}
+							className="p-3 rounded-full hover:bg-white/10 transition-colors"
+							title="Expandir menú"
+						>
+							<Menu size={20} />
+						</button>
+
+						<Tooltip content="Inicio" placement="right">
+							<button
+								onClick={() => navigate(RUTAS.ADMIN.ROOT)}
+								className="p-3 rounded-full hover:bg-white/10 transition-colors"
+							>
+								<Home size={20} />
+							</button>
+						</Tooltip>
+
+						{/* Más íconos según permisos */}
+						{permisos.includes(PERMISOS.MENU_ITEM_USUARIOS) && (
+							<Tooltip content="Usuarios" placement="right">
+								<button
+									onClick={() => navigate(RUTAS.ADMIN.USUARIOS.ROOT)}
+									className="p-3 rounded-full hover:bg-white/10 transition-colors relative"
+								>
+									<Users size={20} />
+									{nuevosFormularios > 0 && (
+										<span className="absolute top-1 right-1 bg-red-500 rounded-full w-2 h-2"></span>
+									)}
+								</button>
+							</Tooltip>
+						)}
+					</div>
+				)}
 			</motion.aside>
 		</>
 	);
