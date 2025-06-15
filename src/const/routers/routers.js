@@ -24,6 +24,9 @@ export const RUTAS = {
   },
 
   USER: {
+    PERFIL: {
+      ROOT: `${DASHBOARD}/perfil`,
+    },
     INVENTARIO: {
       CREAR_INVENTARIO: `${DASHBOARD}/crear_inventario`,
       VER_INVENTARIO: `${DASHBOARD}/inventarios`,

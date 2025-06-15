@@ -13,6 +13,7 @@ export const CONTAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/contar/contar_equ
 export const CONTAR_MEDICAMENTO = `${URL_PATH}controllers/contar/contar_medicamentos.php`;
 export const CONTAR_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/contar/contar_reactivos_vigilancias.php`;
 export const CONTAR_INVENTARIO = `${URL_PATH}controllers/contar/contar_inventarios.php`;
+export const CONTAR_USUARIOS = `${URL_PATH}controllers/contar/contar_usuarios.php`;
 //listar
 export const LISTAR_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/listar/listar_dispositivos_medicos.php`;
 export const LISTAR_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/listar/listar_equipos_biomedicos.php`;

@@ -22,6 +22,7 @@ import DetalleMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/maten
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
+import PerfilUsuario from "./pages/paginaCliente/perfil/perfil_usuario";
 
 import { RUTAS } from "./const/routers/routers";
 function App() {
@@ -112,6 +113,15 @@ function App() {
           }
         />
 
+        {/* VISTA DE PERFIL */}
+        <Route
+          path={RUTAS.USER.PERFIL.ROOT}
+          element={
+            <RutaPrivada>
+              <PerfilUsuario />
+            </RutaPrivada>
+          }
+        />
         {/* formularios */}
         <Route
           path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}

@@ -9,29 +9,32 @@ import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { obtenerTotalInventario } from "../../../services/dashboard_services";
 import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimiento_freezer";
-
+import { obtenerTotalUsuarios } from "../../../services/dashboardAdmin_services";
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [graficaIndex, setGraficaIndex] = useState(0);
 
-	const totalGraficas = 3;
+
 
 	const [totales, setTotales] = useState({
 		inventario: 0,
+		usuarios: 0,
 		mantenimientoFreezer: 0
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [inventario, mantenimientoFreezer] = await Promise.all([
+				const [inventario, usuarios, mantenimientoFreezer] = await Promise.all([
 					obtenerTotalInventario(),
+					obtenerTotalUsuarios(),
 					obtenerTotalMantenimientoFreezer()
 				]);
 
 				setTotales({
 					inventario: inventario,
+					usuarios: usuarios,
 					mantenimientoFreezer: mantenimientoFreezer
 
 				});
@@ -164,28 +167,28 @@ export default function DashboardAdmin() {
 					<SummaryCard
 						title="Inventario Total"
 						value={totales.inventario}
-						change="+12%"
+						change=""
 						icon={<Package2 className="w-6 h-6" />}
 						color="blue"
 					/>
 					<SummaryCard
 						title="Usuarios Activos"
-						value="342"
-						change="+5%"
+						value={totales.usuarios}
+						change=""
 						icon={<Users className="w-6 h-6" />}
 						color="green"
 					/>
 					<SummaryCard
 						title="Mantenimientos"
 						value={totales.mantenimientoFreezer}
-						change="-3%"
+						change=""
 						icon={<ClipboardList className="w-6 h-6" />}
 						color="orange"
 					/>
 					<SummaryCard
 						title="Alertas"
 						value="8"
-						change="+2"
+						change=""
 						icon={<AlertCircle className="w-6 h-6" />}
 						color="red"
 					/>

@@ -73,9 +73,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 			<motion.aside
 				className={`
-    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
-    ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
-  `}
+          bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
+          ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
+        `}
 				initial="closed"
 				animate={sidebarOpen ? "open" : "closed"}
 				variants={{
@@ -85,7 +85,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							type: "spring",
 							damping: 25,
 							stiffness: 200,
-							mass: 0.5
+							mass: 0.5,
+							delayChildren: 0.1,
+							staggerChildren: 0.05
 						}
 					},
 					closed: {
@@ -94,7 +96,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							type: "spring",
 							damping: 30,
 							stiffness: 200,
-							mass: 0.5
+							mass: 0.5,
+							staggerChildren: 0.02,
+							staggerDirection: -1
 						}
 					}
 				}}
@@ -102,13 +106,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 					willChange: "transform, width"
 				}}
 			>
-				{/* Perfil usuario */}
+				{/* Perfil usuario - Versión optimizada */}
 				<motion.div
-					className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4 transition-all"
+					className="flex items-center gap-3 mb-8 p-1 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4"
 					whileHover={{ scale: 1.02 }}
-					transition={{ type: "spring", stiffness: 400 }}
+					transition={{ type: "spring", stiffness: 200 }}
 				>
-					<div className="relative">
+					<div className="relative flex-shrink-0">
 						<img
 							src={avatarSrc}
 							alt="Avatar"
@@ -117,22 +121,32 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-indigo-900"></div>
 					</div>
 
-					{/* Solo muestra texto si sidebar está abierto */}
-					{sidebarOpen && (
-						<motion.div
-							initial="closed"
-							animate="open"
-							variants={{
-								open: { opacity: 1, x: 0 },
-								closed: { opacity: 0, x: -20 }
-							}}
-							transition={{ duration: 0.2 }}
-							className="overflow-hidden"
-						>
-							<p className="font-semibold text-white/90">{usuario?.nombre_completo || "Usuario"}</p>
-							<p className="text-xs text-white/60">{usuario?.rol}</p>
-						</motion.div>
-					)}
+					<AnimatePresence>
+						{sidebarOpen && (
+							<motion.div
+								key="profile-text"
+								initial={{ opacity: 0, x: -10 }}
+								animate={{
+									opacity: 1,
+									x: 0,
+									transition: { delay: 0.15, duration: 0.2 }
+								}}
+								exit={{
+									opacity: 0,
+									x: -10,
+									transition: { duration: 0.1 }
+								}}
+								className="overflow-hidden"
+							>
+								<p className="font-semibold text-white/90 truncate max-w-[180px]">
+									{usuario?.nombre_completo || "Usuario"}
+								</p>
+								<p className="text-xs text-white/60 truncate max-w-[180px]">
+									{usuario?.rol}
+								</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</motion.div>
 				{/* Menú principal */}
 				<ul className="space-y-1 px-3">
@@ -159,7 +173,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									? setMenuUsuariosOpen(!menuUsuariosOpen)
 									: mostrarAlertaSinPermiso()}
 								sidebarOpen={sidebarOpen}
-								badge={5}
+
 							>
 								<SidebarSubItem
 									icon={<Eye size={16} />}

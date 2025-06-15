@@ -1,14 +1,30 @@
-import { LogOut, Menu, X,Cpu ,Bell ,User  } from "lucide-react";
+import { LogOut, Menu, X, Cpu, Bell, User } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import { RUTAS } from "../../../const/routers/routers";
+import { useState, useRef, useEffect } from "react";
 
 export default function Navbar({ toggleSidebar, sidebarOpen }) {
   const navigate = useNavigate();
   const { usuario, logout, permisos } = useApp();
+  const [mostrarMenu, setMostrarMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  const toggleMenu = () => setMostrarMenu(prev => !prev);
+
+  useEffect(() => {
+    const handleClickFuera = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMostrarMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickFuera);
+    return () => document.removeEventListener("mousedown", handleClickFuera);
+  }, []);
 
   const handleLogout = () => {
     Swal.fire({
@@ -80,45 +96,42 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* Perfil del usuario */}
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="hidden sm:flex flex-col items-end">
-              <motion.span
-                className="font-medium text-white/90"
-                initial={{ opacity: 1, x: 0 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {usuario?.nombre_completo || "Usuario"}
-              </motion.span>
-              <span className="text-xs text-white/60">
-                {usuario?.rol || "Administrador"}
-              </span>
-            </div>
-
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 group-hover:border-white/40 transition-colors">
+          <div className="relative" ref={menuRef}>
+            {/* Click para mostrar menú */}
+            <div
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={toggleMenu}
+            >
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="font-medium text-white/90">
+                  {usuario?.nombre_completo || "Usuario"}
+                </span>
+                <span className="text-xs text-white/60">
+                  {usuario?.rol || "Administrador"}
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 hover:border-white/40">
                 {usuario?.foto ? (
-                  <img
-                    src={usuario.foto}
-                    alt="Foto de perfil"
-                    className="w-full h-full rounded-full object-cover"
-                  />
+                  <img src={usuario.foto} className="w-full h-full rounded-full object-cover" />
                 ) : (
                   <User className="w-5 h-5 text-white/80" />
                 )}
               </div>
+            </div>
 
-              {/* Menú desplegable (opcional) */}
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-1 hidden group-hover:block z-50">
+            {/* Menú */}
+            {mostrarMenu && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-50">
                 <div className="px-4 py-2 text-sm text-gray-700 border-b">
                   <div className="font-medium">{usuario?.nombre_completo}</div>
                   <div className="text-xs text-gray-500">{usuario?.email}</div>
                 </div>
                 <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => {
+                    navigate(RUTAS.USER.PERFIL.ROOT);
+                    setTimeout(() => setMostrarMenu(false), 150);
+                  }}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 >
                   Mi perfil
                 </a>
@@ -136,9 +149,8 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
                   <span>Cerrar sesión</span>
                 </button>
               </div>
-            </div>
+            )}
           </div>
-
           {/* Botón de salir - versión móvil */}
           <button
             onClick={handleLogout}
