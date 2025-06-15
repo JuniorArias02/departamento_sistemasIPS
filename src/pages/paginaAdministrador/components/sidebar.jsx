@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 import { mostrarAlertaSinPermiso } from "../../../hook/useError";
 import { RUTAS } from "../../../const/routers/routers";
 import { fetchNotificacionesPendientes } from "../../../services/mantenimiento_freezer";
-import { NotificationBadge } from "./NotificationBadge";
+// import { NotificationBadge } from "./NotificationBadge";
 import { SidebarCollapsible } from "./ux/SidebarCollapsible";
 import { SidebarItem } from "./ux/SidebarItem";
 import { SidebarSubItem } from "./ux/SidebarSubItem";
@@ -25,23 +25,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
-	const variants = {
-		open: {
-			x: 0,
-			pointerEvents: "auto",
-			transition: { type: "spring", stiffness: 300, damping: 30 },
-		},
-		closed: {
-			x: "-100%",
-			pointerEvents: "none",
-			transition: { type: "spring", stiffness: 300, damping: 30 },
-		},
-	};
 
-	const subMenuVariants = {
-		hidden: { opacity: 0, height: 0, transition: { duration: 0.3 } },
-		visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
-	};
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -120,7 +104,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			>
 				{/* Perfil usuario */}
 				<motion.div
-					className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4"
+					className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4 transition-all"
 					whileHover={{ scale: 1.02 }}
 					transition={{ type: "spring", stiffness: 400 }}
 				>
@@ -132,20 +116,24 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						/>
 						<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-indigo-900"></div>
 					</div>
-					<motion.div
-						animate={sidebarOpen ? "open" : "closed"}
-						variants={{
-							open: { opacity: 1, x: 0 },
-							closed: { opacity: 0, x: -20 }
-						}}
-						transition={{ duration: 0.2 }}
-						className="overflow-hidden"
-					>
-						<p className="font-semibold text-white/90">{usuario?.nombre_completo || "Usuario"}</p>
-						<p className="text-xs text-white/60">{usuario?.rol}</p>
-					</motion.div>
-				</motion.div>
 
+					{/* Solo muestra texto si sidebar está abierto */}
+					{sidebarOpen && (
+						<motion.div
+							initial="closed"
+							animate="open"
+							variants={{
+								open: { opacity: 1, x: 0 },
+								closed: { opacity: 0, x: -20 }
+							}}
+							transition={{ duration: 0.2 }}
+							className="overflow-hidden"
+						>
+							<p className="font-semibold text-white/90">{usuario?.nombre_completo || "Usuario"}</p>
+							<p className="text-xs text-white/60">{usuario?.rol}</p>
+						</motion.div>
+					)}
+				</motion.div>
 				{/* Menú principal */}
 				<ul className="space-y-1 px-3">
 					{permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && (
@@ -171,14 +159,19 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									? setMenuUsuariosOpen(!menuUsuariosOpen)
 									: mostrarAlertaSinPermiso()}
 								sidebarOpen={sidebarOpen}
-								badge={5} // Ejemplo de notificación
+								badge={5}
 							>
 								<SidebarSubItem
 									icon={<Eye size={16} />}
 									text="Ver Usuarios"
-									onClick={() => permisos.includes(PERMISOS.VER_DATOS_USUARIOS)
-										? navigate(RUTAS.ADMIN.USUARIOS.ROOT)
-										: mostrarAlertaSinPermiso()}
+									onClick={() => {
+										if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
+											navigate(RUTAS.ADMIN.USUARIOS.ROOT);
+											setTimeout(() => setSidebarOpen(false), 150);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
 									isActive={location.pathname === RUTAS.ADMIN.USUARIOS.ROOT}
 								/>
 								<SidebarSubItem
@@ -228,7 +221,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								<SidebarSubItem
 									icon={<List size={16} />}
 									text="Ver Formularios"
-									onClick={() => navigate(RUTAS.DASHBOARD)}
+									onClick={() => {
+										navigate(RUTAS.DASHBOARD);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
 								/>
 								<SidebarSubItem
 									icon={<PlusSquare size={16} />}
@@ -287,16 +283,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 				{/* Versión colapsada (mini sidebar) */}
 				{!sidebarOpen && !isMobile && (
-					<div className="absolute inset-0 flex flex-col items-center pt-32 space-y-6">
-						{/* Íconos solo */}
-						<button
-							onClick={() => setSidebarOpen(true)}
-							className="p-3 rounded-full hover:bg-white/10 transition-colors"
-							title="Expandir menú"
-						>
-							<Menu size={20} />
-						</button>
-
+					<div className="flex flex-col items-center space-y-6">
 						<Tooltip content="Inicio" placement="right">
 							<button
 								onClick={() => navigate(RUTAS.ADMIN.ROOT)}
@@ -306,12 +293,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							</button>
 						</Tooltip>
 
-						{/* Más íconos según permisos */}
 						{permisos.includes(PERMISOS.MENU_ITEM_USUARIOS) && (
 							<Tooltip content="Usuarios" placement="right">
 								<button
 									onClick={() => navigate(RUTAS.ADMIN.USUARIOS.ROOT)}
-									className="p-3 rounded-full hover:bg-white/10 transition-colors relative"
+									className="p-3 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer"
 								>
 									<Users size={20} />
 									{nuevosFormularios > 0 && (

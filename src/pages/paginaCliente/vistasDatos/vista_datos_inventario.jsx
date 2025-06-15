@@ -126,7 +126,7 @@ export default function VistaDatosInventarios() {
 					<button
 						onClick={handleExportar}
 						disabled={loadingExport}
-						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
 					>
 						{loadingExport ? (
 							<Loader2 className="w-5 h-5 animate-spin" />
@@ -180,7 +180,7 @@ export default function VistaDatosInventarios() {
 
 					<button
 						onClick={handleBuscar}
-						className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md"
+						className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md cursor-pointer"
 					>
 						<Search size={18} />
 						<span>Buscar</span>
@@ -241,14 +241,14 @@ export default function VistaDatosInventarios() {
 										<div className="flex justify-end gap-2">
 											<button
 												onClick={() => handleEditar(item)}
-												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
+												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer"
 												title="Editar"
 											>
 												<Pencil size={18} />
 											</button>
 											<button
 												onClick={() => handleEliminar(item.id)}
-												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer"
 												title="Eliminar"
 											>
 												<Trash2 size={18} />
@@ -288,7 +288,7 @@ export default function VistaDatosInventarios() {
 					<button
 						disabled={paginaActual === 1}
 						onClick={() => setPaginaActual(1)}
-						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors cursor-pointer"
 					>
 						<ChevronsLeft size={18} />
 					</button>
@@ -296,7 +296,7 @@ export default function VistaDatosInventarios() {
 					<button
 						disabled={paginaActual === 1}
 						onClick={() => setPaginaActual(paginaActual - 1)}
-						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors cursor-pointer"
 					>
 						<ChevronLeft size={18} />
 					</button>
@@ -317,7 +317,7 @@ export default function VistaDatosInventarios() {
 							<button
 								key={pageNum}
 								onClick={() => setPaginaActual(pageNum)}
-								className={`w-10 h-10 rounded-lg ${paginaActual === pageNum ? 'bg-indigo-600 text-white' : 'border border-neutral-200 hover:bg-neutral-100'} transition-colors`}
+								className={`w-10 h-10 rounded-lg cursor-pointer ${paginaActual === pageNum ? 'bg-indigo-600 text-white' : 'border border-neutral-200 hover:bg-neutral-100'} transition-colors`}
 							>
 								{pageNum}
 							</button>
@@ -327,7 +327,7 @@ export default function VistaDatosInventarios() {
 					<button
 						disabled={paginaActual === totalPaginas}
 						onClick={() => setPaginaActual(paginaActual + 1)}
-						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors cursor-pointer"
 					>
 						<ChevronRight size={18} />
 					</button>
@@ -335,7 +335,7 @@ export default function VistaDatosInventarios() {
 					<button
 						disabled={paginaActual === totalPaginas}
 						onClick={() => setPaginaActual(totalPaginas)}
-						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors"
+						className="p-2 rounded-lg border border-neutral-200 disabled:opacity-40 hover:bg-neutral-100 transition-colors cursor-pointer"
 					>
 						<ChevronsRight size={18} />
 					</button>

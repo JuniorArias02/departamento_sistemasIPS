@@ -4,11 +4,47 @@ import {
 } from "../../../services/dashboardAdmin_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
-import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, AlertCircle } from "lucide-react";
+import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { PieChart } from "recharts";
+import { motion, AnimatePresence } from "framer-motion";
+import { obtenerTotalInventario } from "../../../services/dashboard_services";
+import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimiento_freezer";
+
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [graficaIndex, setGraficaIndex] = useState(0);
+
+	const totalGraficas = 3;
+
+	const [totales, setTotales] = useState({
+		inventario: 0,
+		mantenimientoFreezer: 0
+	});
+
+	useEffect(() => {
+		const cargarTotales = async () => {
+			try {
+				const [inventario, mantenimientoFreezer] = await Promise.all([
+					obtenerTotalInventario(),
+					obtenerTotalMantenimientoFreezer()
+				]);
+
+				setTotales({
+					inventario: inventario,
+					mantenimientoFreezer: mantenimientoFreezer
+
+				});
+			} catch (error) {
+				console.error("Error al cargar totales", error);
+			}
+		};
+
+		cargarTotales();
+		const intervalo = setInterval(cargarTotales, 10000);
+		return () => clearInterval(intervalo);
+	}, []);
+
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -37,6 +73,7 @@ export default function DashboardAdmin() {
 			</div>
 		);
 	}
+
 	const SummaryCard = ({ title, value, change, icon, color }) => {
 		const colorClasses = {
 			blue: 'bg-blue-50 text-blue-600',
@@ -89,7 +126,6 @@ export default function DashboardAdmin() {
 			time: "Hace 2 horas",
 			icon: <ClipboardList className="w-4 h-4 text-gray-600" />
 		},
-		// ... más actividades
 	];
 
 	const distribucionSedes = [
@@ -127,7 +163,7 @@ export default function DashboardAdmin() {
 				<div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 					<SummaryCard
 						title="Inventario Total"
-						value="1,248"
+						value={totales.inventario}
 						change="+12%"
 						icon={<Package2 className="w-6 h-6" />}
 						color="blue"
@@ -141,7 +177,7 @@ export default function DashboardAdmin() {
 					/>
 					<SummaryCard
 						title="Mantenimientos"
-						value="56"
+						value={totales.mantenimientoFreezer}
 						change="-3%"
 						icon={<ClipboardList className="w-6 h-6" />}
 						color="orange"
@@ -155,22 +191,52 @@ export default function DashboardAdmin() {
 					/>
 				</div>
 
-				{/* Gráfico principal */}
 				<div className="lg:col-span-2">
 					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 h-full">
+						{/* Header con título y botones */}
 						<div className="flex justify-between items-center mb-6">
-							<h2 className="text-lg font-semibold">Inventario por Usuario</h2>
-							<div className="flex gap-2">
-								<button className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-600">Semanal</button>
-								<button className="px-3 py-1 text-xs rounded-lg bg-blue-50 text-blue-600">Mensual</button>
-								<button className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-600">Anual</button>
+							<h2 className="text-lg font-semibold">
+								{["Inventario por Usuario", "Otra gráfica", "Otra más"][graficaIndex]}
+							</h2>
+
+							<div className="flex items-center gap-2">
+								<button
+									onClick={() => setGraficaIndex((prev) => (prev - 1 + 3) % 3)}
+									className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+									aria-label="Gráfica anterior"
+								>
+									<ChevronLeft size={16} />
+								</button>
+								<button
+									onClick={() => setGraficaIndex((prev) => (prev + 1) % 3)}
+									className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+									aria-label="Gráfica siguiente"
+								>
+									<ChevronRight size={16} />
+								</button>
 							</div>
 						</div>
-						<div className="h-80">
-							<ChartPorUsuario data={inventario} />
+
+						{/* Contenedor de la gráfica con animación */}
+						<div className="h-100 relative overflow-hidden">
+							<AnimatePresence mode="wait">
+								<motion.div
+									key={graficaIndex}
+									initial={{ opacity: 0, x: 100 }}
+									animate={{ opacity: 1, x: 0 }}
+									exit={{ opacity: 0, x: -100 }}
+									transition={{ duration: 0.4 }}
+									className="absolute w-full h-full"
+								>
+									{[<ChartPorUsuario data={inventario} />,
+									<ChartPorUsuario data={inventario} />,
+									<ChartPorUsuario data={inventario} />][graficaIndex]}
+								</motion.div>
+							</AnimatePresence>
 						</div>
 					</div>
 				</div>
+
 
 				{/* Sidebar de actividad */}
 				<div className="space-y-6">

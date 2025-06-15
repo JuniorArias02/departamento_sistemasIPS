@@ -1,7 +1,8 @@
 // componente FormularioUsuarios.jsx
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { Save, Loader2 } from "lucide-react";
+import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle } from "lucide-react";
+
 import { motion } from "framer-motion";
 import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario";
 import { listarRoles } from "../../../services/rolServices";
@@ -122,103 +123,165 @@ export default function FormularioUsuarios() {
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded-2xl space-y-6"
-		>
-			<BackPage isEdit={true} />
-			<h2 className="text-2xl font-semibold text-center text-gray-800">
-				{usuarioEdit ? "Editar Usuario" : "Registrar Usuario"}
-			</h2>
+		<div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
+			<motion.form
+				onSubmit={handleSubmit}
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.4 }}
+				className="max-w-md mx-auto p-6 sm:p-8 bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] border border-gray-100 space-y-8"
+			>
+				{/* Encabezado */}
+				<div className="space-y-2">
+					<BackPage
+						isEdit={true}
+						className="text-indigo-600 hover:text-indigo-800 transition-colors"
+					/>
+					<h2 className="text-3xl font-bold bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 text-transparent text-center">
+						{usuarioEdit ? "Editar Usuario" : "Nuevo Usuario"}
+					</h2>
+					<p className="text-gray-500 text-center">
+						{usuarioEdit ? "Actualiza la información del usuario" : "Completa los datos para registrar un nuevo usuario"}
+					</p>
+				</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				{Object.entries(formData).map(([campo, valor], i) => {
-					if (campo === "rol_id" || campo === "id_usuario_editor" || campo === "id_usuario_objetivo")
-						return null;
-					return (
-						<motion.div
-							key={campo}
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: i * 0.05 }}
-							className="flex flex-col gap-1"
-						>
-							<label
-								htmlFor={campo}
-								className="text-sm font-medium text-gray-700 capitalize"
-							>
-								{campo.replace(/_/g, " ")}
-							</label>
-
+				{/* Campos del formulario */}
+				<div className="space-y-5">
+					{/* Campo Nombre */}
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.1 }}
+						className="space-y-1"
+					>
+						<label htmlFor="nombre" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+							<User size={16} className="text-gray-400" />
+							Nombre Completo
+						</label>
+						<div className="relative">
 							<input
-								type={
-									campo === "correo"
-										? "email"
-										: campo === "contrasena"
-											? "password"
-											: "text"
-								}
-								id={campo}
-								name={campo}
-								value={valor}
+								type="text"
+								id="nombre"
+								name="nombre"
+								value={formData.nombre_completo}
 								onChange={handleChange}
-								className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-								placeholder={campo.replace(/_/g, " ")}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+								placeholder="Ej: Juan Pérez"
 							/>
-						</motion.div>
-					);
-				})}
+						</div>
+					</motion.div>
 
-				{/* Select para rol */}
+					{/* Campo Correo */}
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.2 }}
+						className="space-y-1"
+					>
+						<label htmlFor="correo" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+							<UserCircle size={16} className="text-gray-400" />
+							usuario
+						</label>
+						<div className="relative">
+							<input
+								type="email"
+								id="correo"
+								name="correo"
+								value={formData.usuario}
+								onChange={handleChange}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+								placeholder="Ej: usuario@dominio.com"
+							/>
+						</div>
+					</motion.div>
+
+					{/* Campo Contraseña */}
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.3 }}
+						className="space-y-1"
+					>
+						<label htmlFor="contrasena" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+							<Lock size={16} className="text-gray-400" />
+							Contraseña
+						</label>
+						<div className="relative">
+							<input
+								type="password"
+								id="contrasena"
+								name="contrasena"
+								value={formData.contrasena}
+								onChange={handleChange}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+								placeholder={usuarioEdit ? "Dejar en blanco para no cambiar" : "Mínimo 8 caracteres"}
+							/>
+						</div>
+					</motion.div>
+
+					{/* Selector de Rol */}
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.4 }}
+						className="space-y-1"
+					>
+						<label htmlFor="rol_id" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+							<Shield size={16} className="text-gray-400" />
+							Rol del Usuario
+						</label>
+						<div className="relative">
+							<select
+								id="rol_id"
+								name="rol_id"
+								value={formData.rol_id}
+								onChange={handleChange}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none transition-all"
+							>
+								<option value="">Selecciona un rol</option>
+								{(rol || []).map((r) => (
+									<option key={r.id} value={r.id}>
+										{r.nombre}
+									</option>
+								))}
+							</select>
+							<Shield size={16} className="absolute left-3 top-3.5 text-gray-400" />
+							<ChevronDown size={16} className="absolute right-3 top-3.5 text-gray-400 pointer-events-none" />
+						</div>
+					</motion.div>
+				</div>
+
+				{/* Botón de acción */}
 				<motion.div
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: Object.keys(formData).length * 0.05 }}
-					className="flex flex-col gap-1"
+					transition={{ delay: 0.5 }}
+					className="pt-4"
 				>
-					<label
-						htmlFor="rol_id"
-						className="text-sm font-medium text-gray-700 capitalize"
+					<button
+						type="submit"
+						disabled={loading}
+						className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-indigo-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 					>
-						Rol
-					</label>
-
-					<select
-						id="rol_id"
-						name="rol_id"
-						value={formData.rol_id}
-						onChange={handleChange}
-						className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-					>
-						<option value="">Selecciona un rol</option>
-						{(rol || []).map((r) => (
-							<option key={r.id} value={r.id}>
-								{r.nombre}
-							</option>
-						))}
-					</select>
+						{loading ? (
+							<>
+								<Loader2 size={20} className="animate-spin" />
+								<span>Procesando...</span>
+							</>
+						) : usuarioEdit ? (
+							<>
+								<Save size={20} />
+								<span>Actualizar Usuario</span>
+							</>
+						) : (
+							<>
+								<UserPlus size={20} />
+								<span>Registrar Usuario</span>
+							</>
+						)}
+					</button>
 				</motion.div>
-			</div>
-
-			<div className="flex justify-end">
-				<button
-					type="submit"
-					disabled={loading}
-					className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-					{loading ? (
-						<>
-							<Loader2 className="animate-spin" size={20} />
-							{usuarioEdit ? "Actualizando..." : "Guardando..."}
-						</>
-					) : (
-						<>
-							<Save size={20} />
-							{usuarioEdit ? "Actualizar" : "Registrar"}
-						</>
-					)}
-				</button>
-			</div>
-		</form>
+			</motion.form>
+		</div>
 	);
 }

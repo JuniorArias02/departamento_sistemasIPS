@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { Save, Loader2 } from "lucide-react";
+import { Save, Loader2, Hash, Tag, Building2, User, Cpu, Settings, Barcode, MapPin, ChevronDown, UploadCloud, PlusCircle, Image } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
 import { crearInventario, actualizarInventario } from "../../../services/inventario";
 import BackPage from "../components/BackPage";
@@ -115,93 +115,134 @@ export default function FormularioInventario() {
 	return (
 		<motion.form
 			onSubmit={handleSubmit}
-			initial={{ opacity: 0, y: 30 }}
+			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.4 }}
-			className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded-2xl space-y-6"
+			transition={{ duration: 0.4, ease: "easeOut" }}
+			className="max-w-3xl mx-auto p-6 sm:p-8 bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] border border-gray-100 space-y-8"
 		>
-			<h2 className="text-2xl font-semibold text-center text-gray-800">
-				{inventarioEdit ? "Editar Inventario" : "Registrar Inventario"}
-			</h2>
+			{/* Encabezado con gradiente */}
+			<div className="text-center">
+				<h2 className="text-3xl font-bold bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 text-transparent">
+					{inventarioEdit ? "Editar Activo" : "Nuevo Activo inventario"}
+				</h2>
+				<p className="text-gray-500 mt-2">
+					{inventarioEdit ? "Actualiza los datos del activo" : "Registra un nuevo activo en el inventario"}
+				</p>
+			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				{/* Campos de texto */}
+			{/* Campos del formulario */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{[
-					{ name: "codigo", label: "Código" },
-					{ name: "nombre", label: "Nombre" },
-					{ name: "dependencia", label: "Dependencia" },
-					{ name: "responsable", label: "Responsable" },
-					{ name: "marca", label: "Marca" },
-					{ name: "modelo", label: "Modelo" },
-					{ name: "serial", label: "Serial" },
-				].map(({ name, label }) => (
+					{ name: "codigo", label: "Código", icon: <Hash size={18} className="text-gray-400" /> },
+					{ name: "nombre", label: "Nombre del Activo", icon: <Tag size={18} className="text-gray-400" /> },
+					{ name: "dependencia", label: "Dependencia", icon: <Building2 size={18} className="text-gray-400" /> },
+					{ name: "responsable", label: "Responsable", icon: <User size={18} className="text-gray-400" /> },
+					{ name: "marca", label: "Marca", icon: <Cpu size={18} className="text-gray-400" /> },
+					{ name: "modelo", label: "Modelo", icon: <Settings size={18} className="text-gray-400" /> },
+					{ name: "serial", label: "Número de Serie", icon: <Barcode size={18} className="text-gray-400" /> },
+				].map(({ name, label, icon }, index) => (
 					<motion.div
 						key={name}
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
-						className="flex flex-col gap-1"
+						transition={{ delay: index * 0.05 }}
+						className="space-y-1"
 					>
-						<label htmlFor={name} className="text-sm font-medium text-gray-700">
-							{label}
+						<label htmlFor={name} className="text-sm font-medium text-gray-700 flex items-center gap-1">
+							{icon}
+							<span>{label}</span>
 						</label>
-						<input
-							type="text"
-							id={name}
-							name={name}
-							value={formData[name]}
-							onChange={handleChange}
-							className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							placeholder={label}
-						/>
+						<div className="relative">
+							<input
+								type="text"
+								id={name}
+								name={name}
+								value={formData[name]}
+								onChange={handleChange}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+								placeholder={`Ingrese ${label.toLowerCase()}`}
+							/>
+							<div className="absolute left-3 top-3.5">
+
+							</div>
+						</div>
 					</motion.div>
 				))}
 
-				{/* Select sede */}
+				{/* Selector de sede con icono */}
 				<motion.div
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
-					className="flex flex-col gap-1"
+					transition={{ delay: 0.4 }}
+					className="space-y-1"
 				>
-					<label htmlFor="sede_id" className="text-sm font-medium text-gray-700">
-						Sede
+					<label htmlFor="sede_id" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+						<MapPin size={18} className="text-gray-400" />
+						<span>Sede/Localización</span>
 					</label>
-					<select
-						id="sede_id"
-						name="sede_id"
-						value={formData.sede_id}
-						onChange={handleChange}
-						className="bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-					>
-						<option value="">Seleccione una sede</option>
-						{sedes.map((s) => (
-							<option key={s.id} value={s.id}>
-								{s.nombre}
-							</option>
-						))}
-					</select>
+					<div className="relative">
+						<select
+							id="sede_id"
+							name="sede_id"
+							value={formData.sede_id}
+							onChange={handleChange}
+							className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none transition-all"
+						>
+							<option value="">Seleccione una sede</option>
+							{sedes.map((s) => (
+								<option key={s.id} value={s.id}>
+									{s.nombre}
+								</option>
+							))}
+						</select>
+						<MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
+						<ChevronDown size={18} className="absolute right-3 top-3.5 text-gray-400 pointer-events-none" />
+					</div>
 				</motion.div>
+
+				{/* Campo adicional para imagen/QR (opcional) */}
+
 			</div>
 
-			<div className="flex justify-between">
-				<BackPage isEdit={!!inventarioEdit} />
+			{/* Botones de acción */}
+			<motion.div
+				initial={{ opacity: 0, y: 10 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.5 }}
+				className="flex flex-col-reverse sm:flex-row justify-between gap-4 pt-4"
+			>
+				<BackPage
+					isEdit={!!inventarioEdit}
+					className="px-5 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors"
+				/>
+
 				<button
 					type="submit"
 					disabled={loading}
-					className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+					className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-indigo-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 				>
 					{loading ? (
 						<>
-							<Loader2 className="animate-spin" size={20} />
-							Guardando...
+							<Loader2 size={20} className="animate-spin" />
+							<span>Procesando...</span>
 						</>
 					) : (
 						<>
-							<Save size={20} />
-							{inventarioEdit ? "Actualizar" : "Registrar"}
+							{inventarioEdit ? (
+								<>
+									<Save size={20} />
+									<span>Actualizar Activo</span>
+								</>
+							) : (
+								<>
+									<PlusCircle size={20} />
+									<span>Registrar Activo</span>
+								</>
+							)}
 						</>
 					)}
 				</button>
-			</div>
+			</motion.div>
 		</motion.form>
 	);
 }
