@@ -118,13 +118,13 @@ export default function DashboardAdmin() {
 
 	const actividadesRecientes = [
 		{
-			user: "Dr. Martínez",
+			user: "Junior Arias",
 			action: "Actualizó el inventario",
 			time: "Hace 15 minutos",
 			icon: <Package2 className="w-4 h-4 text-gray-600" />
 		},
 		{
-			user: "Enfermera Pérez",
+			user: "Jeferson Arevalo",
 			action: "Registró nuevo mantenimiento",
 			time: "Hace 2 horas",
 			icon: <ClipboardList className="w-4 h-4 text-gray-600" />
