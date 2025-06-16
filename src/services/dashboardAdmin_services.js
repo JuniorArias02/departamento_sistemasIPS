@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GRAFICA_INVENTARIO,GRAFICA_DISPOSITIVO_MEDICO,GRAFICA_EQUIPO_BIOMEDICO,GRAFICA_MEDICAMENTO,GRAFICA_REACTIVO_VIGILANCIA,CONTAR_USUARIOS,GRAFICA_MANTENIMIENTO } from '../const/url';
+import { GRAFICA_INVENTARIO,GRAFICA_DISPOSITIVO_MEDICO,GRAFICA_EQUIPO_BIOMEDICO,GRAFICA_MEDICAMENTO,GRAFICA_REACTIVO_VIGILANCIA,CONTAR_USUARIOS,GRAFICA_MANTENIMIENTO, ACTIVIDADES_RECIENTES } from '../const/url';
 
 export const obtenerGraficaInventario = async () => {
 	const res = await axios.get(GRAFICA_INVENTARIO);
@@ -37,4 +37,9 @@ export const obtenerGraficaReactivo = async () => {
 export const obtenerTotalUsuarios = async () => {
 	const res = await axios.get(CONTAR_USUARIOS);
 	return res.data.total;
+};
+
+export const obtenerActividadesRecientes = async () => {
+	const res = await axios.get(ACTIVIDADES_RECIENTES);
+	return res.data;
 };

@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { obtenerTotalInventario } from "../../../services/dashboard_services";
 import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimiento_freezer";
 import { obtenerTotalUsuarios } from "../../../services/dashboardAdmin_services";
+import RecentActivities from "../components/ux/RecentActivities";
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [mantenimiento, setMantenimiento] = useState([]);
@@ -119,21 +120,6 @@ export default function DashboardAdmin() {
 			</div>
 		</div>
 	);
-
-	const actividadesRecientes = [
-		{
-			user: "Junior Arias",
-			action: "Actualizó el inventario",
-			time: "Hace 15 minutos",
-			icon: <Package2 className="w-4 h-4 text-gray-600" />
-		},
-		{
-			user: "Diego Ricardo",
-			action: "Registró nuevo mantenimiento",
-			time: "Hace 2 horas",
-			icon: <ClipboardList className="w-4 h-4 text-gray-600" />
-		},
-	];
 
 	const distribucionSedes = [
 		{ name: "Sede Norte", value: 35 },
@@ -247,19 +233,8 @@ export default function DashboardAdmin() {
 
 				{/* Sidebar de actividad */}
 				<div className="space-y-6">
-					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">
-						<h2 className="text-lg font-semibold mb-4">Actividad Reciente</h2>
-						<div className="space-y-4">
-							{actividadesRecientes.map((actividad, index) => (
-								<ActivityItem
-									key={index}
-									user={actividad.user}
-									action={actividad.action}
-									time={actividad.time}
-									icon={actividad.icon}
-								/>
-							))}
-						</div>
+					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">	
+						<RecentActivities />
 					</div>
 
 					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">

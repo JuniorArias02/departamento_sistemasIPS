@@ -60,3 +60,5 @@ export const OBTENER_ROL = `${URL_PATH}controllers/rol/rol/obtener_rol.php`;
 
 export const MI_PERFIL = `${URL_PATH}controllers/usuario/mi_perfil.php`;
 export const EDITAR_PERFIL = `${URL_PATH}controllers/usuario/editar_perfil.php`;
+
+export const ACTIVIDADES_RECIENTES = `${URL_PATH}controllers/usuario/actividades_recientes.php`;
