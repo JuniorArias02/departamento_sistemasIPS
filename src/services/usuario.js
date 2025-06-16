@@ -1,10 +1,48 @@
 import axios from "axios";
-import { CREAR_USUARIO, LISTAR_USUARIOS,OBTENER_USUARIO,ACTUALIZAR_USUARIO,ELIMINAR_USUARIO } from "../const/url";
+import { CREAR_USUARIO, LISTAR_USUARIOS, OBTENER_USUARIO, ACTUALIZAR_USUARIO, ELIMINAR_USUARIO, MI_PERFIL,EDITAR_PERFIL } from "../const/url";
+
+
+export const obtenerMiPerfil = async (id) => {
+  try {
+    const { data } = await axios.post(MI_PERFIL, { id });
+
+    if (!data.success) {
+      throw new Error(data.message || 'Error al obtener el perfil');
+    }
+
+    return data.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message
+      || error.message
+      || 'Error desconocido al obtener el perfil';
+
+    throw new Error(errorMessage);
+  }
+};
+
+export const editarMiPerfil = async (datos) => {
+  try {
+    const { data } = await axios.post(EDITAR_PERFIL, datos);
+
+    if (!data.success) {
+      throw new Error(data.message || 'Error al editar el perfil');
+    }
+
+    return data.message;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message
+      || error.message
+      || 'Error desconocido al editar el perfil';
+
+    throw new Error(errorMessage);
+  }
+};
+
 
 export const CrearUsuario = async (datos) => {
   try {
     const response = await axios.post(CREAR_USUARIO, datos);
-      // console.log("Respuesta del servidor:", response.data);
+    // console.log("Respuesta del servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error al crear usuario:", error);
@@ -56,14 +94,15 @@ export const eliminarUsuario = async (id_usuario_editor, id_usuario_objetivo) =>
 
 
 export const listarUsuariosAdmin = async (userId) => {
-	try {
-		const response = await axios.post(LISTAR_USUARIOS, { user_id: userId });
-		if (response.data.success) {
-			return response.data.data;
-		} else {
-			throw new Error(response.data.message || "Error al listar usuarios");
-		}
-	} catch (error) {
-		throw new Error(error?.response?.data?.message || "Error al listar usuarios");
-	}
+  try {
+    const response = await axios.post(LISTAR_USUARIOS, { user_id: userId });
+    if (response.data.success) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data.message || "Error al listar usuarios");
+    }
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || "Error al listar usuarios");
+  }
 };
+

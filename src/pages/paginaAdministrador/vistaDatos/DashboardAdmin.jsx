@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import {
 	obtenerGraficaInventario,
+	obtenerGraficaMantenimiento
 } from "../../../services/dashboardAdmin_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
-import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { obtenerTotalInventario } from "../../../services/dashboard_services";
@@ -12,6 +13,7 @@ import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimient
 import { obtenerTotalUsuarios } from "../../../services/dashboardAdmin_services";
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
+	const [mantenimiento, setMantenimiento] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [graficaIndex, setGraficaIndex] = useState(0);
 
@@ -53,12 +55,14 @@ export default function DashboardAdmin() {
 		const fetchData = async () => {
 			try {
 				const [
-					inv
+					inv,
+					man
 				] = await Promise.all([
 					obtenerGraficaInventario(),
+					obtenerGraficaMantenimiento()
 				]);
-
 				setInventario(formatearFechas(inv));
+				setMantenimiento(formatearFechas(man));
 			} catch (error) {
 				console.error("Error al cargar las gráficas", error);
 			} finally {
@@ -124,7 +128,7 @@ export default function DashboardAdmin() {
 			icon: <Package2 className="w-4 h-4 text-gray-600" />
 		},
 		{
-			user: "Jeferson Arevalo",
+			user: "Diego Ricardo",
 			action: "Registró nuevo mantenimiento",
 			time: "Hace 2 horas",
 			icon: <ClipboardList className="w-4 h-4 text-gray-600" />
@@ -186,12 +190,13 @@ export default function DashboardAdmin() {
 						color="orange"
 					/>
 					<SummaryCard
-						title="Alertas"
-						value="8"
+						title="Agregar widget"
+						value=""
 						change=""
-						icon={<AlertCircle className="w-6 h-6" />}
-						color="red"
+						icon={<PlusCircle className="w-6 h-6" />}
+						color="green"
 					/>
+
 				</div>
 
 				<div className="lg:col-span-2">
@@ -199,7 +204,7 @@ export default function DashboardAdmin() {
 						{/* Header con título y botones */}
 						<div className="flex justify-between items-center mb-6">
 							<h2 className="text-lg font-semibold">
-								{["Inventario por Usuario", "Otra gráfica", "Otra más"][graficaIndex]}
+								{["Inventario", "Matenimiento", "Proximamente"][graficaIndex]}
 							</h2>
 
 							<div className="flex items-center gap-2">
@@ -232,8 +237,7 @@ export default function DashboardAdmin() {
 									className="absolute w-full h-full"
 								>
 									{[<ChartPorUsuario data={inventario} />,
-									<ChartPorUsuario data={inventario} />,
-									<ChartPorUsuario data={inventario} />][graficaIndex]}
+									<ChartPorUsuario data={mantenimiento} />][graficaIndex]}
 								</motion.div>
 							</AnimatePresence>
 						</div>

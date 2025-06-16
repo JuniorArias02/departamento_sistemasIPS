@@ -53,6 +53,10 @@ export const GRAFICA_DISPOSITIVO_MEDICO = `${URL_PATH}controllers/grafica/grafic
 export const GRAFICA_EQUIPO_BIOMEDICO = `${URL_PATH}controllers/grafica/grafica_equipo_biomedico.php`;
 export const GRAFICA_MEDICAMENTO = `${URL_PATH}controllers/grafica/grafica_medicamento.php`;
 export const GRAFICA_REACTIVO_VIGILANCIA = `${URL_PATH}controllers/grafica/grafica_reactivo.php`;
+export const GRAFICA_MANTENIMIENTO = `${URL_PATH}controllers/grafica/grafica_mantenimiento.php`;
 
 // rol
 export const OBTENER_ROL = `${URL_PATH}controllers/rol/rol/obtener_rol.php`;
+
+export const MI_PERFIL = `${URL_PATH}controllers/usuario/mi_perfil.php`;
+export const EDITAR_PERFIL = `${URL_PATH}controllers/usuario/editar_perfil.php`;

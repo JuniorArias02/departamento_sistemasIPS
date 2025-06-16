@@ -1,42 +1,75 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { User, Mail, Edit, Save, Lock, Phone } from 'lucide-react';
-
-
+import { obtenerMiPerfil, editarMiPerfil } from '../../../services/usuario';
+import { useApp } from '../../../store/AppContext';
+import Swal from 'sweetalert2';
 
 export default function PerfilUsuario(props) {
-	// Primero, establece initialData con valores por defecto
-	const initialData = props.initialData || {
-		nombre_completo: 'Junior Edimer Arias Castellanos',
-		usuario: 'junior@house',
-		correo: 'junior.arias02yt@gmail.com',
-		telefono: '3183111056'
-	};
-
-	// Luego usa esos valores para el estado
-	const [userData, setUserData] = useState(initialData);
+	const { usuario } = useApp();
+	const [userData, setUserData] = useState({
+		nombre_completo: '',
+		usuario: '',
+		correo: '',
+		telefono: '',
+		rol_id: ''
+	});
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
-	const { onSave } = props; // Asegúrate de que onSave se pase como prop
+	const { onSave } = props;
 	const [showPasswordModal, setShowPasswordModal] = useState(false);
 	const [passwordData, setPasswordData] = useState({
 		current: '',
 		new: '',
 		confirm: ''
 	});
+	useEffect(() => {
+		const cargarPerfil = async () => {
+			try {
+				setLoading(true);
+				const idUsuario = usuario.id;
+				const datosUsuario = await obtenerMiPerfil(idUsuario);
+				setUserData(datosUsuario);
+			} catch (err) {
+				setError(err.message);
+			} finally {
+				setLoading(false);
+			}
+		};
 
+		cargarPerfil();
+	}, []);
 
 	const handleEdit = () => {
 		setIsEditing(true);
 	};
 
 	const handleCancel = () => {
-		setUserData(initialData);
+		setUserData(userData);
 		setIsEditing(false);
 	};
 
-	const handleSave = () => {
-		onSave(userData);
-		setIsEditing(false);
+	const handleSave = async () => {
+		try {
+			await editarMiPerfil(userData);
+
+			Swal.fire({
+				icon: 'success',
+				title: '¡Perfil actualizado!',
+				text: 'Tus datos se guardaron correctamente.',
+				timer: 2000,
+				showConfirmButton: false
+			});
+
+			setIsEditing(false);
+		} catch (err) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: err.message || 'Error al guardar cambios'
+			});
+		}
 	};
 
 	const handleChange = (e) => {
@@ -202,7 +235,7 @@ export default function PerfilUsuario(props) {
 								</div>
 								<div>
 									<h1 className="text-xl font-bold">{userData.nombre_completo}</h1>
-									<p className="text-white/90">@{userData.usuario}</p>
+									<p className="text-white/90">{userData.usuario}</p>
 								</div>
 							</div>
 						</div>
