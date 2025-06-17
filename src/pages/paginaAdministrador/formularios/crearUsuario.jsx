@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle } from "lucide-react";
-
 import { motion } from "framer-motion";
-import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario";
-import { listarRoles } from "../../../services/rolServices";
+import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario_service";
+import { listarRoles } from "../../../services/rol_services";
 import { useApp } from "../../../store/AppContext";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { useLocation } from "react-router-dom";

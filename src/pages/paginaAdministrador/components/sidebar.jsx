@@ -10,11 +10,12 @@ import { PERMISOS } from "../../../secure/permisos/permisos";
 import Swal from "sweetalert2";
 import { mostrarAlertaSinPermiso } from "../../../hook/useError";
 import { RUTAS } from "../../../const/routers/routers";
-import { fetchNotificacionesPendientes } from "../../../services/mantenimiento_freezer";
-// import { NotificationBadge } from "./NotificationBadge";
+import { fetchNotificacionesPendientes } from "../../../services/mantenimiento_services";
 import { SidebarCollapsible } from "./ux/SidebarCollapsible";
 import { SidebarItem } from "./ux/SidebarItem";
 import { SidebarSubItem } from "./ux/SidebarSubItem";
+
+
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const navigate = useNavigate();
 	const { usuario, permisos, logout } = useApp();
@@ -30,7 +31,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
 			setAnimarCampana(true);
-			const timeout = setTimeout(() => setAnimarCampana(false), 600);
+			const timeout = setTimeout(() => setAnimarCampana(false), 10000);
 			return () => clearTimeout(timeout);
 		}
 	}, [nuevosFormularios]);
@@ -287,11 +288,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								}
 								text="Mantenimientos IPS"
 								onClick={() => {
-									navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS);
+									navigate(RUTAS.USER.MANTENIMIENTO.VISTA_DATOS);
 									setTimeout(() => setSidebarOpen(false), 150);
 								}}
 								sidebarOpen={sidebarOpen}
-								isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO_FREEZER.ROOT)}
+								isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO.ROOT)}
 								delay={0.3}
 							/>
 

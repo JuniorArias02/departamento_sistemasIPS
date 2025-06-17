@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { listarMantenimientosFreezer, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_freezer"; // Asegúrate de importar la función de actualización
+import { listarMantenimientos,actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "../../../store/AppContext";
@@ -16,7 +16,7 @@ import {
 	Clock
 } from 'lucide-react';
 
-export default function VistaDatosMantenimientoFreezer() {
+export default function VistaDatosMantenimiento() {
 	const navigate = useNavigate();
 	const { usuario } = useApp();
 	const [mantenimientos, setMantenimientos] = useState([]);
@@ -25,7 +25,7 @@ export default function VistaDatosMantenimientoFreezer() {
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const response = await listarMantenimientosFreezer(usuario.id);
+			const response = await listarMantenimientos(usuario.id);
 			setMantenimientos(response.data);
 		} catch (error) {
 			console.error("Error cargando mantenimientos", error);
@@ -40,7 +40,7 @@ export default function VistaDatosMantenimientoFreezer() {
 	}, [usuario.id]);
 
 	const handleVerDetalle = (mantenimiento) => {
-		navigate(RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES, {
+		navigate(RUTAS.USER.MANTENIMIENTO.VER_DETALLES, {
 			state: { mantenimientos: mantenimiento }
 		});
 	};

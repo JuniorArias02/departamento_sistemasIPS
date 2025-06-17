@@ -20,7 +20,7 @@ import { motion } from 'framer-motion';
 import BackPage from '../../components/BackPage';
 import { useNavigate } from 'react-router-dom';
 import { URL_PATH } from '../../../../const/api';
-export default function DetalleMantenimientoFreezer() {
+export default function DetalleMantenimiento() {
 	const { state } = useLocation();
 	const navigate = useNavigate();
 	const item = state?.mantenimientos;

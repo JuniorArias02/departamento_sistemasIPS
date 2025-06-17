@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import {
-	obtenerGraficaInventario,
-	obtenerGraficaMantenimiento
-} from "../../../services/dashboardAdmin_services";
+import { obtenerGraficaInventario } from "../../../services/inventario_services";
+import { obtenerGraficaMantenimiento } from "../../../services/mantenimiento_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
 import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { obtenerTotalInventario } from "../../../services/dashboard_services";
-import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimiento_freezer";
-import { obtenerTotalUsuarios } from "../../../services/dashboardAdmin_services";
+import { obtenerTotalInventario } from "../../../services/inventario_services";
+import { obtenerTotalMantenimiento } from "../../../services/mantenimiento_services";
+import { obtenerTotalUsuarios } from "../../../services/usuario_service";
 import RecentActivities from "../components/ux/RecentActivities";
+
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [mantenimiento, setMantenimiento] = useState([]);
@@ -23,22 +22,22 @@ export default function DashboardAdmin() {
 	const [totales, setTotales] = useState({
 		inventario: 0,
 		usuarios: 0,
-		mantenimientoFreezer: 0
+		mantenimiento: 0
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [inventario, usuarios, mantenimientoFreezer] = await Promise.all([
+				const [inventario, usuarios, mantenimiento] = await Promise.all([
 					obtenerTotalInventario(),
 					obtenerTotalUsuarios(),
-					obtenerTotalMantenimientoFreezer()
+					obtenerTotalMantenimiento()
 				]);
 
 				setTotales({
 					inventario: inventario,
 					usuarios: usuarios,
-					mantenimientoFreezer: mantenimientoFreezer
+					mantenimiento: mantenimiento
 
 				});
 			} catch (error) {
@@ -170,7 +169,7 @@ export default function DashboardAdmin() {
 					/>
 					<SummaryCard
 						title="Mantenimientos"
-						value={totales.mantenimientoFreezer}
+						value={totales.mantenimiento}
 						change=""
 						icon={<ClipboardList className="w-6 h-6" />}
 						color="orange"
@@ -233,7 +232,7 @@ export default function DashboardAdmin() {
 
 				{/* Sidebar de actividad */}
 				<div className="space-y-6">
-					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">	
+					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">
 						<RecentActivities />
 					</div>
 

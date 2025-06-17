@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarInventarios, eliminarInventario, buscarInventario, exportarInventariosCliente } from "../../../services/inventario";
+import { listarInventarios, eliminarInventario, buscarInventario, exportarInventariosCliente } from "../../../services/inventario_services";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
 import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, RefreshCw, ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "lucide-react";

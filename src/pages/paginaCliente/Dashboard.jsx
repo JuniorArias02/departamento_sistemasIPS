@@ -1,10 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	obtenerTotalInventario
-} from "../../services/dashboard_services";
-import { obtenerTotalMantenimientoFreezer } from "../../services/mantenimiento_freezer";
+import { obtenerTotalInventario } from '../../services/inventario_services';
+import { obtenerTotalMantenimiento } from "../../services/mantenimiento_services";
 import {Eye, ClipboardList, Wrench} from "lucide-react";
 import { motion } from "framer-motion";
 import { useContadorAnimado } from "../../hook/useContadorAnimado";
@@ -15,20 +13,20 @@ export default function Dashboard() {
 
 	const [totales, setTotales] = useState({
 		inventario: 0,
-		mantenimientoFreezer: 0
+		mantenimiento: 0
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [inventario, mantenimientoFreezer] = await Promise.all([
+				const [inventario, mantenimiento] = await Promise.all([
 					obtenerTotalInventario(),
-					obtenerTotalMantenimientoFreezer()
+					obtenerTotalMantenimiento()
 				]);
 
 				setTotales({
 					inventario: inventario,
-					mantenimientoFreezer: mantenimientoFreezer
+					mantenimientoFreezer: mantenimiento
 
 				});
 			} catch (error) {
@@ -50,9 +48,9 @@ export default function Dashboard() {
 		},
 		{
 			titulo: "Mantenimientos IPS",
-			ruta: RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO,
-			verRuta: RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS,
-			total: totales.mantenimientoFreezer,
+			ruta: RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO,
+			verRuta: RUTAS.USER.MANTENIMIENTO.VISTA_DATOS,
+			total: totales.mantenimiento,
 		}
 	];
 

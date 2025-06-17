@@ -1,12 +1,13 @@
 import { useApp } from "../../../store/AppContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { listarUsuariosAdmin, eliminarUsuario } from "../../../services/usuario";
+import { listarUsuariosAdmin, eliminarUsuario } from "../../../services/usuario_service";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { RUTAS } from "../../../const/routers/routers";
 import { UserPlus, Pencil, Trash2, Eye, Search, Filter, Download, UserX, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, User } from "lucide-react";
+
 export default function VistaDatosUsuarios() {
 	const [usuarios, setUsuarios] = useState([]);
 	const navigate = useNavigate();

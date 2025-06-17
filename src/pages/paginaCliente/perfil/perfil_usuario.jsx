@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { User, Mail, Edit, Save, Lock, Phone } from 'lucide-react';
-import { obtenerMiPerfil, editarMiPerfil } from '../../../services/usuario';
+import { obtenerMiPerfil, editarMiPerfil } from '../../../services/perfil_services';
 import { useApp } from '../../../store/AppContext';
 import Swal from 'sweetalert2';
 

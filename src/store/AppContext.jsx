@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { obtenerPermisos } from "../services/permisos";
 
 const AppContext = createContext();
 

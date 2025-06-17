@@ -5,14 +5,14 @@ import {
   LISTAR_INVENTARIO,
   EXPORTAR_INVENTARIO,
   BUSCAR_INVENTARIO,
-  EXPORTAR_INVENTARIO_JSON
+  EXPORTAR_INVENTARIO_JSON,
+  GRAFICA_INVENTARIO,
+  CONTAR_INVENTARIO
 
-} from "../const/url";
+} from "../const/endpoint/inventario/inventario_endpoint";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
-
-// const API_URL = CREAR_EQUIPO_BIOMEDICO;
 
 export const crearInventario = async (datos) => {
   try {
@@ -74,6 +74,18 @@ export const eliminarInventario = async (id) => {
   }
 };
 
+export const obtenerGraficaInventario = async () => {
+	const res = await axios.get(GRAFICA_INVENTARIO);
+	return res.data;
+};
+
+
+export const obtenerTotalInventario = async () => {
+  const res = await axios.get(CONTAR_INVENTARIO);
+  return res.data.total;
+};
+
+
 export const exportarInventarios = async () => {
   try {
     const response = await axios.get(EXPORTAR_INVENTARIO, {
@@ -96,6 +108,7 @@ export const exportarInventarios = async () => {
     );
   }
 };
+
 // json_exportar_inventario.php
 export const exportarInventariosCliente = async () => {
   try {
@@ -110,7 +123,7 @@ export const exportarInventariosCliente = async () => {
           anchos[i] = Math.max(anchos[i] || 10, len);
         });
       });
-      return anchos.map(w => ({ wch: w + 2 })); // un poco de espacio extra
+      return anchos.map(w => ({ wch: w + 2 }));
     };
 
     // Luego en tu función exportar:
@@ -136,7 +149,7 @@ export const exportarInventariosCliente = async () => {
 
     const buffer = XLSX.write(libro, { bookType: "xlsx", type: "array" });
     const blob = new Blob([buffer], { type: "application/octet-stream" });
-    saveAs(blob, "inventario_cliente.xlsx");
+    saveAs(blob, "inventario.xlsx");
 
 
     console.log("Excel exportado correctamente.");

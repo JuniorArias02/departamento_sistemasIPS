@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { loginUsuario } from "../../services/authService";
+import { loginUsuario } from "../../services/auth_service";
 import { useApp } from "../../store/AppContext";
 import Swal from "sweetalert2";
 import { Eye, EyeOff, Smile, Hospital, Shield, User, LogIn, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { validarRutas } from "../../secure/validarRutas";
-import { obtenerPermisos } from "../../services/permisos";
+import { obtenerPermisos } from "../../services/permisos_services";
 import getVersion from "../../../version";
+
 export default function FormularioLogin() {
   const navigate = useNavigate();
   const { login } = useApp();
@@ -162,9 +163,9 @@ export default function FormularioLogin() {
             <div className="mt-8 text-center text-sm text-neutral-500">
               <p>¿No tienes una cuenta? <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">Contacta al administrador</a></p>
             </div>
-              <div className="bottom-4 right-4 text-xs text-center  text-neutral-400">
-                v{getVersion().version} • {getVersion().releaseDate}
-              </div>
+            <div className="bottom-4 right-4 text-xs text-center  text-neutral-400">
+              v{getVersion().version} • {getVersion().releaseDate}
+            </div>
           </div>
         </div>
       </div>
