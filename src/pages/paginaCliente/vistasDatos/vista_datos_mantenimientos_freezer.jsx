@@ -13,7 +13,8 @@ import {
 	User,
 	Warehouse,
 	CheckCircle,
-	Clock
+	Clock,
+	ClipboardList
 } from 'lucide-react';
 
 export default function VistaDatosMantenimientoFreezer() {
