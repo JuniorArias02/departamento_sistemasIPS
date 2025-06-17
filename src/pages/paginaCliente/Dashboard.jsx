@@ -26,7 +26,7 @@ export default function Dashboard() {
 
 				setTotales({
 					inventario: inventario,
-					mantenimientoFreezer: mantenimiento
+					mantenimiento: mantenimiento
 
 				});
 			} catch (error) {
