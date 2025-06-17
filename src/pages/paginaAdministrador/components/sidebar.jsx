@@ -36,6 +36,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	}, [nuevosFormularios]);
 
 	useEffect(() => {
+	if (!sidebarOpen) {
+		setMenuUsuariosOpen(false);
+		setMenuRolesOpen(false);
+		setMenuFormulariosOpen(false);
+	}
+}, [sidebarOpen]);
+
+	useEffect(() => {
 		const fetchNuevosFormularios = async () => {
 			if (usuario?.id) {
 				try {
@@ -148,6 +156,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						)}
 					</AnimatePresence>
 				</motion.div>
+
 				{/* Menú principal */}
 				<ul className="space-y-1 px-3">
 					{permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && (
@@ -173,7 +182,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									? setMenuUsuariosOpen(!menuUsuariosOpen)
 									: mostrarAlertaSinPermiso()}
 								sidebarOpen={sidebarOpen}
-
 							>
 								<SidebarSubItem
 									icon={<Eye size={16} />}
@@ -187,24 +195,32 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										}
 									}}
 									isActive={location.pathname === RUTAS.ADMIN.USUARIOS.ROOT}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
 								/>
 								<SidebarSubItem
 									icon={<UserPlus size={16} />}
 									text="Crear Usuario"
-									onClick={() => permisos.includes(PERMISOS.AGREGAR_USUARIO)
-										? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
-										: mostrarAlertaSinPermiso()}
+									onClick={() =>
+										permisos.includes(PERMISOS.AGREGAR_USUARIO)
+											? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
+											: mostrarAlertaSinPermiso()}
+									sidebarOpen={sidebarOpen}
+									delay={0.2}
 								/>
 							</SidebarCollapsible>
+
 
 							{/* Menú Roles */}
 							<SidebarCollapsible
 								icon={<Shield size={20} />}
 								text="Gestión de Roles"
 								isOpen={menuRolesOpen}
-								onClick={() => permisos.includes(PERMISOS.MENU_ITEM_ROLES)
-									? setMenuRolesOpen(!menuRolesOpen)
-									: mostrarAlertaSinPermiso()}
+								onClick={() =>
+									permisos.includes(PERMISOS.MENU_ITEM_ROLES)
+										? setMenuRolesOpen(!menuRolesOpen)
+										: mostrarAlertaSinPermiso()
+								}
 								sidebarOpen={sidebarOpen}
 							>
 								{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
@@ -213,6 +229,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										text="Listado de Roles"
 										onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
 										isActive={location.pathname === RUTAS.ADMIN.ROLES.VISTA_DATOS}
+										sidebarOpen={sidebarOpen}
+										delay={0.1}
 									/>
 								)}
 								{permisos.includes(PERMISOS.CREAR_ROLES) && (
@@ -220,9 +238,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										icon={<PlusCircle size={16} />}
 										text="Crear Nuevo Rol"
 										onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+										sidebarOpen={sidebarOpen}
+										delay={0.2}
 									/>
 								)}
 							</SidebarCollapsible>
+
 
 							{/* Menú Formularios */}
 							<SidebarCollapsible
@@ -239,13 +260,18 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										navigate(RUTAS.DASHBOARD);
 										setTimeout(() => setSidebarOpen(false), 150);
 									}}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
 								/>
 								<SidebarSubItem
 									icon={<PlusSquare size={16} />}
 									text="Crear Formulario"
 									onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+									sidebarOpen={sidebarOpen}
+									delay={0.2}
 								/>
 							</SidebarCollapsible>
+
 
 							{/* Ítem con notificación */}
 							<SidebarItem
@@ -266,13 +292,22 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								}}
 								sidebarOpen={sidebarOpen}
 								isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO_FREEZER.ROOT)}
+								delay={0.3}
 							/>
+
 						</>
 					)}
 
 					{/* Cerrar sesión */}
 					<motion.li
 						className="mt-6"
+						initial="hidden"
+						animate={sidebarOpen ? "visible" : "hidden"}
+						variants={{
+							hidden: { opacity: 0, x: -10 },
+							visible: { opacity: 1, x: 0 }
+						}}
+						transition={{ duration: 0.2, delay: 0.4 }} // Ajusta el delay como quieras
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
 					>
@@ -286,6 +321,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								<motion.span
 									initial={{ opacity: 0, x: -10 }}
 									animate={{ opacity: 1, x: 0 }}
+									transition={{ delay: 0.45 }} // Para que el texto entre un poco después del ícono
 									className="font-medium"
 								>
 									Cerrar Sesión
@@ -294,7 +330,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						</button>
 					</motion.li>
 				</ul>
-
 				{/* Versión colapsada (mini sidebar) */}
 				{!sidebarOpen && !isMobile && (
 					<div className="flex flex-col items-center space-y-6">
