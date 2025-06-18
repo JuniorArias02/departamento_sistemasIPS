@@ -20,6 +20,11 @@ export const RUTAS = {
       VISTA_DATOS: `${DASHBOARD_ADMIN}/roles`
     },
 
+    PERMISOS: {
+      CREAR: `${DASHBOARD_ADMIN}/crear_permiso`,
+      ASIGNAR: `${DASHBOARD_ADMIN}/asignar_permiso`
+    },
+
     CREAR_FORMULARIO: `${DASHBOARD_ADMIN}/crear_formulario`,
   },
 

@@ -25,6 +25,8 @@ import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
 import PerfilUsuario from "./pages/paginaCliente/perfil/perfil_usuario";
 
+import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_permisos";
+
 import { RUTAS } from "./const/routers/routers";
 function App() {
   const { usuario, permisos } = useApp();
@@ -70,6 +72,13 @@ function App() {
             <VistaDatosRoles />
           </RutaSoloAdmin>
         } />
+
+        <Route path={RUTAS.ADMIN.PERMISOS.ASIGNAR} element={
+          <RutaSoloAdmin>
+            <AsignarPermisos />
+          </RutaSoloAdmin>
+        } />
+
 
         <Route path={RUTAS.USER.MANTENIMIENTO.VER_DETALLES} element={
           <RutaSoloAdmin>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus } from "lucide-react";
+import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +22,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuUsuariosOpen, setMenuUsuariosOpen] = useState(false);
 	const [menuFormulariosOpen, setMenuFormulariosOpen] = useState(false);
 	const [menuRolesOpen, setMenuRolesOpen] = useState(false);
+	const [menuPermisosOpen, setMenuPermisosOpen] = useState(false);
 	const [nuevosFormularios, setNuevosFormularios] = useState(0);
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
@@ -37,12 +38,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	}, [nuevosFormularios]);
 
 	useEffect(() => {
-	if (!sidebarOpen) {
-		setMenuUsuariosOpen(false);
-		setMenuRolesOpen(false);
-		setMenuFormulariosOpen(false);
-	}
-}, [sidebarOpen]);
+		if (!sidebarOpen) {
+			setMenuUsuariosOpen(false);
+			setMenuRolesOpen(false);
+			setMenuFormulariosOpen(false);
+		}
+	}, [sidebarOpen]);
 
 	useEffect(() => {
 		const fetchNuevosFormularios = async () => {
@@ -82,12 +83,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 			<motion.aside
 				className={`
-          bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
-          ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
-        `}
-				initial="closed"
-				animate={sidebarOpen ? "open" : "closed"}
-				variants={{
+    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
+    ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
+  `}
+				initial={isMobile ? { x: "-100%" } : "closed"}
+				animate={isMobile
+					? sidebarOpen ? { x: 0 } : { x: "-100%" }
+					: sidebarOpen ? "open" : "closed"
+				}
+				variants={!isMobile ? {
 					open: {
 						width: "18rem",
 						transition: {
@@ -96,24 +100,23 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							stiffness: 200,
 							mass: 0.5,
 							delayChildren: 0.1,
-							staggerChildren: 0.05
-						}
+							staggerChildren: 0.05,
+						},
 					},
 					closed: {
-						width: isMobile ? "0rem" : "5rem",
+						width: "5rem",
 						transition: {
 							type: "spring",
 							damping: 30,
 							stiffness: 200,
 							mass: 0.5,
 							staggerChildren: 0.02,
-							staggerDirection: -1
-						}
-					}
-				}}
-				style={{
-					willChange: "transform, width"
-				}}
+							staggerDirection: -1,
+						},
+					},
+				} : undefined}
+				transition={{ type: "spring", damping: 25, stiffness: 200 }}
+				style={{ willChange: "transform, width" }}
 			>
 				{/* Perfil usuario - Versión optimizada */}
 				<motion.div
@@ -245,6 +248,46 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								)}
 							</SidebarCollapsible>
 
+							{/* Gestión de Permisos */}
+							<SidebarCollapsible
+								icon={<KeyRound size={20} />}
+								text="Gestión de Permisos"
+								isOpen={menuPermisosOpen}
+								onClick={() =>
+									permisos.includes(PERMISOS.MENU_ITEM_PERMISOS)
+										? setMenuPermisosOpen(!menuPermisosOpen)
+										: mostrarAlertaSinPermiso()
+								}
+								sidebarOpen={sidebarOpen}
+							>
+								<SidebarSubItem
+									icon={<ShieldPlus size={16} />}
+									text="Crear Permiso"
+									onClick={() => {
+										if (permisos.includes(PERMISOS.CREAR_PERMISO)) {
+											navigate(RUTAS.CREAR_PERMISO);
+											setTimeout(() => setSidebarOpen(false), 150);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
+								/>
+								<SidebarSubItem
+									icon={<UserCog size={16} />}
+									text="Asignar Permiso"
+									onClick={() => {
+										if (permisos.includes(PERMISOS.ASIGNAR_PERMISO)) {
+											navigate(RUTAS.ADMIN.PERMISOS.ASIGNAR);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
+									sidebarOpen={sidebarOpen}
+									delay={0.2}
+								/>
+							</SidebarCollapsible>
 
 							{/* Menú Formularios */}
 							<SidebarCollapsible

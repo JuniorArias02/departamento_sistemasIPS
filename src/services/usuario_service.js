@@ -58,6 +58,7 @@ export const listarUsuariosAdmin = async (userId) => {
   try {
     const response = await axios.post(LISTAR_USUARIOS, { user_id: userId });
     if (response.data.success) {
+      console.log("Usuarios obtenidos:", response.data.data);
       return response.data.data;
     } else {
       throw new Error(response.data.message || "Error al listar usuarios");

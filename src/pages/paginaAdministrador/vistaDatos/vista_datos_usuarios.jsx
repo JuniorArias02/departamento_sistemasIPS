@@ -1,3 +1,4 @@
+import React from "react";
 import { useApp } from "../../../store/AppContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,13 +14,20 @@ export default function VistaDatosUsuarios() {
 	const navigate = useNavigate();
 	const { usuario: usuarioContext } = useApp();
 
+	const [totalUsuarios, setTotalUsuarios] = useState(0);
+	const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
+	const [filteredUsuarios, setFilteredUsuarios] = useState([]); // Estado para usuarios filtrados
+	const [currentPage, setCurrentPage] = useState(1); // Estado para página actual
+	const [itemsPerPage] = useState(5); // Items por página (puedes ajustar)
+
 	useEffect(() => {
 		if (!usuarioContext?.id) return;
 
 		const fetchUsuarios = async () => {
 			try {
 				const data = await listarUsuariosAdmin(usuarioContext.id);
-				setUsuarios(data);
+				setUsuarios(data); // Guarda todos los usuarios
+				setFilteredUsuarios(data); // Inicialmente, usuarios filtrados = todos
 			} catch (error) {
 				console.error("Error al cargar usuarios:", error);
 			}
@@ -28,6 +36,28 @@ export default function VistaDatosUsuarios() {
 		fetchUsuarios();
 	}, [usuarioContext?.id]);
 
+	useEffect(() => {
+		if (!searchTerm) {
+			setFilteredUsuarios(usuarios); // Si no hay término, muestra todos
+			return;
+		}
+
+		const filtered = usuarios.filter(usuario =>
+			usuario.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			usuario.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			usuario.rol.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+
+		setFilteredUsuarios(filtered);
+		setCurrentPage(1); // Resetear a página 1 al buscar
+	}, [searchTerm, usuarios]);
+
+
+	const getPaginatedUsuarios = () => {
+		const startIndex = (currentPage - 1) * itemsPerPage;
+		const endIndex = startIndex + itemsPerPage;
+		return filteredUsuarios.slice(startIndex, endIndex);
+	};
 	const handleEditar = (item) => {
 		navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO, {
 			state: { usuarios: item },
@@ -50,6 +80,8 @@ export default function VistaDatosUsuarios() {
 			try {
 				await eliminarUsuario(usuarioContext.id, id);
 				setUsuarios((prev) => prev.filter((u) => u.id !== id));
+				setUsuarios((prev) => prev.filter((u) => u.id !== id));
+				setCurrentPage(1); // Resetear a página 1 después de eliminar
 				Swal.fire("Eliminado!", "El usuario fue eliminado.", "success");
 			} catch (error) {
 				console.error(error);
@@ -99,6 +131,7 @@ export default function VistaDatosUsuarios() {
 							placeholder="Buscar usuarios..."
 							className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
 							onChange={(e) => setSearchTerm(e.target.value)}
+							value={searchTerm}
 						/>
 					</div>
 
@@ -124,7 +157,7 @@ export default function VistaDatosUsuarios() {
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-200">
-							{usuarios.map((u) => (
+							{getPaginatedUsuarios().map(u => (
 								<motion.tr
 									key={u.id}
 									initial={{ opacity: 0, y: 5 }}
@@ -158,9 +191,9 @@ export default function VistaDatosUsuarios() {
 										</span>
 									</td>
 									<td className="px-6 py-4">
-										<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+										<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
 											}`}>
-											{u.activo ? (
+											{u.estado ? (
 												<>
 													<span className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
 													Activo
@@ -197,28 +230,66 @@ export default function VistaDatosUsuarios() {
 					</table>
 				</div>
 
+
 				{/* Paginación mejorada */}
 				<div className="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
 					<div className="text-sm text-gray-500">
-						Mostrando <span className="font-medium">1-10</span> de <span className="font-medium">25</span> usuarios
+						Mostrando <span className="font-medium">
+							{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredUsuarios.length)}
+						</span> de <span className="font-medium">{filteredUsuarios.length}</span> usuarios
 					</div>
 					<div className="flex gap-1">
-						<button className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors">
+						<button
+							onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredUsuarios.length / itemsPerPage)))}
+							disabled={currentPage === Math.ceil(filteredUsuarios.length / itemsPerPage)}
+							className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+						>
 							<ChevronsLeft size={16} />
 						</button>
-						<button className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors">
+						<button
+							onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+							disabled={currentPage === 1}
+							className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+						>
 							<ChevronLeft size={16} />
 						</button>
-						<button className="w-10 h-10 rounded-lg bg-indigo-600 text-white font-medium">
-							1
-						</button>
-						<button className="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-							2
-						</button>
-						<button className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors">
+
+						{/* Renderizado dinámico de números de página */}
+						{Array.from({ length: Math.ceil(filteredUsuarios.length / itemsPerPage) }, (_, i) => i + 1)
+							.filter(page =>
+								page === 1 ||
+								page === currentPage ||
+								page === currentPage - 1 ||
+								page === currentPage + 1 ||
+								page === Math.ceil(filteredUsuarios / itemsPerPage)
+							)
+							.map((page, index, array) => (
+								<React.Fragment key={page}>
+									{index > 0 && array[index - 1] !== page - 1 && (
+										<span className="w-10 h-10 flex items-center justify-center">...</span>
+									)}
+									<button
+										onClick={() => setCurrentPage(page)}
+										className={`w-10 h-10 rounded-lg ${currentPage === page ? 'bg-indigo-600 text-white' : 'border border-gray-200 hover:bg-gray-100'} font-medium transition-colors`}
+									>
+										{page}
+									</button>
+								</React.Fragment>
+							))
+						}
+
+						<button
+							onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalUsuarios / itemsPerPage)))}
+							disabled={currentPage === Math.ceil(totalUsuarios / itemsPerPage)}
+							className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+						>
 							<ChevronRight size={16} />
 						</button>
-						<button className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors">
+						<button
+							onClick={() => setCurrentPage(Math.ceil(totalUsuarios / itemsPerPage))}
+							disabled={currentPage === Math.ceil(totalUsuarios / itemsPerPage)}
+							className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+						>
 							<ChevronsRight size={16} />
 						</button>
 					</div>
@@ -226,20 +297,32 @@ export default function VistaDatosUsuarios() {
 			</div>
 
 			{/* Estado vacío (opcional) */}
-			{usuarios.length === 0 && (
+			{filteredUsuarios.length === 0 && (
 				<div className="mt-12 text-center">
-					<div className="mx-auto w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-						<UserX size={40} className="text-indigo-400" />
-					</div>
-					<h3 className="text-lg font-medium text-gray-800">No hay usuarios registrados</h3>
-					<p className="text-gray-500 mt-1 mb-4">Crea tu primer usuario para comenzar</p>
-					<button
-						onClick={() => navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)}
-						className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-5 py-2.5 rounded-lg shadow transition-all duration-300 inline-flex items-center gap-2"
-					>
-						<UserPlus size={16} />
-						<span>Agregar usuario</span>
-					</button>
+					{searchTerm ? (
+						<>
+							<div className="mx-auto w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+								<Search size={40} className="text-indigo-400" />
+							</div>
+							<h3 className="text-lg font-medium text-gray-800">No se encontraron resultados</h3>
+							<p className="text-gray-500 mt-1 mb-4">No hay usuarios que coincidan con "{searchTerm}"</p>
+						</>
+					) : (
+						<>
+							<div className="mx-auto w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+								<UserX size={40} className="text-indigo-400" />
+							</div>
+							<h3 className="text-lg font-medium text-gray-800">No hay usuarios registrados</h3>
+							<p className="text-gray-500 mt-1 mb-4">Crea tu primer usuario para comenzar</p>
+							<button
+								onClick={() => navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)}
+								className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-5 py-2.5 rounded-lg shadow transition-all duration-300 inline-flex items-center gap-2"
+							>
+								<UserPlus size={16} />
+								<span>Agregar usuario</span>
+							</button>
+						</>
+					)}
 				</div>
 			)}
 		</motion.div>

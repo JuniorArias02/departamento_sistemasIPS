@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { listarMantenimientos,actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
+import { listarMantenimientos, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "../../../store/AppContext";
@@ -15,10 +15,11 @@ import {
 	CheckCircle,
 	Clock
 } from 'lucide-react';
+import { PERMISOS } from "../../../secure/permisos/permisos";
 
 export default function VistaDatosMantenimiento() {
 	const navigate = useNavigate();
-	const { usuario } = useApp();
+	const { usuario, permisos } = useApp();
 	const [mantenimientos, setMantenimientos] = useState([]);
 	const [loading, setLoading] = useState(true);
 
@@ -147,8 +148,8 @@ export default function VistaDatosMantenimiento() {
 							whileHover={{ y: -5 }}
 							transition={{ duration: 0.3 }}
 							className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 relative border-t-4 ${item.esta_revisado
-									? 'border-green-500'
-									: 'border-yellow-500'
+								? 'border-green-500'
+								: 'border-yellow-500'
 								}`}
 						>
 							<div className="p-6">
@@ -158,8 +159,8 @@ export default function VistaDatosMantenimiento() {
 										{item.titulo}
 									</h3>
 									<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.esta_revisado
-											? 'bg-green-100 text-green-800'
-											: 'bg-yellow-100 text-yellow-800'
+										? 'bg-green-100 text-green-800'
+										: 'bg-yellow-100 text-yellow-800'
 										}`}>
 										{item.esta_revisado ? '✓ Revisado' : '⌛ Pendiente'}
 									</span>
@@ -198,6 +199,7 @@ export default function VistaDatosMantenimiento() {
 
 								{/* Acciones */}
 								<div className="mt-6 flex justify-between space-x-3">
+									{/* Botón de detalles */}
 									<button
 										onClick={() => handleVerDetalle(item)}
 										className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
@@ -207,25 +209,34 @@ export default function VistaDatosMantenimiento() {
 										Detalles
 									</button>
 
-									<button
-										onClick={() => handleToggleRevisado(item.id, item.esta_revisado)}
-										className={`inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${item.esta_revisado
-												? "text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-500"
-												: "text-green-700 bg-green-100 hover:bg-green-200 focus:ring-green-500"
-											}`}
-									>
-										{item.esta_revisado ? (
-											<>
-												<Clock className="mr-1.5 h-4 w-4" />
-												Pendiente
-											</>
-										) : (
-											<>
-												<CheckCircle className="mr-1.5 h-4 w-4" />
-												Revisado
-											</>
-										)}
-									</button>
+									{/* Botón Revisado (una sola vez) */}
+									{permisos.includes(PERMISOS.MARCAR_REVISADO_MANTENIMIENTO) && (
+										<button
+											onClick={() => {
+												if (!item.esta_revisado) {
+													handleToggleRevisado(item.id, item.esta_revisado);
+												}
+											}}
+											disabled={item.esta_revisado}
+											className={`inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all
+			${item.esta_revisado
+													? "text-green-700 bg-green-100 opacity-50 cursor-not-allowed"
+													: "text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-500"
+												}`}
+										>
+											{item.esta_revisado ? (
+												<>
+													<CheckCircle className="mr-1.5 h-4 w-4" />
+													Revisado
+												</>
+											) : (
+												<>
+													<Clock className="mr-1.5 h-4 w-4" />
+													Marcar como revisado
+												</>
+											)}
+										</button>
+									)}
 								</div>
 							</div>
 						</motion.div>
