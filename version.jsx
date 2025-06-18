@@ -1,5 +1,5 @@
 export default function getVersion() {
-  const version = "2.2 beta";
+  const version = "2.201 beta";
   const releaseDate = "18/06/2025";
   return { version, releaseDate };
 }
