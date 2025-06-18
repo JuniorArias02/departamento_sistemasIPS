@@ -1,78 +1,88 @@
 import { useEffect, useState } from "react";
-import {
-	obtenerGraficaInventario,
-	obtenerGraficaMantenimiento
-} from "../../../services/dashboardAdmin_services";
+import { obtenerGraficaInventario } from "../../../services/inventario_services";
+import { obtenerGraficaMantenimiento } from "../../../services/mantenimiento_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
 import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { obtenerTotalInventario } from "../../../services/dashboard_services";
-import { obtenerTotalMantenimientoFreezer } from "../../../services/mantenimiento_freezer";
-import { obtenerTotalUsuarios } from "../../../services/dashboardAdmin_services";
+import { obtenerTotalInventario } from "../../../services/inventario_services";
+import { obtenerTotalMantenimiento } from "../../../services/mantenimiento_services";
+import { obtenerTotalUsuarios } from "../../../services/usuario_service";
 import RecentActivities from "../components/ux/RecentActivities";
+import { useNavigate } from "react-router-dom";
+import { RUTAS } from "../../../const/routers/routers";
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [mantenimiento, setMantenimiento] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [graficaIndex, setGraficaIndex] = useState(0);
+	const navigate = useNavigate();
 
 
 
 	const [totales, setTotales] = useState({
 		inventario: 0,
 		usuarios: 0,
-		mantenimientoFreezer: 0
+		mantenimiento: 0
 	});
 
 	useEffect(() => {
-		const cargarTotales = async () => {
-			try {
-				const [inventario, usuarios, mantenimientoFreezer] = await Promise.all([
-					obtenerTotalInventario(),
-					obtenerTotalUsuarios(),
-					obtenerTotalMantenimientoFreezer()
-				]);
+		refrescarTodo();
 
-				setTotales({
-					inventario: inventario,
-					usuarios: usuarios,
-					mantenimientoFreezer: mantenimientoFreezer
-
-				});
-			} catch (error) {
-				console.error("Error al cargar totales", error);
-			}
-		};
-
-		cargarTotales();
-		const intervalo = setInterval(cargarTotales, 10000);
-		return () => clearInterval(intervalo);
+		const intervalo = setInterval(() => {
+			refrescarTodo();
+		}, 60000); 
+		return () => clearInterval(intervalo); 
 	}, []);
 
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const [
-					inv,
-					man
-				] = await Promise.all([
-					obtenerGraficaInventario(),
-					obtenerGraficaMantenimiento()
-				]);
-				setInventario(formatearFechas(inv));
-				setMantenimiento(formatearFechas(man));
-			} catch (error) {
-				console.error("Error al cargar las gráficas", error);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const cargarTotales = async () => {
+		try {
+			const [inventario, usuarios, mantenimiento] = await Promise.all([
+				obtenerTotalInventario(),
+				obtenerTotalUsuarios(),
+				obtenerTotalMantenimiento()
+			]);
 
-		fetchData();
-	}, []);
+			setTotales({
+				inventario,
+				usuarios,
+				mantenimiento
+			});
+		} catch (error) {
+			console.error("Error al cargar totales", error);
+		}
+	};
+
+
+	const cargarGraficas = async () => {
+		setLoading(true);
+		try {
+			const [inv, man] = await Promise.all([
+				obtenerGraficaInventario(),
+				obtenerGraficaMantenimiento()
+			]);
+
+			setInventario(formatearFechas(inv));
+			setMantenimiento(formatearFechas(man));
+		} catch (error) {
+			console.error("Error al cargar gráficas", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const refrescarTodo = async () => {
+		setLoading(true);
+		await Promise.all([
+			cargarTotales(),
+			cargarGraficas()
+		]);
+		setLoading(false);
+	};
+
+
 	if (loading) {
 		return (
 			<div className="min-h-screen flex flex-col justify-center items-center gap-6 bg-gray-50">
@@ -82,7 +92,7 @@ export default function DashboardAdmin() {
 		);
 	}
 
-	const SummaryCard = ({ title, value, change, icon, color }) => {
+	const SummaryCard = ({ title, value, change, onNavigate, icon, color }) => {
 		const colorClasses = {
 			blue: 'bg-blue-50 text-blue-600',
 			green: 'bg-green-50 text-green-600',
@@ -91,21 +101,22 @@ export default function DashboardAdmin() {
 		};
 
 		return (
-			<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-5">
+			<div
+				className="bg-white rounded-2xl shadow-xs border border-gray-200 p-5 cursor-pointer hover:shadow-md transition"
+				onClick={onNavigate}
+			>
 				<div className="flex justify-between">
 					<div className={`w-10 h-10 rounded-lg ${colorClasses[color]} flex items-center justify-center`}>
 						{icon}
 					</div>
-					<span className={`text-xs font-medium ${change.startsWith('+') ? 'text-green-500' : 'text-red-500'
-						}`}>
-						{change}
-					</span>
+					<span className="text-xs font-medium text-indigo-600 underline">{change}</span>
 				</div>
 				<h3 className="text-sm text-gray-500 mt-4">{title}</h3>
 				<p className="text-2xl font-semibold mt-1">{value}</p>
 			</div>
 		);
 	};
+
 
 	// Componente de item de actividad (ActivityItem)
 	const ActivityItem = ({ user, action, time, icon }) => (
@@ -143,9 +154,18 @@ export default function DashboardAdmin() {
 								<ChevronDown className="w-4 h-4 text-gray-400" />
 							</button>
 						</div>
-						<button className="p-2 rounded-xl bg-white border border-gray-200 shadow-xs hover:shadow-sm transition-all">
-							<RefreshCw className="w-5 h-5 text-gray-600" />
+						<button
+							onClick={refrescarTodo}
+							className="p-2 rounded-xl bg-white border border-gray-200 shadow-xs hover:shadow-sm transition-all disabled:opacity-50"
+							disabled={loading}
+						>
+							{loading ? (
+								<RefreshCw className="w-5 h-5 animate-spin text-gray-400" />
+							) : (
+								<RefreshCw className="w-5 h-5 text-gray-600" />
+							)}
 						</button>
+
 					</div>
 				</div>
 			</header>
@@ -157,21 +177,24 @@ export default function DashboardAdmin() {
 					<SummaryCard
 						title="Inventario Total"
 						value={totales.inventario}
-						change=""
+						change="ver"
+						onNavigate={() => navigate(RUTAS.USER.INVENTARIO.VER_INVENTARIO)}
 						icon={<Package2 className="w-6 h-6" />}
 						color="blue"
 					/>
 					<SummaryCard
 						title="Usuarios Activos"
 						value={totales.usuarios}
-						change=""
+						change="ver"
+						onNavigate={() => navigate(RUTAS.ADMIN.USUARIOS.ROOT)}
 						icon={<Users className="w-6 h-6" />}
 						color="green"
 					/>
 					<SummaryCard
 						title="Mantenimientos"
-						value={totales.mantenimientoFreezer}
-						change=""
+						value={totales.mantenimiento}
+						change="ver"
+						onNavigate={() => navigate(RUTAS.USER.MANTENIMIENTO.VISTA_DATOS)}
 						icon={<ClipboardList className="w-6 h-6" />}
 						color="orange"
 					/>
@@ -213,19 +236,27 @@ export default function DashboardAdmin() {
 
 						{/* Contenedor de la gráfica con animación */}
 						<div className="h-100 relative overflow-hidden">
-							<AnimatePresence mode="wait">
-								<motion.div
-									key={graficaIndex}
-									initial={{ opacity: 0, x: 100 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: -100 }}
-									transition={{ duration: 0.4 }}
-									className="absolute w-full h-full"
-								>
-									{[<ChartPorUsuario data={inventario} />,
-									<ChartPorUsuario data={mantenimiento} />][graficaIndex]}
-								</motion.div>
-							</AnimatePresence>
+							{loading ? (
+								<div className="w-full h-full animate-pulse bg-gray-100 rounded-xl flex flex-col gap-4 p-4">
+									<div className="h-6 bg-gray-300 rounded w-1/3" />
+									<div className="h-4 bg-gray-200 rounded w-1/4" />
+									<div className="flex-1 bg-gray-200 rounded" />
+								</div>
+							) : (
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={graficaIndex}
+										initial={{ opacity: 0, x: 100 }}
+										animate={{ opacity: 1, x: 0 }}
+										exit={{ opacity: 0, x: -100 }}
+										transition={{ duration: 0.4 }}
+										className="absolute w-full h-full"
+									>
+										{[<ChartPorUsuario data={inventario} />, <ChartPorUsuario data={mantenimiento} />][graficaIndex]}
+									</motion.div>
+								</AnimatePresence>
+							)}
+
 						</div>
 					</div>
 				</div>
@@ -233,7 +264,7 @@ export default function DashboardAdmin() {
 
 				{/* Sidebar de actividad */}
 				<div className="space-y-6">
-					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">	
+					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">
 						<RecentActivities />
 					</div>
 

@@ -1,11 +1,11 @@
 import axios from "axios";
-import { CREAR_MANTENIMIENTO_FREEZER, CONTAR_MANTENIMIENTO_FREEZER, ELIMINAR_MANTENIMIENTO_FREEZER, LISTAR_MANTENIMIENTOS_FREEZER, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO_FREEZER } from "../const/mantenimientosFreezer/mantenimientoUrl";
-import { LISTAR_COORDINADORES } from "../const/url";
+import { CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO,GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
 
-export const listarMantenimientosFreezer = async (usuarioId) => {
+
+export const listarMantenimientos = async (usuarioId) => {
 	try {
 		const response = await axios.post(
-			LISTAR_MANTENIMIENTOS_FREEZER,
+			LISTAR_MANTENIMIENTOS,
 			{ usuario_id: usuarioId }
 
 		);
@@ -21,7 +21,7 @@ export const listarMantenimientosFreezer = async (usuarioId) => {
 
 export const actualizarEstadoMantenimiento = async (id, datos) => {
 	try {
-		const response = await axios.post(ACTUALIZAR_ESTADO_MANTENIMIENTO_FREEZER, { id, ...datos });
+		const response = await axios.post(ACTUALIZAR_ESTADO_MANTENIMIENTO, { id, ...datos });
 		return response.data;
 	} catch (error) {
 		throw new Error(
@@ -30,9 +30,9 @@ export const actualizarEstadoMantenimiento = async (id, datos) => {
 	}
 };
 
-export const crearMantenimientoFreezer = async (datos) => {
+export const crearMantenimiento = async (datos) => {
 	try {
-		const response = await axios.post(CREAR_MANTENIMIENTO_FREEZER, datos);
+		const response = await axios.post(CREAR_MANTENIMIENTO, datos);
 		return response.data;
 	} catch (error) {
 		console.error("Error al crear mantenimiento freezer:", error);
@@ -43,22 +43,15 @@ export const crearMantenimientoFreezer = async (datos) => {
 };
 
 
-export const listarCoordinadores = async () => {
-	try {
-		const response = await axios.get(LISTAR_COORDINADORES);
-		return response.data;
-	} catch (error) {
-		throw new Error(
-			error?.response?.data?.mensaje ||
-			"Error al listar los coordinadores",
-		);
-	}
+export const obtenerTotalMantenimiento = async () => {
+	const res = await axios.get(CONTAR_MANTENIMIENTO);
+	return res.data.total;
 };
 
 
-export const obtenerTotalMantenimientoFreezer = async () => {
-	const res = await axios.get(CONTAR_MANTENIMIENTO_FREEZER);
-	return res.data.total;
+export const obtenerGraficaMantenimiento = async () => {
+	const res = await axios.get(GRAFICA_MANTENIMIENTO);
+	return res.data;
 };
 
 

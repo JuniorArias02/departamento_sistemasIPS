@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarRoles_completo } from "../../../services/rolServices";
+import { listarRoles_completo } from "../../../services/rol_services";
 import Swal from "sweetalert2";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { Edit, Trash2, Shield, Plus } from "lucide-react";

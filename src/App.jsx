@@ -6,23 +6,26 @@ import Layout from "./pages/paginaCliente/components/Layout";
 import Dashboard from "./pages/paginaCliente/Dashboard";
 // formularios
 import FormularioInventario from "./pages/paginaCliente/formularios/inventario";
-import FormularioMantenimientoFreezer from "./pages/paginaCliente/formularios/mantenimiento_freezer";
-// vistaDatos
 import VistaDatosInventarios from "./pages/paginaCliente/vistasDatos/vista_datos_inventario";
-import VistaDatosMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/vista_datos_mantenimientos_freezer";
-// VISTA ADMINISTRADOR
+
+import VistaDatosMantenimiento from "./pages/paginaCliente/vistasDatos/vista_datos_mantenimientos";
+import FormularioMantenimiento from "./pages/paginaCliente/formularios/mantenimiento";
+import DetalleMantenimiento from "./pages/paginaCliente/vistasDatos/matenimiento/ver_detalles_mantenimiento";
+
 import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
 import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
+
 import DashboardAdmin from "./pages/paginaAdministrador/vistaDatos/DashboardAdmin";
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
-import DetalleMantenimientoFreezer from "./pages/paginaCliente/vistasDatos/matenimiento_freezer/ver_detalles_mantenimiento";
 
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
 import PerfilUsuario from "./pages/paginaCliente/perfil/perfil_usuario";
+
+import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_permisos";
 
 import { RUTAS } from "./const/routers/routers";
 function App() {
@@ -70,9 +73,16 @@ function App() {
           </RutaSoloAdmin>
         } />
 
-        <Route path={RUTAS.USER.MANTENIMIENTO_FREEZER.VER_DETALLES} element={
+        <Route path={RUTAS.ADMIN.PERMISOS.ASIGNAR} element={
           <RutaSoloAdmin>
-            <DetalleMantenimientoFreezer />
+            <AsignarPermisos />
+          </RutaSoloAdmin>
+        } />
+
+
+        <Route path={RUTAS.USER.MANTENIMIENTO.VER_DETALLES} element={
+          <RutaSoloAdmin>
+            <DetalleMantenimiento />
           </RutaSoloAdmin>
         } />
 
@@ -95,10 +105,10 @@ function App() {
         />
 
         <Route
-          path={RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS}
+          path={RUTAS.USER.MANTENIMIENTO.VISTA_DATOS}
           element={
             <RutaSoloAdmin>
-              <VistaDatosMantenimientoFreezer />
+              <VistaDatosMantenimiento />
             </RutaSoloAdmin>
           }
         />
@@ -129,8 +139,8 @@ function App() {
         />
 
         <Route
-          path={RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO}
-          element={<FormularioMantenimientoFreezer />}
+          path={RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO}
+          element={<FormularioMantenimiento />}
         />
 
         {/* vistaDatos */}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
-import { User, Mail, Edit, Save, Lock, Phone } from 'lucide-react';
-import { obtenerMiPerfil, editarMiPerfil } from '../../../services/usuario';
+import { User, Mail, Edit, Save, Lock, Phone, Eye, EyeOff } from 'lucide-react';
+import { obtenerMiPerfil, editarMiPerfil, cambiarContrasena } from '../../../services/perfil_services';
 import { useApp } from '../../../store/AppContext';
 import Swal from 'sweetalert2';
 
@@ -14,6 +14,12 @@ export default function PerfilUsuario(props) {
 		telefono: '',
 		rol_id: ''
 	});
+
+	const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+	const [showNewPassword, setShowNewPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [passwordStrength, setPasswordStrength] = useState(0);
+
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
@@ -24,6 +30,39 @@ export default function PerfilUsuario(props) {
 		new: '',
 		confirm: ''
 	});
+
+	const calculatePasswordStrength = (password) => {
+		let strength = 0;
+		if (password.length > 0) strength += 1;
+		if (password.length >= 8) strength += 1;
+		if (/[A-Z]/.test(password)) strength += 1;
+		if (/[0-9]/.test(password)) strength += 1;
+		if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+		return Math.min(strength, 4); // Máximo 4 niveles
+	};
+
+	// Modifica tu handlePasswordChange para incluir:
+	const handlePasswordChange = (e) => {
+		const { name, value } = e.target;
+		setPasswordData(prev => ({
+			...prev,
+			[name]: value
+		}));
+
+		if (name === 'new') {
+			setPasswordStrength(calculatePasswordStrength(value));
+		}
+	};
+
+	const isPasswordValid = () => {
+		return (
+			passwordData.current &&
+			passwordData.new &&
+			passwordData.confirm &&
+			passwordData.new === passwordData.confirm &&
+			passwordStrength >= 2 // Requiere al menos fortaleza moderada
+		);
+	};
 	useEffect(() => {
 		const cargarPerfil = async () => {
 			try {
@@ -77,22 +116,98 @@ export default function PerfilUsuario(props) {
 		setUserData(prev => ({ ...prev, [name]: value }));
 	};
 
-	const handlePasswordChange = (e) => {
-		const { name, value } = e.target;
-		setPasswordData(prev => ({ ...prev, [name]: value }));
-	};
 
-	const handlePasswordSubmit = () => {
-		// Validar que las contraseñas coincidan
-		if (passwordData.new !== passwordData.confirm) {
-			alert('Las contraseñas no coinciden');
-			return;
+	const handlePasswordSubmit = async () => {
+		try {
+			// Validación básica en el cliente con SweetAlert
+			if (!passwordData.current) {
+				await Swal.fire({
+					icon: 'warning',
+					title: 'Oops...',
+					text: 'Por favor ingresa tu contraseña actual',
+					confirmButtonColor: '#6366f1', // Color indigo
+				});
+				return;
+			}
+
+			if (passwordData.new && passwordData.new.length < 8) {
+				await Swal.fire({
+					icon: 'error',
+					title: 'Contraseña muy corta',
+					text: 'La nueva contraseña debe tener al menos 8 caracteres',
+					confirmButtonColor: '#6366f1',
+				});
+				return;
+			}
+
+			if (passwordData.new !== passwordData.confirm) {
+				await Swal.fire({
+					icon: 'error',
+					title: 'Las contraseñas no coinciden',
+					text: 'Por favor verifica que ambas contraseñas sean iguales',
+					confirmButtonColor: '#6366f1',
+				});
+				return;
+			}
+
+			const userId = usuario?.id;
+			if (!userId) {
+				throw new Error('No se pudo obtener el ID del usuario');
+			}
+
+			// Mostrar loader mientras se procesa
+			Swal.fire({
+				title: 'Procesando...',
+				html: 'Estamos actualizando tu contraseña',
+				allowOutsideClick: false,
+				didOpen: () => {
+					Swal.showLoading();
+				}
+			});
+
+			// Llamar al servicio
+			const resultado = await cambiarContrasena({
+				id: userId,
+				current_password: passwordData.current,
+				new_password: passwordData.new,
+				confirm_password: passwordData.confirm
+			});
+
+			// Cerrar modal y resetear formulario
+			setShowPasswordModal(false);
+			setPasswordData({ current: '', new: '', confirm: '' });
+
+			// Mostrar confirmación con SweetAlert
+			await Swal.fire({
+				icon: 'success',
+				title: '¡Éxito!',
+				text: resultado.message || 'Contraseña cambiada exitosamente',
+				confirmButtonColor: '#6366f1',
+				timer: 3000,
+				timerProgressBar: true,
+			});
+
+		} catch (error) {
+			console.error('Error al cambiar contraseña:', error);
+
+			// Cerrar cualquier alerta previa
+			Swal.close();
+
+			// Mostrar error con SweetAlert
+			await Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: error.message || 'Ocurrió un error al cambiar la contraseña',
+				confirmButtonColor: '#6366f1',
+			});
+
+			// Mantener solo la contraseña actual
+			setPasswordData(prev => ({
+				current: prev.current,
+				new: '',
+				confirm: ''
+			}));
 		}
-
-		// Aquí iría la llamada a la API para cambiar la contraseña
-		console.log('Cambiando contraseña:', passwordData);
-		setShowPasswordModal(false);
-		setPasswordData({ current: '', new: '', confirm: '' });
 	};
 
 	const containerVariants = {
@@ -168,50 +283,117 @@ export default function PerfilUsuario(props) {
 							</h3>
 
 							<div className="space-y-4">
+								{/* Contraseña actual */}
 								<div>
-									<label className="block text-sm font-medium text-gray-500">Contraseña actual</label>
-									<input
-										type="password"
-										name="current"
-										value={passwordData.current}
-										onChange={handlePasswordChange}
-										className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-									/>
+									<label className="block text-sm font-medium text-gray-500 mb-1">Contraseña actual</label>
+									<div className="relative">
+										<input
+											type={showCurrentPassword ? "text" : "password"}
+											name="current"
+											value={passwordData.current}
+											onChange={handlePasswordChange}
+											className="mt-1 block w-full pl-3 pr-10 py-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+										/>
+										<button
+											type="button"
+											className="absolute right-3 top-2 text-gray-500 hover:text-indigo-600"
+											onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+										>
+											{showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+										</button>
+									</div>
 								</div>
 
+								{/* Nueva contraseña */}
 								<div>
-									<label className="block text-sm font-medium text-gray-500">Nueva contraseña</label>
-									<input
-										type="password"
-										name="new"
-										value={passwordData.new}
-										onChange={handlePasswordChange}
-										className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-									/>
+									<label className="block text-sm font-medium text-gray-500 mb-1">Nueva contraseña</label>
+									<div className="relative">
+										<input
+											type={showNewPassword ? "text" : "password"}
+											name="new"
+											value={passwordData.new}
+											onChange={handlePasswordChange}
+											className="mt-1 block w-full pl-3 pr-10 py-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+										/>
+										<button
+											type="button"
+											className="absolute right-3 top-2 text-gray-500 hover:text-indigo-600"
+											onClick={() => setShowNewPassword(!showNewPassword)}
+										>
+											{showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+										</button>
+									</div>
+									{/* Indicador de fuerza */}
+									<div className="mt-2">
+										<div className="flex gap-1 h-1.5 mb-1">
+											{[1, 2, 3, 4].map((i) => (
+												<div
+													key={i}
+													className={`flex-1 rounded-full ${i <= passwordStrength
+														? passwordStrength < 2
+															? 'bg-red-400'
+															: passwordStrength < 4
+																? 'bg-yellow-400'
+																: 'bg-green-500'
+														: 'bg-gray-200'
+														}`}
+												/>
+											))}
+										</div>
+										<p className="text-xs text-gray-500">
+											Fortaleza: {passwordStrength === 0 ? 'Ninguna' :
+												passwordStrength < 2 ? 'Débil' :
+													passwordStrength < 4 ? 'Moderada' : 'Fuerte'}
+										</p>
+									</div>
 								</div>
 
+								{/* Confirmar nueva contraseña */}
 								<div>
-									<label className="block text-sm font-medium text-gray-500">Confirmar nueva contraseña</label>
-									<input
-										type="password"
-										name="confirm"
-										value={passwordData.confirm}
-										onChange={handlePasswordChange}
-										className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-									/>
+									<label className="block text-sm font-medium text-gray-500 mb-1">Confirmar nueva contraseña</label>
+									<div className="relative">
+										<input
+											type={showConfirmPassword ? "text" : "password"}
+											name="confirm"
+											value={passwordData.confirm}
+											onChange={handlePasswordChange}
+											className="mt-1 block w-full pl-3 pr-10 py-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+										/>
+										<button
+											type="button"
+											className="absolute right-3 top-2 text-gray-500 hover:text-indigo-600"
+											onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+										>
+											{showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+										</button>
+									</div>
+									{passwordData.new && passwordData.confirm && (
+										<p className={`text-xs mt-1 ${passwordData.new === passwordData.confirm
+											? 'text-green-600'
+											: 'text-red-600'
+											}`}>
+											{passwordData.new === passwordData.confirm
+												? '✓ Las contraseñas coinciden'
+												: '✗ Las contraseñas no coinciden'}
+										</p>
+									)}
 								</div>
 							</div>
 
 							<div className="mt-6 flex justify-end space-x-3">
 								<button
 									onClick={() => setShowPasswordModal(false)}
-									className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+									className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
 								>
 									Cancelar
 								</button>
 								<button
 									onClick={handlePasswordSubmit}
-									className="px-4 py-2 bg-indigo-600 rounded-md text-white hover:bg-indigo-700"
+									disabled={!isPasswordValid()}
+									className={`px-4 py-2 rounded-md text-white transition-colors ${!isPasswordValid()
+										? 'bg-gray-400 cursor-not-allowed'
+										: 'bg-indigo-600 hover:bg-indigo-700'
+										}`}
 								>
 									Guardar contraseña
 								</button>

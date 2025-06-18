@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN } from "../const/url";
+import { LOGIN } from "../const/endpoint/login/login_endpoint";
 
 
 export const loginUsuario = async (datos) => {

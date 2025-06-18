@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { obtenerActividadesRecientes } from "../../../../services/dashboardAdmin_services";
+import { obtenerActividadesRecientes } from "../../../../services/utils_service";
 import {
   PlusCircle,
   RefreshCw,

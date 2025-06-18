@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Save, Loader2, Hash, Tag, Building2, User, Cpu, Settings, Barcode, MapPin, ChevronDown, UploadCloud, PlusCircle, Image } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
-import { crearInventario, actualizarInventario } from "../../../services/inventario";
+import { crearInventario, actualizarInventario } from "../../../services/inventario_services";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { listarSedes } from "../../../services/sedes";
+import { listarSedes } from "../../../services/sedes_service";
 
 export default function FormularioInventario() {
 	const { usuario } = useApp();

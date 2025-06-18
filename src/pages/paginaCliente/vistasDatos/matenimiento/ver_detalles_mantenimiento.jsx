@@ -11,19 +11,84 @@ import {
 	AlertCircle,
 	Clipboard,
 	Hash,
-	Maximize2,Users ,
-	
+	Maximize2, Users,
+
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
-
 import BackPage from '../../components/BackPage';
 import { useNavigate } from 'react-router-dom';
 import { URL_PATH } from '../../../../const/api';
-export default function DetalleMantenimientoFreezer() {
+import { actualizarEstadoMantenimiento } from '../../../../services/mantenimiento_services';
+import Swal from 'sweetalert2';
+import { useState } from 'react';
+import { useApp } from '../../../../store/AppContext';
+import { PERMISOS } from '../../../../secure/permisos/permisos';
+
+export default function DetalleMantenimiento() {
 	const { state } = useLocation();
+	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
-	const item = state?.mantenimientos;
+	const [mantenimiento, setMantenimiento] = useState(state?.mantenimientos);
+
+	const item = mantenimiento;
+
+
+	const handleToggleRevisado = async (id, estaRevisadoActual) => {
+		const nuevoEstado = !estaRevisadoActual;
+		const estadoTexto = nuevoEstado ? "revisado" : "pendiente";
+		const { isConfirmed } = await Swal.fire({
+			title: `¿Marcar como ${estadoTexto}?`,
+			text: `Estás a punto de cambiar el estado a ${estadoTexto}`,
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: `Sí, marcar como ${estadoTexto}`,
+			cancelButtonText: 'Cancelar'
+		});
+
+		if (!isConfirmed) return;
+
+		try {
+			// Mostrar loader mientras se procesa
+			Swal.fire({
+				title: 'Actualizando estado...',
+				allowOutsideClick: false,
+				didOpen: () => {
+					Swal.showLoading();
+				}
+			});
+
+			await actualizarEstadoMantenimiento(id, {
+				esta_revisado: nuevoEstado ? 1 : 0,
+				usuario_id: usuario.id
+			});
+
+			setMantenimiento(prev => ({
+				...prev,
+				esta_revisado: nuevoEstado,
+				revisado_por: nuevoEstado ? usuario.id : null,
+				fecha_revisado: nuevoEstado ? new Date().toISOString() : null,
+				nombre_revisor: nuevoEstado ? usuario.nombre_completo : null
+			}));
+			// Notificación de éxito
+			Swal.fire(
+				'¡Actualizado!',
+				`El estado se cambió a ${estadoTexto} correctamente.`,
+				'success'
+			);
+		} catch (error) {
+			console.error('Error:', error);
+			Swal.fire(
+				'Error',
+				error.response?.data?.message ||
+				'Ocurrió un error al actualizar el estado',
+				'error'
+			);
+		}
+	};
+
 
 	if (!item) {
 		return (
@@ -32,7 +97,6 @@ export default function DetalleMantenimientoFreezer() {
 			</div>
 		);
 	}
-
 	// Formatear fechas
 	const formatDate = (dateString) => {
 		if (!dateString) return 'No aplica';
@@ -256,7 +320,8 @@ export default function DetalleMantenimientoFreezer() {
 						{/* Estado con micro-interacción */}
 						<motion.div
 							whileHover={{ scale: 1.02 }}
-							className={`rounded-2xl p-6 shadow-sm border ${item.esta_revisado ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}
+							className={`rounded-2xl p-6 shadow-sm border ${item.esta_revisado ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
+								}`}
 						>
 							<h2 className="flex items-center gap-3 text-lg font-semibold mb-2">
 								{item.esta_revisado ? (
@@ -266,12 +331,14 @@ export default function DetalleMantenimientoFreezer() {
 								)}
 								<span>Estado actual</span>
 							</h2>
+
 							<p className="text-sm text-gray-600">
 								{item.esta_revisado
 									? 'Este mantenimiento ha sido revisado y completado.'
-									: 'Este mantenimiento está pendiente de revisión por el equipo técnico.'}
+									: 'Este mantenimiento está pendiente de revisión.'}
 							</p>
-							{!item.esta_revisado && (
+
+							{!item.esta_revisado && permisos.includes(PERMISOS.MARCAR_REVISADO_MANTENIMIENTO) && (
 								<button
 									onClick={() => handleToggleRevisado(item.id, item.esta_revisado)}
 									className="mt-4 w-full py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
@@ -280,6 +347,7 @@ export default function DetalleMantenimientoFreezer() {
 								</button>
 							)}
 						</motion.div>
+
 					</div>
 				</div>
 			</div>

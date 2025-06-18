@@ -1,34 +1,34 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	obtenerTotalInventario
-} from "../../services/dashboard_services";
-import { obtenerTotalMantenimientoFreezer } from "../../services/mantenimiento_freezer";
-import {Eye, ClipboardList, Wrench} from "lucide-react";
+import { obtenerTotalInventario } from '../../services/inventario_services';
+import { obtenerTotalMantenimiento } from "../../services/mantenimiento_services";
+import { Eye, ClipboardList, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContadorAnimado } from "../../hook/useContadorAnimado";
 import { RUTAS } from "../../const/routers/routers";
-
+import { PERMISOS } from '../../secure/permisos/permisos';
+import { useApp } from '../../store/AppContext';
 export default function Dashboard() {
+	const {permisos,  } = useApp();
 	const navigate = useNavigate();
 
 	const [totales, setTotales] = useState({
 		inventario: 0,
-		mantenimientoFreezer: 0
+		mantenimiento: 0
 	});
 
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [inventario, mantenimientoFreezer] = await Promise.all([
+				const [inventario, mantenimiento] = await Promise.all([
 					obtenerTotalInventario(),
-					obtenerTotalMantenimientoFreezer()
+					obtenerTotalMantenimiento()
 				]);
 
 				setTotales({
 					inventario: inventario,
-					mantenimientoFreezer: mantenimientoFreezer
+					mantenimiento: mantenimiento
 
 				});
 			} catch (error) {
@@ -50,9 +50,10 @@ export default function Dashboard() {
 		},
 		{
 			titulo: "Mantenimientos IPS",
-			ruta: RUTAS.USER.MANTENIMIENTO_FREEZER.CREAR_MANTENIMIENTO,
-			verRuta: RUTAS.USER.MANTENIMIENTO_FREEZER.VISTA_DATOS,
-			total: totales.mantenimientoFreezer,
+			ruta: RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO,
+			verRuta: RUTAS.USER.MANTENIMIENTO.VISTA_DATOS,
+			total: totales.mantenimiento,
+			permiso: PERMISOS.VER_DATOS_MANTENIMIENTOS,
 		}
 	];
 
@@ -92,19 +93,20 @@ export default function Dashboard() {
 						<div className="absolute inset-0 bg-gradient-to-br from-white to-indigo-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
 						{/* Botón "Ver Datos" */}
-						<motion.button
-							onClick={(e) => {
-								e.stopPropagation();
-								navigate(op.verRuta);
-							}}
-							className="absolute top-4 right-4 flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-xs bg-white/80 hover:bg-white px-3 py-1.5 rounded-full shadow-sm ring-1 ring-gray-200/50 backdrop-blur-sm transition-all z-10"
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-						>
-							<Eye className="h-3.5 w-3.5" />
-							<span>Ver Datos</span>
-						</motion.button>
-
+						{op.verRuta && (!op.permiso || permisos.includes(op.permiso)) && (
+							<motion.button
+								onClick={(e) => {
+									e.stopPropagation();
+									navigate(op.verRuta);
+								}}
+								className="absolute top-4 right-4 flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-xs bg-white/80 hover:bg-white px-3 py-1.5 rounded-full shadow-sm ring-1 ring-gray-200/50 backdrop-blur-sm transition-all z-10"
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								<Eye className="h-3.5 w-3.5" />
+								<span>Ver Datos</span>
+							</motion.button>
+						)}
 						{/* Contenido principal */}
 						<div
 							onClick={() => navigate(op.ruta)}

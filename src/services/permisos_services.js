@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { OBTENER_PERMISOS } from '../const/permisos';
+import { OBTENER_PERMISOS } from '../const/endpoint/rol/permisos/permisos_endpoint';
 
 export const obtenerPermisos = async (usuarioId) => {
 	try {

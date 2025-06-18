@@ -20,6 +20,11 @@ export const RUTAS = {
       VISTA_DATOS: `${DASHBOARD_ADMIN}/roles`
     },
 
+    PERMISOS: {
+      CREAR: `${DASHBOARD_ADMIN}/crear_permiso`,
+      ASIGNAR: `${DASHBOARD_ADMIN}/asignar_permiso`
+    },
+
     CREAR_FORMULARIO: `${DASHBOARD_ADMIN}/crear_formulario`,
   },
 
@@ -32,10 +37,10 @@ export const RUTAS = {
       VER_INVENTARIO: `${DASHBOARD}/inventarios`,
       ACTUALIZAR_INVENTARIO: `${DASHBOARD}/crear_inventario`,
     },
-    MANTENIMIENTO_FREEZER: {
-      CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento_freezer`,
-      VISTA_DATOS: `${DASHBOARD}/mantenimiento_freezer`,
-      VER_DETALLES: `${DASHBOARD}/mantenimiento_freezer/detalles`,
+    MANTENIMIENTO: {
+      CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento`,
+      VISTA_DATOS: `${DASHBOARD}/mantenimiento`,
+      VER_DETALLES: `${DASHBOARD}/mantenimiento/detalles`,
     },
   }
 };

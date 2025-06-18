@@ -22,4 +22,12 @@ export const PERMISOS = {
 	CREAR_ROLES: "crear_roles",
 	EDITAR_ROLES: "editar_roles",
 	ASIGNAR_PERMISOS: "asignar_permisos",
+	// mantenimiento ips
+	VER_DATOS_MANTENIMIENTOS: "ver_datos_mantenimientos",
+	MARCAR_REVISADO_MANTENIMIENTO: "marcar_revisado_mantenimiento",
+	
+	// gestion de permisos
+	MENU_ITEM_PERMISOS: "menu_item_permisos",
+	CREAR_PERMISO: "crear_permiso",
+	ASIGNAR_PERMISO: "asignar_permiso",
 };
