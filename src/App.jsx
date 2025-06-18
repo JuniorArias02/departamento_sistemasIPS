@@ -103,13 +103,15 @@ function App() {
             </RutaSoloAdmin>
           }
         />
-
+   
         <Route
           path={RUTAS.USER.MANTENIMIENTO.VISTA_DATOS}
           element={
-            <RutaSoloAdmin>
+            permisos.includes(PERMISOS.VER_DATOS_MANTENIMIENTOS) ? (
               <VistaDatosMantenimiento />
-            </RutaSoloAdmin>
+            ) : (
+              <Navigate to={RUTAS.ERROR_404} replace />
+            )
           }
         />
 
