@@ -25,6 +25,7 @@ export const PERMISOS = {
 	// mantenimiento ips
 	VER_DATOS_MANTENIMIENTOS: "ver_datos_mantenimientos",
 	MARCAR_REVISADO_MANTENIMIENTO: "marcar_revisado_mantenimiento",
+	VER_DETALLE_MANTENIMIENTO:	"ver_detalle_mantenimiento",
 	
 	// gestion de permisos
 	MENU_ITEM_PERMISOS: "menu_item_permisos",

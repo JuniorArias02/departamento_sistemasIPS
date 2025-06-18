@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useApp } from "./store/AppContext";
+import { Toaster } from "react-hot-toast";
 import RutaPrivada from "./secure/RutaPrivada";
 import FormularioLogin from "./auth/formularioLogin/FormularioLogin";
 import Layout from "./pages/paginaCliente/components/Layout";
@@ -32,139 +33,177 @@ function App() {
   const { usuario, permisos } = useApp();
 
   return (
-    <Routes>
-      {/* Login */}
-      <Route
-        path={RUTAS.LOGIN}
-        element={
-          usuario ? (
-            permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN) ? (
-              <Navigate to={RUTAS.ADMIN.ROOT} replace />
-            ) : (
-              <Navigate to={RUTAS.DASHBOARD} replace />
-            )
-          ) : (
-            <FormularioLogin />
-          )
-        }
+    <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#1e293b',
+            color: '#fff',
+            border: '1px solid #334155'
+          },
+          error: {
+            style: {
+              background: '#7f1d1d',
+              border: '1px solid #b91c1c'
+            }
+          }
+        }}
       />
 
-      {/* Rutas protegidas */}
-      <Route
-        element={
-          <RutaPrivada>
-            <Layout />
-          </RutaPrivada>
-        }
-      >
+      <Routes>
+        {/* Login */}
         <Route
-          path={RUTAS.ADMIN.ROOT}
+          path={RUTAS.LOGIN}
           element={
-            <RutaSoloAdmin>
-              <DashboardAdmin />
-            </RutaSoloAdmin>
-          }
-        />
-
-        {/* modulos de roles  */}
-        <Route path={RUTAS.ADMIN.ROLES.VISTA_DATOS} element={
-          <RutaSoloAdmin>
-            <VistaDatosRoles />
-          </RutaSoloAdmin>
-        } />
-
-        <Route path={RUTAS.ADMIN.PERMISOS.ASIGNAR} element={
-          <RutaSoloAdmin>
-            <AsignarPermisos />
-          </RutaSoloAdmin>
-        } />
-
-
-        <Route path={RUTAS.USER.MANTENIMIENTO.VER_DETALLES} element={
-          <RutaSoloAdmin>
-            <DetalleMantenimiento />
-          </RutaSoloAdmin>
-        } />
-
-        <Route path={RUTAS.PAGINA_CONSTRUCCION} element={
-          <RutaSoloAdmin>
-            <NotAvailable />
-          </RutaSoloAdmin>
-        } />
-
-        <Route path={RUTAS.DASHBOARD} element={<Dashboard />} />
-
-        {/* Rutas SOLO para administrador */}
-        <Route
-          path={RUTAS.ADMIN.USUARIOS.ROOT}
-          element={
-            <RutaSoloAdmin>
-              <VistaDatosUsuarios />
-            </RutaSoloAdmin>
-          }
-        />
-   
-        <Route
-          path={RUTAS.USER.MANTENIMIENTO.VISTA_DATOS}
-          element={
-            permisos.includes(PERMISOS.VER_DATOS_MANTENIMIENTOS) ? (
-              <VistaDatosMantenimiento />
+            usuario ? (
+              permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN) ? (
+                <Navigate to={RUTAS.ADMIN.ROOT} replace />
+              ) : (
+                <Navigate to={RUTAS.DASHBOARD} replace />
+              )
             ) : (
-              <Navigate to={RUTAS.ERROR_404} replace />
+              <FormularioLogin />
             )
           }
         />
 
-
+        {/* Rutas protegidas */}
         <Route
-          path={RUTAS.ADMIN.USUARIOS.CREAR_USUARIO}
-          element={
-            <RutaSoloAdmin>
-              <FormularioUsuarios />
-            </RutaSoloAdmin>
-          }
-        />
-
-        {/* VISTA DE PERFIL */}
-        <Route
-          path={RUTAS.USER.PERFIL.ROOT}
           element={
             <RutaPrivada>
-              <PerfilUsuario />
+              <Layout />
             </RutaPrivada>
           }
-        />
-        {/* formularios */}
-        <Route
-          path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}
-          element={<FormularioInventario />}
-        />
+        >
+          <Route
+            path={RUTAS.ADMIN.ROOT}
+            element={
+              <RutaSoloAdmin>
+                <DashboardAdmin />
+              </RutaSoloAdmin>
+            }
+          />
+
+          {/* modulos de roles  */}
+          <Route
+            path={RUTAS.ADMIN.ROLES.VISTA_DATOS}
+            element={
+              permisos.includes(PERMISOS.VER_LISTADO_ROLES) ? (
+                <VistaDatosRoles />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.ADMIN.PERMISOS.ASIGNAR}
+            element={
+              permisos.includes(PERMISOS.ASIGNAR_PERMISO) ? (
+                <AsignarPermisos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.USER.MANTENIMIENTO.VER_DETALLES}
+            element={
+              permisos.includes(PERMISOS.VER_DETALLE_MANTENIMIENTO) ? (
+                <DetalleMantenimiento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route path={RUTAS.PAGINA_CONSTRUCCION} element={
+            <NotAvailable />
+          } />
+
+          <Route path={RUTAS.DASHBOARD} element={<Dashboard />} />
+
+          {/* Rutas SOLO para administrador */}
+          <Route
+            path={RUTAS.ADMIN.USUARIOS.ROOT}
+            element={
+              permisos.includes(PERMISOS.VER_DATOS_USUARIOS) ? (
+                <VistaDatosUsuarios />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.MANTENIMIENTO.VISTA_DATOS}
+            element={
+              permisos.includes(PERMISOS.VER_DATOS_MANTENIMIENTOS) ? (
+                <VistaDatosMantenimiento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.ADMIN.USUARIOS.CREAR_USUARIO}
+            element={
+              permisos.includes(PERMISOS.AGREGAR_USUARIO) ? (
+                <FormularioUsuarios />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          {/* VISTA DE PERFIL */}
+          <Route
+            path={RUTAS.USER.PERFIL.ROOT}
+            element={
+              <RutaPrivada>
+                <PerfilUsuario />
+              </RutaPrivada>
+            }
+          />
+
+          {/* formularios */}
+          <Route
+            path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}
+            element={<FormularioInventario />}
+          />
+
+          <Route
+            path={RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO}
+            element={<FormularioMantenimiento />}
+          />
+
+          {/* vistaDatos */}
+          <Route
+            path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}
+            element={<VistaDatosInventarios />}
+          />
+
+        </Route>
+
+        {/* RUTAS DE ERROES DE PAGINA */}
+        <Route path={RUTAS.ERROR_404} element={<NotFound />} />
+
+
+
+        {/* Ruta por defecto */}
 
         <Route
-          path={RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO}
-          element={<FormularioMantenimiento />}
+          path="*"
+          element={<Navigate to={usuario ? RUTAS.ERROR_404 : RUTAS.LOGIN} replace />}
         />
-
-        {/* vistaDatos */}
-        <Route
-          path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}
-          element={<VistaDatosInventarios />}
-        />
-
-      </Route>
-
-      {/* RUTAS DE ERROES DE PAGINA */}
-      <Route path={RUTAS.ERROR_404} element={<NotFound />} />
-
-
-
-      {/* Ruta por defecto */}
-
-      <Route
-        path="*"
-        element={<Navigate to={usuario ? RUTAS.ERROR_404 : RUTAS.LOGIN} replace />}
-      />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 export default App;

@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import { RUTAS } from "../../../const/routers/routers";
 import { useState, useRef, useEffect } from "react";
+import DepartamentoSistemas from "./DepartamentoSistemas";
 
 export default function Navbar({ toggleSidebar, sidebarOpen }) {
   const navigate = useNavigate();
-  const { usuario, logout, permisos } = useApp();
+  const { usuario, logout, permisos} = useApp();
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -75,14 +76,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
             </motion.button>
           )}
 
-          <div className="flex items-center gap-2">
-            <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
-              <Cpu className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-lg sm:text-xl bg-clip-text bg-gradient-to-r from-white to-blue-100 text-transparent">
-              Departamento de Sistemas
-            </span>
-          </div>
+          <DepartamentoSistemas />
         </div>
 
         {/* Parte derecha */}
