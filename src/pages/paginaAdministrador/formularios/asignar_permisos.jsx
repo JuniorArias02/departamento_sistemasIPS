@@ -13,8 +13,10 @@ import {
 import { listarRoles, asignarPermisos, obtenerPermisosRol } from '../../../services/rol_services';
 import Swal from 'sweetalert2';
 import BackPage from '../../paginaCliente/components/BackPage';
+import { useApp } from '../../../store/AppContext';
 
 export default function AsignarPermisos() {
+	const { usuario: usuarioContext } = useApp();
 	const [roles, setRoles] = useState([]);
 	const [selectedRolId, setSelectedRolId] = useState('');
 	const [permisos, setPermisos] = useState([]);
@@ -89,7 +91,7 @@ export default function AsignarPermisos() {
 				}
 			});
 
-			await asignarPermisos(selectedRolId, Array.from(selectedPermisos));
+			await asignarPermisos(usuarioContext.id, selectedRolId, Array.from(selectedPermisos));
 
 			// Éxito simple
 			Swal.fire({

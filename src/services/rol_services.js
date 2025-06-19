@@ -38,9 +38,10 @@ export const obtenerPermisosRol = async (rolId) => {
 };
 
 
-export const asignarPermisos = async (rolId, permisosIds) => {
+export const asignarPermisos = async (usuarioId,rolId, permisosIds) => {
   try {
     const response = await axios.post(ASIGNAR_PERMISO, {
+      usuario_id: usuarioId,
       rol_id: rolId,
       permisos: permisosIds
     });
