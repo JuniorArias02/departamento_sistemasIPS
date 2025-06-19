@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { listarInventarios, eliminarInventario, buscarInventario, exportarInventariosCliente } from "../../../services/inventario_services";
+import { listarInventarios, eliminarInventario, buscarInventario, exportarInventarios } from "../../../services/inventario_services";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, RefreshCw, ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, CheckCircle2, AlertTriangle, RefreshCw, ChevronsRight, ChevronsLeft, XCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { RUTAS } from "../../../const/routers/routers";
@@ -67,10 +67,12 @@ export default function VistaDatosInventarios() {
 		});
 	};
 
-	const handleExportar = async () => {
+	const handleExportar = async (e) => {
 		setLoadingExport(true);
+		if (e?.preventDefault) e.preventDefault(); // 💥 evita recargar
+
 		try {
-			await exportarInventariosCliente();
+			await exportarInventarios();
 			Swal.fire({
 				icon: "success",
 				title: "Exportado",
@@ -84,6 +86,7 @@ export default function VistaDatosInventarios() {
 			setLoadingExport(false);
 		}
 	};
+
 
 	useEffect(() => {
 		const delay = setTimeout(() => {
@@ -195,76 +198,118 @@ export default function VistaDatosInventarios() {
 						<thead className="bg-gradient-to-r from-indigo-50 to-violet-50 text-neutral-700">
 							<tr>
 								<th className="px-6 py-4 font-semibold">Código</th>
-								<th className="px-6 py-4 font-semibold">Activo</th>
+								<th className="px-6 py-4 font-semibold">Nombre</th>
 								<th className="px-6 py-4 font-semibold">Dependencia</th>
 								<th className="px-6 py-4 font-semibold">Responsable</th>
 								<th className="px-6 py-4 font-semibold">Marca/Modelo</th>
 								<th className="px-6 py-4 font-semibold">Serial</th>
+								<th className="px-6 py-4 font-semibold">Calibrado</th>
 								<th className="px-6 py-4 font-semibold">Sede</th>
 								<th className="px-6 py-4 font-semibold text-right">Acciones</th>
 							</tr>
 						</thead>
 
 						<tbody className="divide-y divide-neutral-200">
-							{inventariosPagina.map((item, i) => (
-								<motion.tr
-									key={item.id}
-									initial={{ opacity: 0, y: 10 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.3, delay: i * 0.03 }}
-									className="hover:bg-neutral-50/80 transition-colors"
-								>
-									<td className="px-6 py-4 font-medium text-indigo-600">{item.codigo}</td>
-									<td className="px-6 py-4">{item.nombre}</td>
-									<td className="px-6 py-4 text-neutral-600">{item.dependencia}</td>
-									<td className="px-6 py-4">
-										<div className="flex items-center gap-2">
-											<div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-												<User size={16} />
+							{inventariosPagina.map((item, i) => {
+								// Determinar el estado de calibrado
+								const hoy = new Date();
+								const fechaCalibrado = item.calibrado ? new Date(item.calibrado) : null;
+								let calibradoEstado = 'no-calibrado';
+								let calibradoIcon = <XCircle size={18} className="text-red-500" />;
+								let calibradoTooltip = 'No calibrado';
+
+								if (fechaCalibrado) {
+									const diffTime = hoy - fechaCalibrado;
+									const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+									if (diffDays < 30) {
+										calibradoEstado = 'reciente';
+										calibradoIcon = <CheckCircle2 size={18} className="text-green-500" />;
+										calibradoTooltip = 'Calibrado recientemente';
+									} else if (diffDays < 90) {
+										calibradoEstado = 'proximo';
+										calibradoIcon = <AlertCircle size={18} className="text-amber-500" />;
+										calibradoTooltip = 'Próximo a calibrar';
+									} else {
+										calibradoEstado = 'vencido';
+										calibradoIcon = <AlertTriangle size={18} className="text-red-500" />;
+										calibradoTooltip = 'Calibración vencida';
+									}
+								}
+
+								return (
+									<motion.tr
+										key={item.id}
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.3, delay: i * 0.03 }}
+										className="hover:bg-neutral-50/80 transition-colors"
+									>
+										<td className="px-6 py-4 font-medium text-indigo-600">{item.codigo}</td>
+										<td className="px-6 py-4">{item.nombre}</td>
+										<td className="px-6 py-4 text-neutral-600">{item.dependencia}</td>
+										<td className="px-6 py-4">
+											<div className="flex items-center gap-2">
+												<div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+													<User size={16} />
+												</div>
+												<span>{item.responsable}</span>
 											</div>
-											<span>{item.responsable}</span>
-										</div>
-									</td>
-									<td className="px-6 py-4">
-										<div>
-											<div className="font-medium">{item.marca}</div>
-											<div className="text-sm text-neutral-500">{item.modelo}</div>
-										</div>
-									</td>
-									<td className="px-6 py-4 font-mono text-sm">{item.serial}</td>
-									<td className="px-6 py-4">
-										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
-											{item.sede_nombre}
-										</span>
-									</td>
-									<td className="px-6 py-4 text-right">
-										<div className="flex justify-end gap-2">
-											<button
-												onClick={() => handleEditar(item)}
-												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer"
-												title="Editar"
-											>
-												<Pencil size={18} />
-											</button>
-											<button
-												onClick={() => handleEliminar(item.id)}
-												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer"
-												title="Eliminar"
-											>
-												<Trash2 size={18} />
-											</button>
-										</div>
-									</td>
-								</motion.tr>
-							))}
+										</td>
+										<td className="px-6 py-4">
+											<div>
+												<div className="font-medium">{item.marca}</div>
+												<div className="text-sm text-neutral-500">{item.modelo}</div>
+											</div>
+										</td>
+										<td className="px-6 py-4 font-mono text-sm">{item.serial}</td>
+										<td className="px-6 py-4">
+											<div className="flex items-center gap-2" title={calibradoTooltip}>
+												{calibradoIcon}
+												{item.calibrado && (
+													<span className="text-sm text-neutral-500">
+														{new Date(item.calibrado).toLocaleDateString()}
+													</span>
+												)}
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
+												{item.sede_nombre}
+											</span>
+										</td>
+										<td className="px-6 py-4 text-right">
+											<div className="flex justify-end gap-2">
+												<button
+													onClick={() => handleEditar(item)}
+													className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer"
+													title="Editar"
+												>
+													<Pencil size={18} />
+												</button>
+												<button
+													onClick={() => handleEliminar(item.id)}
+													className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer"
+													title="Eliminar"
+												>
+													<Trash2 size={18} />
+												</button>
+											</div>
+										</td>
+									</motion.tr>
+								);
+							})}
 
 							{inventarios.length === 0 && (
 								<tr>
-									<td colSpan="8" className="px-6 py-12 text-center">
+									<td colSpan="9" className="px-6 py-12 text-center">
 										<div className="flex flex-col items-center justify-center gap-3 text-neutral-400">
 											<PackageSearch size={48} strokeWidth={1} />
 											<div className="text-lg">No se encontraron inventarios</div>
-											<button className="mt-3 text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+											<button
+												className="mt-3 text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+												onClick={() => window.location.reload()}
+											>
 												<RefreshCw size={16} />
 												<span>Recargar datos</span>
 											</button>
