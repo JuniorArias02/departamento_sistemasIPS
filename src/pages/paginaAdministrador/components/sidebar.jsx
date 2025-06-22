@@ -163,7 +163,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 				{/* Menú principal */}
 				<ul className="space-y-1 px-3">
-					{permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && (
+					{permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
 							{/* Ítems del menú */}
 							<SidebarItem
@@ -182,7 +182,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								icon={<Users size={20} />}
 								text="Usuarios"
 								isOpen={menuUsuariosOpen}
-								onClick={() => permisos.includes(PERMISOS.MENU_ITEM_USUARIOS)
+								onClick={() => permisos.includes(PERMISOS.USUARIOS.MENU_ITEM)
 									? setMenuUsuariosOpen(!menuUsuariosOpen)
 									: mostrarAlertaSinPermiso()}
 								sidebarOpen={sidebarOpen}
@@ -191,7 +191,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									icon={<Eye size={16} />}
 									text="Ver Usuarios"
 									onClick={() => {
-										if (permisos.includes(PERMISOS.VER_DATOS_USUARIOS)) {
+										if (permisos.includes(PERMISOS.USUARIOS.VER_DATOS)) {
 											navigate(RUTAS.ADMIN.USUARIOS.ROOT);
 											setTimeout(() => setSidebarOpen(false), 150);
 										} else {
@@ -206,7 +206,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									icon={<UserPlus size={16} />}
 									text="Crear Usuario"
 									onClick={() =>
-										permisos.includes(PERMISOS.AGREGAR_USUARIO)
+										permisos.includes(PERMISOS.USUARIOS.CREAR)
 											? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
 											: mostrarAlertaSinPermiso()}
 									sidebarOpen={sidebarOpen}
@@ -221,13 +221,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								text="Gestión de Roles"
 								isOpen={menuRolesOpen}
 								onClick={() =>
-									permisos.includes(PERMISOS.MENU_ITEM_ROLES)
+									permisos.includes(PERMISOS.ROLES.MENU_ITEM)
 										? setMenuRolesOpen(!menuRolesOpen)
 										: mostrarAlertaSinPermiso()
 								}
 								sidebarOpen={sidebarOpen}
 							>
-								{permisos.includes(PERMISOS.VER_LISTADO_ROLES) && (
+								{permisos.includes(PERMISOS.ROLES.VER_LISTADO) && (
 									<SidebarSubItem
 										icon={<List size={16} />}
 										text="Listado de Roles"
@@ -237,7 +237,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										delay={0.1}
 									/>
 								)}
-								{permisos.includes(PERMISOS.CREAR_ROLES) && (
+								{permisos.includes(PERMISOS.ROLES.CREAR) && (
 									<SidebarSubItem
 										icon={<PlusCircle size={16} />}
 										text="Crear Nuevo Rol"
@@ -254,7 +254,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								text="Gestión de Permisos"
 								isOpen={menuPermisosOpen}
 								onClick={() =>
-									permisos.includes(PERMISOS.MENU_ITEM_PERMISOS)
+									permisos.includes(PERMISOS.GESTION_PERMISOS.MENU_ITEM)
 										? setMenuPermisosOpen(!menuPermisosOpen)
 										: mostrarAlertaSinPermiso()
 								}
@@ -264,7 +264,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									icon={<ShieldPlus size={16} />}
 									text="Crear Permiso"
 									onClick={() => {
-										if (permisos.includes(PERMISOS.CREAR_PERMISO)) {
+										if (permisos.includes(PERMISOS.GESTION_PERMISOS.CREAR)) {
 											navigate(RUTAS.CREAR_PERMISO);
 											setTimeout(() => setSidebarOpen(false), 150);
 										} else {
@@ -276,9 +276,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								/>
 								<SidebarSubItem
 									icon={<UserCog size={16} />}
-									text="Asignar Permiso"
+									text="Asignar Permisos"
 									onClick={() => {
-										if (permisos.includes(PERMISOS.ASIGNAR_PERMISO)) {
+										if (permisos.includes(PERMISOS.GESTION_PERMISOS.ASIGNAR)) {
 											navigate(RUTAS.ADMIN.PERMISOS.ASIGNAR);
 										} else {
 											mostrarAlertaSinPermiso();
@@ -386,7 +386,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							</button>
 						</Tooltip>
 
-						{permisos.includes(PERMISOS.MENU_ITEM_USUARIOS) && (
+						{permisos.includes(PERMISOS.USUARIOS.MENU_ITEM) && (
 							<Tooltip content="Usuarios" placement="right">
 								<button
 									onClick={() => navigate(RUTAS.ADMIN.USUARIOS.ROOT)}

@@ -57,7 +57,7 @@ function App() {
           path={RUTAS.LOGIN}
           element={
             usuario ? (
-              permisos.includes(PERMISOS.INGRESAR_DASHBOARDADMIN) ? (
+              permisos.includes(PERMISOS.SISTEMA.INGRESAR_DASHBOARDADMIN) ? (
                 <Navigate to={RUTAS.ADMIN.ROOT} replace />
               ) : (
                 <Navigate to={RUTAS.DASHBOARD} replace />
@@ -89,7 +89,7 @@ function App() {
           <Route
             path={RUTAS.ADMIN.ROLES.VISTA_DATOS}
             element={
-              permisos.includes(PERMISOS.VER_LISTADO_ROLES) ? (
+              permisos.includes(PERMISOS.ROLES.VER_LISTADO) ? (
                 <VistaDatosRoles />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -100,7 +100,7 @@ function App() {
           <Route
             path={RUTAS.ADMIN.PERMISOS.ASIGNAR}
             element={
-              permisos.includes(PERMISOS.ASIGNAR_PERMISO) ? (
+              permisos.includes(PERMISOS.GESTION_PERMISOS.ASIGNAR) ? (
                 <AsignarPermisos />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -111,7 +111,7 @@ function App() {
           <Route
             path={RUTAS.USER.MANTENIMIENTO.VER_DETALLES}
             element={
-              permisos.includes(PERMISOS.VER_DETALLE_MANTENIMIENTO) ? (
+              permisos.includes(PERMISOS.MANTENIMIENTOS.VER_DETALLE) ? (
                 <DetalleMantenimiento />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -129,7 +129,7 @@ function App() {
           <Route
             path={RUTAS.ADMIN.USUARIOS.ROOT}
             element={
-              permisos.includes(PERMISOS.VER_DATOS_USUARIOS) ? (
+              permisos.includes(PERMISOS.USUARIOS.VER_DATOS) ? (
                 <VistaDatosUsuarios />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -141,7 +141,7 @@ function App() {
           <Route
             path={RUTAS.USER.MANTENIMIENTO.VISTA_DATOS}
             element={
-              permisos.includes(PERMISOS.VER_DATOS_MANTENIMIENTOS) ? (
+              permisos.includes(PERMISOS.MANTENIMIENTOS.VER_DATOS) ? (
                 <VistaDatosMantenimiento />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -153,7 +153,7 @@ function App() {
           <Route
             path={RUTAS.ADMIN.USUARIOS.CREAR_USUARIO}
             element={
-              permisos.includes(PERMISOS.AGREGAR_USUARIO) ? (
+              permisos.includes(PERMISOS.USUARIOS.CREAR) ? (
                 <FormularioUsuarios />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -175,19 +175,39 @@ function App() {
           {/* formularios */}
           <Route
             path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}
-            element={<FormularioInventario />}
+            element={
+              permisos.includes(PERMISOS.INVENTARIO.VER_FORMULARIO) ? (
+                <FormularioInventario />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
           />
 
           <Route
             path={RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO}
-            element={<FormularioMantenimiento />}
+            element={
+              permisos.includes(PERMISOS.MANTENIMIENTOS.VER_FORMULARIO) ? (
+                <FormularioMantenimiento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
           />
+
 
           {/* vistaDatos */}
           <Route
             path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}
-            element={<VistaDatosInventarios />}
+            element={
+              permisos.includes(PERMISOS.INVENTARIO.VER_FORMULARIO) ? (
+                <VistaDatosInventarios />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
           />
+
 
         </Route>
 

@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 import { crearMantenimiento, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
 import { listarCoordinadores } from "../../../services/utils_service";
 import { listarSedes } from "../../../services/sedes_service";
+import { PERMISOS } from "../../../secure/permisos/permisos";
 
 export default function FormularioMantenimientoFreezer() {
-  const { usuario } = useApp();
+  const { usuario, permisos } = useApp();
   const location = useLocation();
   const mantenimientoEdit = location.state?.mantenimiento;
   const [coordinadores, setCoordinadores] = useState([]);
@@ -388,44 +389,46 @@ export default function FormularioMantenimientoFreezer() {
         {/* Botones con micro-interacciones */}
         <div className="flex justify-between items-center pt-4">
           <BackPage isEdit={mantenimientoEdit} />
-          <motion.button
-            type="submit"
-            disabled={loading}
-            whileHover={!loading ? { scale: 1.02 } : {}}
-            whileTap={!loading ? { scale: 0.98 } : {}}
-            className={`relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed`}
-          >
-            {loading && (
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-70"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.5,
-                  ease: "easeInOut"
-                }}
-              />
-            )}
-            <span className="relative z-10 flex items-center gap-2">
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Procesando...
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  {mantenimientoEdit ? "Actualizar" : "Registrar"}
-                </>
+          {permisos.includes(PERMISOS.MANTENIMIENTOS.CREAR) && (
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={!loading ? { scale: 1.02 } : {}}
+              whileTap={!loading ? { scale: 0.98 } : {}}
+              className={`relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed`}
+            >
+              {loading && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-70"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 1.5,
+                    ease: "easeInOut"
+                  }}
+                />
               )}
-            </span>
-          </motion.button>
+              <span className="relative z-10 flex items-center gap-2">
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {mantenimientoEdit ? "Actualizar" : "Registrar"}
+                  </>
+                )}
+              </span>
+            </motion.button>
+          )}
         </div>
       </form>
     </div>

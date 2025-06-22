@@ -211,7 +211,7 @@ export default function VistaDatosMantenimiento() {
 									</button>
 
 									{/* Botón Revisado (una sola vez) */}
-									{permisos.includes(PERMISOS.MARCAR_REVISADO_MANTENIMIENTO) && (
+									{permisos.includes(PERMISOS.MANTENIMIENTOS.MARCAR_REVISADO) && (
 										<button
 											onClick={() => {
 												if (!item.esta_revisado) {

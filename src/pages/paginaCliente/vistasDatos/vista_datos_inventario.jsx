@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { listarInventarios, eliminarInventario, buscarInventario, exportarInventariosCliente } from "../../../services/inventario_services";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, RefreshCw, ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Download, Search, Pencil, Trash2, User, Building2, PackageSearch, RefreshCw, ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { RUTAS } from "../../../const/routers/routers";
+import { PERMISOS } from "../../../secure/permisos/permisos";
+import { useApp } from "../../../store/AppContext";
 
 export default function VistaDatosInventarios() {
+	const { permisos } = useApp();
 	const navigate = useNavigate();
 	const [inventarios, setInventarios] = useState([]);
 	const [loadingExport, setLoadingExport] = useState(false);
@@ -116,6 +119,11 @@ export default function VistaDatosInventarios() {
 		}
 	};
 
+	const puedeExportar = permisos.includes(PERMISOS.INVENTARIO.EXPORTAR);
+	const puedeEditar = permisos.includes(PERMISOS.INVENTARIO.EDITAR);
+	const puedeEliminar = permisos.includes(PERMISOS.INVENTARIO.ELIMINAR);
+
+
 
 	return (
 		<div className="w-full max-w-none mx-auto p-6 bg-white rounded-2xl shadow-sm space-y-6">
@@ -124,8 +132,19 @@ export default function VistaDatosInventarios() {
 				<BackPage className="text-neutral-600 hover:text-indigo-600 transition-colors" />
 				<div className="flex gap-3">
 					<button
-						onClick={handleExportar}
-						disabled={loadingExport}
+						onClick={() => {
+							if (!puedeExportar) {
+								Swal.fire({
+									icon: 'warning',
+									title: 'Sin permisos',
+									text: 'No tienes permisos para exportar inventario.',
+									confirmButtonColor: '#6366F1'
+								});
+								return;
+							}
+							handleExportar();
+						}}
+						disabled={loadingExport || !puedeExportar}
 						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
 					>
 						{loadingExport ? (
@@ -135,6 +154,7 @@ export default function VistaDatosInventarios() {
 						)}
 						<span>Exportar Excel</span>
 					</button>
+
 				</div>
 			</div>
 
@@ -240,19 +260,45 @@ export default function VistaDatosInventarios() {
 									<td className="px-6 py-4 text-right">
 										<div className="flex justify-end gap-2">
 											<button
-												onClick={() => handleEditar(item)}
-												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer"
+												onClick={() => {
+													if (!puedeEditar) {
+														Swal.fire({
+															icon: 'warning',
+															title: 'Sin permisos',
+															text: 'No tienes permisos para editar este registro.',
+															confirmButtonColor: '#F59E0B' // amarillo
+														});
+														return;
+													}
+													handleEditar(item);
+												}}
+												className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer disabled:opacity-60"
 												title="Editar"
+												disabled={!puedeEditar}
 											>
 												<Pencil size={18} />
 											</button>
+
 											<button
-												onClick={() => handleEliminar(item.id)}
-												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer"
+												onClick={() => {
+													if (!puedeEliminar) {
+														Swal.fire({
+															icon: 'warning',
+															title: 'Sin permisos',
+															text: 'No tienes permisos para eliminar este registro.',
+															confirmButtonColor: '#DC2626' // rojo
+														});
+														return;
+													}
+													handleEliminar(item.id);
+												}}
+												className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer disabled:opacity-60"
 												title="Eliminar"
+												disabled={!puedeEliminar}
 											>
 												<Trash2 size={18} />
 											</button>
+
 										</div>
 									</td>
 								</motion.tr>

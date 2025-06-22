@@ -1,7 +1,7 @@
 // componente FormularioUsuarios.jsx
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle, Eye, Info, ShieldUser, LockKeyhole, EyeOff,ShieldCheck} from "lucide-react";
+import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle, Eye, Info, ShieldUser, LockKeyhole, EyeOff, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario_service";
 import { listarRoles } from "../../../services/rol_services";
@@ -10,9 +10,10 @@ import BackPage from "../../paginaCliente/components/BackPage";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../const/routers/routers";
+import { PERMISOS } from "../../../secure/permisos/permisos";
 
 export default function FormularioUsuarios() {
-	const { usuario: usuarioContext } = useApp();
+	const { usuario: usuarioContext, permisos } = useApp();
 	const navigate = useNavigate();
 	const [rol, setRol] = useState([]);
 	const location = useLocation();
@@ -372,31 +373,34 @@ export default function FormularioUsuarios() {
 						<div className="text-sm text-gray-500">
 							{usuarioEdit ? "Actualiza los datos del usuario" : "Completa todos los campos requeridos"}
 						</div>
-						<motion.button
-							type="submit"
-							onClick={handleSubmit}
-							disabled={loading}
-							whileHover={!loading ? { scale: 1.03 } : {}}
-							whileTap={!loading ? { scale: 0.97 } : {}}
-							className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-lg shadow-md hover:shadow-indigo-200 transition-all flex items-center gap-2 disabled:opacity-70"
-						>
-							{loading ? (
-								<>
-									<Loader2 size={18} className="animate-spin" />
-									Procesando...
-								</>
-							) : usuarioEdit ? (
-								<>
-									<Save size={18} />
-									Guardar Cambios
-								</>
-							) : (
-								<>
-									<UserPlus size={18} />
-									Registrar Usuario
-								</>
+						{((usuarioEdit && permisos.includes(PERMISOS.USUARIOS.EDITAR)) ||
+							(!usuarioEdit && permisos.includes(PERMISOS.USUARIOS.CREAR))) && (
+								<motion.button
+									type="submit"
+									onClick={handleSubmit}
+									disabled={loading}
+									whileHover={!loading ? { scale: 1.03 } : {}}
+									whileTap={!loading ? { scale: 0.97 } : {}}
+									className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-lg shadow-md hover:shadow-indigo-200 transition-all flex items-center gap-2 disabled:opacity-70"
+								>
+									{loading ? (
+										<>
+											<Loader2 size={18} className="animate-spin" />
+											Procesando...
+										</>
+									) : usuarioEdit ? (
+										<>
+											<Save size={18} />
+											Guardar Cambios
+										</>
+									) : (
+										<>
+											<UserPlus size={18} />
+											Registrar Usuario
+										</>
+									)}
+								</motion.button>
 							)}
-						</motion.button>
 					</div>
 				</motion.div>
 			</motion.div>

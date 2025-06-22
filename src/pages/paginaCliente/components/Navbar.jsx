@@ -49,7 +49,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
       <nav className="bg-gradient-to-r from-indigo-700 to-violet-800 text-white px-6 py-3 shadow-lg flex justify-between items-center border-b border-white/10">
         {/* Parte izquierda */}
         <div className="flex items-center gap-5">
-          {permisos.includes(PERMISOS.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
+          {permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
             <motion.button
               onClick={toggleSidebar}
               className="z-50 p-1 rounded-lg hover:bg-white/10 transition-colors"
