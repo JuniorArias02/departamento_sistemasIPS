@@ -300,23 +300,6 @@ export default function VistaDatosInventarios() {
 										</td>
 										<td className="px-6 py-4 text-right">
 											<div className="flex justify-end gap-2">
-												<span>{item.responsable}</span>
-											</div>
-										</td>
-										<td className="px-6 py-4">
-											<div>
-												<div className="font-medium">{item.marca}</div>
-												<div className="text-sm text-neutral-500">{item.modelo}</div>
-											</div>
-										</td>
-										<td className="px-6 py-4 font-mono text-sm">{item.serial}</td>
-										<td className="px-6 py-4">
-											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
-												{item.sede_nombre}
-											</span>
-										</td>
-										<td className="px-6 py-4 text-right">
-											<div className="flex justify-end gap-2">
 												<button
 													onClick={() => {
 														if (!puedeEditar) {
