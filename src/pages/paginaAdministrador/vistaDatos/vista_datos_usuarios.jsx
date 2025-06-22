@@ -8,8 +8,10 @@ import Swal from "sweetalert2";
 import BackPage from "../../paginaCliente/components/BackPage";
 import { RUTAS } from "../../../const/routers/routers";
 import { UserPlus, Pencil, Trash2, Eye, Search, Filter, Download, UserX, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, User } from "lucide-react";
+import { PERMISOS } from "../../../secure/permisos/permisos";
 
 export default function VistaDatosUsuarios() {
+	const { permisos } = useApp();
 	const [usuarios, setUsuarios] = useState([]);
 	const navigate = useNavigate();
 	const { usuario: usuarioContext } = useApp();
@@ -208,20 +210,26 @@ export default function VistaDatosUsuarios() {
 									</td>
 									<td className="px-6 py-4 text-right">
 										<div className="flex justify-end gap-2">
-											<button
-												onClick={() => handleEditar(u)}
-												className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-												title="Editar"
-											>
-												<Pencil size={16} />
-											</button>
-											<button
-												onClick={() => handleEliminar(u.id)}
-												className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-												title="Eliminar"
-											>
-												<Trash2 size={16} />
-											</button>
+											{permisos.includes(PERMISOS.USUARIOS.EDITAR) && (
+												<button
+													onClick={() => handleEditar(u)}
+													className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+													title="Editar"
+												>
+													<Pencil size={16} />
+												</button>
+											)}
+
+											{permisos.includes(PERMISOS.USUARIOS.ELIMINAR) && (
+												<button
+													onClick={() => handleEliminar(u.id)}
+													className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+													title="Eliminar"
+												>
+													<Trash2 size={16} />
+												</button>
+											)}
+
 										</div>
 									</td>
 								</motion.tr>

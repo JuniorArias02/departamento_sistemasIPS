@@ -3,7 +3,7 @@ import { obtenerGraficaInventario } from "../../../services/inventario_services"
 import { obtenerGraficaMantenimiento } from "../../../services/mantenimiento_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
-import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { obtenerTotalInventario } from "../../../services/inventario_services";
@@ -18,7 +18,7 @@ export default function DashboardAdmin() {
 	const [loading, setLoading] = useState(true);
 	const [graficaIndex, setGraficaIndex] = useState(0);
 	const navigate = useNavigate();
-
+	const [diasFiltro, setDiasFiltro] = useState(30);
 
 
 	const [totales, setTotales] = useState({
@@ -32,8 +32,8 @@ export default function DashboardAdmin() {
 
 		const intervalo = setInterval(() => {
 			refrescarTodo();
-		}, 60000); 
-		return () => clearInterval(intervalo); 
+		}, 60000);
+		return () => clearInterval(intervalo);
 	}, []);
 
 
@@ -92,31 +92,59 @@ export default function DashboardAdmin() {
 		);
 	}
 
-	const SummaryCard = ({ title, value, change, onNavigate, icon, color }) => {
+	const SummaryCard = ({
+		title,
+		value,
+		change,
+		onNavigate,
+		icon,
+		color,
+		isLoading = false
+	}) => {
 		const colorClasses = {
-			blue: 'bg-blue-50 text-blue-600',
-			green: 'bg-green-50 text-green-600',
-			orange: 'bg-orange-50 text-orange-600',
-			red: 'bg-red-50 text-red-600'
+			blue: 'from-blue-50 to-blue-100 text-blue-600',
+			green: 'from-green-50 to-green-100 text-green-600',
+			orange: 'from-orange-50 to-orange-100 text-orange-600',
+			red: 'from-red-50 to-red-100 text-red-600',
+			indigo: 'from-indigo-50 to-indigo-100 text-indigo-600'
 		};
 
 		return (
 			<div
-				className="bg-white rounded-2xl shadow-xs border border-gray-200 p-5 cursor-pointer hover:shadow-md transition"
+				className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-all duration-300 group hover:border-indigo-100"
 				onClick={onNavigate}
 			>
-				<div className="flex justify-between">
-					<div className={`w-10 h-10 rounded-lg ${colorClasses[color]} flex items-center justify-center`}>
+				<div className="flex justify-between items-start">
+					<div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
 						{icon}
 					</div>
-					<span className="text-xs font-medium text-indigo-600 underline">{change}</span>
+
+					{change && (
+						<span className="text-xs font-medium text-indigo-600 flex items-center gap-1.5 hover:text-indigo-800 transition-colors px-2 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100">
+							{change === "ver" ? (
+								<>
+									Ver más
+									<ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+								</>
+							) : (
+								change
+							)}
+						</span>
+					)}
 				</div>
-				<h3 className="text-sm text-gray-500 mt-4">{title}</h3>
-				<p className="text-2xl font-semibold mt-1">{value}</p>
+
+				<h3 className="text-sm text-gray-500 mt-5 mb-1 font-medium">{title}</h3>
+
+				{isLoading ? (
+					<div className="h-8 w-3/4 bg-gray-100 rounded-md animate-pulse mt-2"></div>
+				) : (
+					<p className="text-2xl font-semibold mt-1 text-gray-800">
+						{value}
+					</p>
+				)}
 			</div>
 		);
 	};
-
 
 	// Componente de item de actividad (ActivityItem)
 	const ActivityItem = ({ user, action, time, icon }) => (
@@ -148,10 +176,22 @@ export default function DashboardAdmin() {
 					</div>
 					<div className="flex items-center gap-3">
 						<div className="relative">
-							<button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl shadow-xs hover:shadow-sm transition-all">
-								<CalendarDays className="w-5 h-5 text-gray-600" />
-								<span className="text-sm font-medium">Últimos 30 días</span>
-								<ChevronDown className="w-4 h-4 text-gray-400" />
+							<button className="flex items-center gap-3 px-4 py-2.5 bg-white border border-gray-200 rounded-xl shadow-xs hover:border-indigo-300 hover:shadow-sm transition-all duration-200 group">
+								<CalendarDays className="w-5 h-5 text-indigo-500" />
+								<input
+									type="number"
+									min="1"
+									max="365"
+									value={isNaN(diasFiltro) ? "" : diasFiltro}
+									onChange={(e) => {
+										const valor = parseInt(e.target.value);
+										setDiasFiltro(isNaN(valor) ? "" : valor);
+									}}
+									className="w-16 px-2 py-1 text-center text-sm font-medium text-gray-700 bg-gray-50 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-200"
+								/>
+
+								<span className="text-sm text-gray-500">días</span>
+								<ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" />
 							</button>
 						</div>
 						<button
@@ -213,7 +253,7 @@ export default function DashboardAdmin() {
 						{/* Header con título y botones */}
 						<div className="flex justify-between items-center mb-6">
 							<h2 className="text-lg font-semibold">
-								{["Inventario", "Matenimiento", "Proximamente"][graficaIndex]}
+								{["Inventario", "Mantenimiento", "Proximamente"][graficaIndex]}
 							</h2>
 
 							<div className="flex items-center gap-2">
@@ -252,7 +292,7 @@ export default function DashboardAdmin() {
 										transition={{ duration: 0.4 }}
 										className="absolute w-full h-full"
 									>
-										{[<ChartPorUsuario data={inventario} />, <ChartPorUsuario data={mantenimiento} />][graficaIndex]}
+										{[<ChartPorUsuario data={inventario} diasFiltro={diasFiltro} />, <ChartPorUsuario data={mantenimiento} diasFiltro={diasFiltro} />][graficaIndex]}
 									</motion.div>
 								</AnimatePresence>
 							)}

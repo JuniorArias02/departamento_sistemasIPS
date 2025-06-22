@@ -7,9 +7,9 @@ import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { listarSedes } from "../../../services/sedes_service";
-
+import { PERMISOS } from "../../../secure/permisos/permisos";
 export default function FormularioInventario() {
-	const { usuario } = useApp();
+	const { usuario, permisos } = useApp();
 	const location = useLocation();
 	const inventarioEdit = location.state?.inventario;
 	const [sedes, setSedes] = useState([]);
@@ -45,6 +45,10 @@ export default function FormularioInventario() {
 		calibrado: "",
 		observaciones: ""
 	});
+
+	const puedeGuardar = inventarioEdit
+		? permisos.includes(PERMISOS.INVENTARIO.EDITAR)
+		: permisos.includes(PERMISOS.INVENTARIO.CREAR);
 
 	const [loading, setLoading] = useState(false);
 
@@ -227,7 +231,19 @@ export default function FormularioInventario() {
 
 	return (
 		<motion.form
-			onSubmit={handleSubmit}
+			onSubmit={(e) => {
+				if (!puedeGuardar) {
+					e.preventDefault();
+					Swal.fire({
+						icon: 'warning',
+						title: 'Sin permisos',
+						text: 'No tienes permisos para guardar este activo.',
+						confirmButtonColor: '#6366F1'
+					});
+					return;
+				}
+				handleSubmit(e);
+			}}
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: "easeOut" }}
@@ -577,7 +593,7 @@ export default function FormularioInventario() {
 
 				<button
 					type="submit"
-					disabled={loading}
+					disabled={loading || !puedeGuardar}
 					className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-indigo-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 				>
 					{loading ? (

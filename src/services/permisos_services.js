@@ -6,6 +6,7 @@ export const obtenerPermisos = async (usuarioId) => {
 		const response = await axios.post(OBTENER_PERMISOS, {
 			usuario_id: usuarioId,
 		});
+		console.log('Permisos obtenidos:', response.data);
 		const permisos = response.data.permisos;
 		return permisos;
 	} catch (error) {

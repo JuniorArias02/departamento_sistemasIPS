@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { obtenerPermisos } from "../services/permisos_services";
 
 const AppContext = createContext();
 
@@ -7,7 +8,7 @@ export const AppProvider = ({ children }) => {
   const [permisos, setPermisos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Recuperar sesión al cargar la app
+  // Cargar datos al iniciar
   useEffect(() => {
     const user = localStorage.getItem("usuario");
     const userPermisos = localStorage.getItem("permisos");
@@ -16,16 +17,26 @@ export const AppProvider = ({ children }) => {
       setUsuario(JSON.parse(user));
       setPermisos(JSON.parse(userPermisos) || []);
     }
-
     setCargando(false);
   }, []);
 
-  // Función de login modificada para recibir permisos
-  const login = async (usuario, permisosObtenidos) => {
-    setUsuario(usuario);
+  // Función para actualizar permisos sin cerrar sesión
+  const actualizarPermisos = async () => {
+    if (!usuario) return;
+
+    try {
+      const nuevosPermisos = await obtenerPermisos(usuario.id);
+      setPermisos(nuevosPermisos);
+      localStorage.setItem("permisos", JSON.stringify(nuevosPermisos));
+    } catch (error) {
+      console.error("Error al actualizar permisos:", error);
+    }
+  };
+
+  const login = async (usuarioData, permisosObtenidos) => { 
+    setUsuario(usuarioData);
     setPermisos(permisosObtenidos);
-    
-    localStorage.setItem("usuario", JSON.stringify(usuario));
+    localStorage.setItem("usuario", JSON.stringify(usuarioData));
     localStorage.setItem("permisos", JSON.stringify(permisosObtenidos));
   };
 
@@ -37,7 +48,9 @@ export const AppProvider = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={{ usuario, permisos, login, logout, cargando }}>
+    <AppContext.Provider
+      value={{ usuario, permisos, login, logout, cargando, actualizarPermisos }}
+    >
       {children}
     </AppContext.Provider>
   );

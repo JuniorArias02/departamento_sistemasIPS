@@ -29,9 +29,8 @@ export default function FormularioLogin() {
     try {
       const data = await loginUsuario(formData);
       const permisosObtenidos = await obtenerPermisos(data.usuario.id);
-      login(data.usuario, permisosObtenidos);
+      login(data.usuario, permisosObtenidos);  // ← Pasa permisos como argumento
       validarRutas(navigate, permisosObtenidos);
-
     } catch (error) {
       Swal.fire({
         icon: "error",

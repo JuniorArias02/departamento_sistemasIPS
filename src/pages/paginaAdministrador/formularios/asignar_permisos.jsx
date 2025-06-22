@@ -13,8 +13,11 @@ import {
 import { listarRoles, asignarPermisos, obtenerPermisosRol } from '../../../services/rol_services';
 import Swal from 'sweetalert2';
 import BackPage from '../../paginaCliente/components/BackPage';
+import { useApp } from '../../../store/AppContext';
+import { PERMISOS } from '../../../secure/permisos/permisos';
 
 export default function AsignarPermisos() {
+	const { usuario: usuarioContext, permisos: permisosUser } = useApp();
 	const [roles, setRoles] = useState([]);
 	const [selectedRolId, setSelectedRolId] = useState('');
 	const [permisos, setPermisos] = useState([]);
@@ -89,7 +92,7 @@ export default function AsignarPermisos() {
 				}
 			});
 
-			await asignarPermisos(selectedRolId, Array.from(selectedPermisos));
+			await asignarPermisos(usuarioContext.id, selectedRolId, Array.from(selectedPermisos));
 
 			// Éxito simple
 			Swal.fire({
@@ -242,26 +245,29 @@ export default function AsignarPermisos() {
 
 			{/* Botón flotante moderno */}
 			<div className="sticky bottom-6 flex justify-end">
-				<button
-					onClick={handleSubmit}
-					disabled={!selectedRolId || loading}
-					className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 shadow-lg ${!selectedRolId || loading
-						? "bg-gray-300 text-gray-500 cursor-not-allowed"
-						: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl hover:from-blue-700 hover:to-indigo-700"
-						}`}
-				>
-					{loading ? (
-						<>
-							<Loader2 className="animate-spin h-5 w-5" />
-							<span className="animate-pulse">Procesando...</span>
-						</>
-					) : (
-						<>
-							<Save className="w-5 h-5" />
-							<span>Guardar Cambios</span>
-						</>
-					)}
-				</button>
+				{permisosUser.includes(PERMISOS.GESTION_PERMISOS.ASIGNAR) && (
+					<button
+						onClick={handleSubmit}
+						disabled={!selectedRolId || loading}
+						className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 shadow-lg ${!selectedRolId || loading
+								? "bg-gray-300 text-gray-500 cursor-not-allowed"
+								: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl hover:from-blue-700 hover:to-indigo-700"
+							}`}
+					>
+						{loading ? (
+							<>
+								<Loader2 className="animate-spin h-5 w-5" />
+								<span className="animate-pulse">Procesando...</span>
+							</>
+						) : (
+							<>
+								<Save className="w-5 h-5" />
+								<span>Guardar Cambios</span>
+							</>
+						)}
+					</button>
+				)}
+
 			</div>
 		</div>
 	);
