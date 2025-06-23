@@ -17,7 +17,7 @@ export const SidebarSubItem = ({ icon, text, onClick, isActive = false, sidebarO
 					: 'text-white/60 hover:bg-white/5 hover:text-white/90'
 			}`}
 		>
-			<div className="w-5 flex justify-center">{icon}</div>
+			<div className="w-5 flex justify-center inter-regular">{icon}</div>
 			{sidebarOpen && <span>{text}</span>}
 		</button>
 	</motion.li>

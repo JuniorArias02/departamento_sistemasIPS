@@ -17,12 +17,17 @@ export const RUTAS = {
     },
 
     ROLES: {
-      VISTA_DATOS: `${DASHBOARD_ADMIN}/roles`
+      VISTA_DATOS: `${DASHBOARD_ADMIN}/roles`,
+      CREAR_ROL: `${DASHBOARD_ADMIN}/crear_rol`,
     },
 
     PERMISOS: {
       CREAR: `${DASHBOARD_ADMIN}/crear_permiso`,
       ASIGNAR: `${DASHBOARD_ADMIN}/asignar_permiso`
+    },
+
+    SISTEMA: {
+      ACTUALIZACIONES_WEB: `${DASHBOARD_ADMIN}/actualizaciones_Web`,
     },
 
     CREAR_FORMULARIO: `${DASHBOARD_ADMIN}/crear_formulario`,
@@ -41,6 +46,10 @@ export const RUTAS = {
       CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento`,
       VISTA_DATOS: `${DASHBOARD}/mantenimiento`,
       VER_DETALLES: `${DASHBOARD}/mantenimiento/detalles`,
+    },
+
+    SISTEMA: {
+      VER_ACTUALIZACIONES: `${DASHBOARD}/ver_actualizaciones`,
     },
   }
 };

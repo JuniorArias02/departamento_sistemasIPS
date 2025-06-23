@@ -10,7 +10,7 @@ import { PERMISOS } from "../../../secure/permisos/permisos";
 import { useApp } from "../../../store/AppContext";
 
 export default function VistaDatosInventarios() {
-	const { permisos } = useApp();
+	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
 	const [inventarios, setInventarios] = useState([]);
 	const [loadingExport, setLoadingExport] = useState(false);
@@ -25,7 +25,7 @@ export default function VistaDatosInventarios() {
 
 	const fetchData = async () => {
 		try {
-			const data = await listarInventarios();
+			const data = await listarInventarios(usuario.id); 
 			setInventarios(data);
 		} catch (err) {
 			console.error("Error cargando inventarios", err);
@@ -55,7 +55,7 @@ export default function VistaDatosInventarios() {
 		}).then(async (result) => {
 			if (result.isConfirmed) {
 				try {
-					await eliminarInventario(id);
+					await eliminarInventario(id, usuario.id);
 					await fetchData();
 					Swal.fire(
 						"Eliminado",
@@ -217,15 +217,15 @@ export default function VistaDatosInventarios() {
 					<table className="w-full text-left">
 						<thead className="bg-gradient-to-r from-indigo-50 to-violet-50 text-neutral-700">
 							<tr>
-								<th className="px-6 py-4 font-semibold">Código</th>
-								<th className="px-6 py-4 font-semibold">Nombre</th>
-								<th className="px-6 py-4 font-semibold">Dependencia</th>
-								<th className="px-6 py-4 font-semibold">Responsable</th>
-								<th className="px-6 py-4 font-semibold">Marca/Modelo</th>
-								<th className="px-6 py-4 font-semibold">Serial</th>
-								<th className="px-6 py-4 font-semibold">Calibrado</th>
-								<th className="px-6 py-4 font-semibold">Sede</th>
-								<th className="px-6 py-4 font-semibold text-right">Acciones</th>
+								<th className="px-6 py-4 poppins-semibold">Código</th>
+								<th className="px-6 py-4 poppins-semibold">Nombre</th>
+								<th className="px-6 py-4 poppins-semibold">Dependencia</th>
+								<th className="px-6 py-4 poppins-semibold">Responsable</th>
+								<th className="px-6 py-4 poppins-semibold">Marca/Modelo</th>
+								<th className="px-6 py-4 poppins-semibold">Serial</th>
+								<th className="px-6 py-4 poppins-semibold">Calibrado</th>
+								<th className="px-6 py-4 poppins-semibold">Sede</th>
+								<th className="px-6 py-4 poppins-semibold text-right">Acciones</th>
 							</tr>
 						</thead>
 
@@ -265,9 +265,9 @@ export default function VistaDatosInventarios() {
 										transition={{ duration: 0.3, delay: i * 0.03 }}
 										className="hover:bg-neutral-50/80 transition-colors"
 									>
-										<td className="px-6 py-4 font-medium text-indigo-600">{item.codigo}</td>
-										<td className="px-6 py-4">{item.nombre}</td>
-										<td className="px-6 py-4 text-neutral-600">{item.dependencia}</td>
+										<td className="px-6 py-4 poppins-semibold text-indigo-600">{item.codigo}</td>
+										<td className="px-6 py-4 inter-medium">{item.nombre}</td>
+										<td className="px-6 py-4 text-neutral-600 inter-regular">{item.dependencia}</td>
 										<td className="px-6 py-4">
 											<div className="flex items-center gap-2">
 												<div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">

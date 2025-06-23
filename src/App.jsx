@@ -21,12 +21,16 @@ import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
 
+import FormularioCrearRol from "./pages/paginaAdministrador/formularios/crear_rol";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
 import PerfilUsuario from "./pages/paginaCliente/perfil/perfil_usuario";
-
 import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_permisos";
+
+// rutas administrador web
+import CrearAvisoActualizacionWeb from "./pages/paginaAdministrador/formularios/crear_aviso_actualizacion_web";
+import VistaActualizacionesWeb from "./pages/paginaCliente/vistasDatos/vista_actualizaciones_web";
 
 import { RUTAS } from "./const/routers/routers";
 function App() {
@@ -85,12 +89,35 @@ function App() {
             }
           />
 
+          {/* modulo de sistema */}
+          <Route
+            path={RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB}
+            element={
+              permisos.includes(PERMISOS.ADMINISTRADOR_WEB.CREAR_AVISO_ACTUALIZACION) ? (
+                <CrearAvisoActualizacionWeb />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
           {/* modulos de roles  */}
           <Route
             path={RUTAS.ADMIN.ROLES.VISTA_DATOS}
             element={
               permisos.includes(PERMISOS.ROLES.VER_LISTADO) ? (
                 <VistaDatosRoles />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.ADMIN.ROLES.CREAR_ROL}
+            element={
+              permisos.includes(PERMISOS.ROLES.CREAR) ? (
+                <FormularioCrearRol />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
               )
@@ -207,6 +234,14 @@ function App() {
               )
             }
           />
+
+          <Route
+            path={RUTAS.USER.SISTEMA.VER_ACTUALIZACIONES}
+            element={
+                <VistaActualizacionesWeb />
+            }
+          />
+
 
 
         </Route>

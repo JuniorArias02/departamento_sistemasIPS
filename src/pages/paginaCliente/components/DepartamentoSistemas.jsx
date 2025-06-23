@@ -36,14 +36,14 @@ export default function DepartamentoSistemas() {
   return (
     <div className="relative group">
       {/* Contenedor interactivo */}
-      <div 
+      <div
         onClick={handleActualizarPermisos}
         className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
       >
         <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
           <Cpu className="w-5 h-5 text-white" />
         </div>
-        <span className="font-bold text-lg bg-clip-text bg-gradient-to-r from-white to-blue-100 text-transparent">
+        <span className="poppins-bold text-lg bg-clip-text bg-gradient-to-r from-white to-blue-100 text-transparent">
           Departamento de Sistemas
         </span>
       </div>

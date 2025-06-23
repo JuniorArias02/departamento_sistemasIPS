@@ -38,17 +38,19 @@ export const actualizarInventario = async (id, datos) => {
   }
 };
 
-export const listarInventarios = async () => {
+export const listarInventarios = async (usuarioId) => {
   try {
-    const response = await axios.get(LISTAR_INVENTARIO);
+    const response = await axios.post(LISTAR_INVENTARIO, {
+      creado_por: usuarioId
+    });
     return response.data;
   } catch (error) {
     throw new Error(
-      error?.response?.data?.mensaje ||
-      "Error al listar los inventario",
+      error?.response?.data?.message || "Error al listar los inventario"
     );
   }
 };
+
 
 export const buscarInventario = async (filtros) => {
   try {
@@ -61,22 +63,24 @@ export const buscarInventario = async (filtros) => {
   }
 };
 
-export const eliminarInventario = async (id) => {
+export const eliminarInventario = async (id_inventario, id_usuario) => {
   try {
-    const response = await axios.delete(ELIMINAR_INVENTARIO, {
-      data: { id },
+    const response = await axios.post(ELIMINAR_INVENTARIO, {
+      id: id_inventario,
+      creado_por: id_usuario
     });
     return response.data;
   } catch (error) {
     throw new Error(
-      error?.response?.data?.error || "Error al eliminar el inventario",
+      error?.response?.data?.message || "Error al eliminar el inventario"
     );
   }
 };
 
+
 export const obtenerGraficaInventario = async () => {
-	const res = await axios.get(GRAFICA_INVENTARIO);
-	return res.data;
+  const res = await axios.get(GRAFICA_INVENTARIO);
+  return res.data;
 };
 
 

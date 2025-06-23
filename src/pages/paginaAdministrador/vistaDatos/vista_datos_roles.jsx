@@ -5,7 +5,7 @@ import BackPage from "../../paginaCliente/components/BackPage";
 import { Edit, Trash2, Shield, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-
+import { RUTAS } from "../../../const/routers/routers";
 export default function VistaDatosRoles() {
 	const navigate = useNavigate();
 	const [roles, setRoles] = useState([]);
@@ -43,7 +43,7 @@ export default function VistaDatosRoles() {
 	}, []);
 
 	const handleCrearNuevo = () => {
-		navigate("/dashboard/roles/crear");
+		navigate(RUTAS.ADMIN.ROLES.CREAR_ROL);
 	};
 
 	const handleEditar = (id) => {

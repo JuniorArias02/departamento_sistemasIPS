@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +23,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuFormulariosOpen, setMenuFormulariosOpen] = useState(false);
 	const [menuRolesOpen, setMenuRolesOpen] = useState(false);
 	const [menuPermisosOpen, setMenuPermisosOpen] = useState(false);
+	const [menuSistemaOpen, setMenuSistemaOpen] = useState(false);
 	const [nuevosFormularios, setNuevosFormularios] = useState(0);
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
@@ -47,7 +48,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 	useEffect(() => {
 		const fetchNuevosFormularios = async () => {
-			if (usuario?.id) {
+			if (
+				usuario?.id &&
+				(permisos.includes(PERMISOS.MANTENIMIENTOS.CONTAR_TODOS_PENDIENTES) ||
+					permisos.includes(PERMISOS.MANTENIMIENTOS.CONTAR_PROPIOS_PENDIENTES))
+			) {
 				try {
 					const pendientes = await fetchNotificacionesPendientes(usuario.id);
 					setNuevosFormularios(pendientes);
@@ -55,12 +60,16 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 					console.error("Error al obtener nuevos formularios:", error);
 					setNuevosFormularios(0);
 				}
+			} else {
+				setNuevosFormularios(0); // por si pierde el permiso en caliente
 			}
 		};
+
 		fetchNuevosFormularios();
 		const interval = setInterval(fetchNuevosFormularios, 3000);
 		return () => clearInterval(interval);
-	}, [usuario?.id]);
+	}, [usuario?.id, permisos]);
+
 
 	const handleLogout = () => {
 		logout();
@@ -150,10 +159,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								}}
 								className="overflow-hidden"
 							>
-								<p className="font-semibold text-white/90 truncate max-w-[180px]">
+								<p className="font-semibold poppins-semibold  text-white/90 truncate max-w-[180px]">
 									{usuario?.nombre_completo || "Usuario"}
 								</p>
-								<p className="text-xs text-white/60 truncate max-w-[180px]">
+								<p className="text-xs inter-regular text-white/60 truncate max-w-[180px]">
 									{usuario?.rol}
 								</p>
 							</motion.div>
@@ -176,6 +185,33 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								sidebarOpen={sidebarOpen}
 								isActive={location.pathname === RUTAS.ADMIN.ROOT}
 							/>
+
+							{/* Menú Sistema */}
+							<SidebarCollapsible
+								icon={<ServerCog size={20} />} // o algún ícono como <Settings size={20} />
+								text="Sistema"
+								isOpen={menuSistemaOpen}
+								onClick={() => permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM)
+									? setMenuSistemaOpen(!menuSistemaOpen)
+									: mostrarAlertaSinPermiso()}
+								sidebarOpen={sidebarOpen}
+							>
+								<SidebarSubItem
+									icon={<Bell size={16} />}
+									text="Avisos Web"
+									onClick={() => {
+										if (permisos.includes(PERMISOS.ADMINISTRADOR_WEB.CREAR_AVISO_ACTUALIZACION)) {
+											navigate(RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB);
+											setTimeout(() => setSidebarOpen(false), 150);
+										} else {
+											mostrarAlertaSinPermiso();
+										}
+									}}
+									isActive={location.pathname === RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
+								/>
+							</SidebarCollapsible>
 
 							{/* Menú Usuarios */}
 							<SidebarCollapsible
@@ -241,7 +277,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									<SidebarSubItem
 										icon={<PlusCircle size={16} />}
 										text="Crear Nuevo Rol"
-										onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+										onClick={() => navigate(RUTAS.ADMIN.ROLES.CREAR_ROL)}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
@@ -318,26 +354,29 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 
 							{/* Ítem con notificación */}
-							<SidebarItem
-								icon={
-									<div className={`relative ${animarCampana ? "animate-bell" : ""}`}>
-										<Bell size={20} />
-										{nuevosFormularios > 0 && (
-											<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-												{nuevosFormularios}
-											</span>
-										)}
-									</div>
-								}
-								text="Mantenimientos IPS"
-								onClick={() => {
-									navigate(RUTAS.USER.MANTENIMIENTO.VISTA_DATOS);
-									setTimeout(() => setSidebarOpen(false), 150);
-								}}
-								sidebarOpen={sidebarOpen}
-								isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO.ROOT)}
-								delay={0.3}
-							/>
+							{permisos.includes(PERMISOS.MANTENIMIENTOS.VER_DATOS) && (
+								<SidebarItem
+									icon={
+										<div className={`relative ${animarCampana ? "animate-bell" : ""}`}>
+											<Bell size={20} />
+											{nuevosFormularios > 0 && (
+												<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+													{nuevosFormularios}
+												</span>
+											)}
+										</div>
+									}
+									text="Mantenimientos IPS"
+									onClick={() => {
+										navigate(RUTAS.USER.MANTENIMIENTO.VISTA_DATOS);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
+									sidebarOpen={sidebarOpen}
+									isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO.ROOT)}
+									delay={0.3}
+								/>
+							)}
+
 
 						</>
 					)}

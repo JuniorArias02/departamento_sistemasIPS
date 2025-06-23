@@ -11,11 +11,9 @@ import { UserPlus, Pencil, Trash2, Eye, Search, Filter, Download, UserX, Chevron
 import { PERMISOS } from "../../../secure/permisos/permisos";
 
 export default function VistaDatosUsuarios() {
-	const { permisos } = useApp();
 	const [usuarios, setUsuarios] = useState([]);
 	const navigate = useNavigate();
-	const { usuario: usuarioContext } = useApp();
-
+	const { usuario: usuarioContext, permisos } = useApp();
 	const [totalUsuarios, setTotalUsuarios] = useState(0);
 	const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
 	const [filteredUsuarios, setFilteredUsuarios] = useState([]); // Estado para usuarios filtrados

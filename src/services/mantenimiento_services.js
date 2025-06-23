@@ -36,8 +36,6 @@ export const crearMantenimiento = async (datos) => {
 		const response = await axios.post(CREAR_MANTENIMIENTO, datos);
 		return response.data;
 	} catch (error) {
-		console.log("datos de salida error	",datos)
-		console.error("Error al crear mantenimiento freezer:", error);
 		throw new Error(
 			error?.response?.data?.mensaje || "Error al crear el mantenimiento freezer",
 		);

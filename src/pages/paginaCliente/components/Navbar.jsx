@@ -7,14 +7,32 @@ import { PERMISOS } from "../../../secure/permisos/permisos";
 import { RUTAS } from "../../../const/routers/routers";
 import { useState, useRef, useEffect } from "react";
 import DepartamentoSistemas from "./DepartamentoSistemas";
+import { notificarActualizaciones } from "../../../services/administrador_web_services";
 
 export default function Navbar({ toggleSidebar, sidebarOpen }) {
   const navigate = useNavigate();
-  const { usuario, logout, permisos} = useApp();
+  const { usuario, logout, permisos } = useApp();
   const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [cantidadActualizaciones, setCantidadActualizaciones] = useState(0);
   const menuRef = useRef(null);
 
   const toggleMenu = () => setMostrarMenu(prev => !prev);
+
+
+  useEffect(() => {
+    const obtenerActualizaciones = async () => {
+      try {
+        const res = await notificarActualizaciones();
+        if (res.success && Array.isArray(res.data)) {
+          setCantidadActualizaciones(res.data.length);
+        }
+      } catch (error) {
+        console.error("Error al consultar actualizaciones:", error);
+      }
+    };
+
+    obtenerActualizaciones();
+  }, []);
 
   useEffect(() => {
     const handleClickFuera = (e) => {
@@ -81,15 +99,20 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
 
         {/* Parte derecha */}
         <div className="flex items-center gap-4">
+
           {/* Notificaciones (opcional) */}
           <button
             className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
             aria-label="Notificaciones"
+            onClick={() => navigate(RUTAS.USER.SISTEMA.VER_ACTUALIZACIONES)}
           >
             <Bell className="w-5 h-5 text-white/90" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            {cantidadActualizaciones > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {cantidadActualizaciones}
+              </span>
+            )}
           </button>
-
           <div className="relative" ref={menuRef}>
             {/* Click para mostrar menú */}
             <div

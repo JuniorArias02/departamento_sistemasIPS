@@ -21,15 +21,18 @@ export default function Dashboard() {
 	useEffect(() => {
 		const cargarTotales = async () => {
 			try {
-				const [inventario, mantenimiento] = await Promise.all([
-					obtenerTotalInventario(),
-					obtenerTotalMantenimiento()
+				const resultados = await Promise.all([
+					permisos.includes(PERMISOS.INVENTARIO.VER_FORMULARIO)
+						? obtenerTotalInventario()
+						: Promise.resolve(0),
+					permisos.includes(PERMISOS.MANTENIMIENTOS.VER_DATOS)
+						? obtenerTotalMantenimiento()
+						: Promise.resolve(0),
 				]);
 
 				setTotales({
-					inventario: inventario,
-					mantenimiento: mantenimiento
-
+					inventario: resultados[0],
+					mantenimiento: resultados[1],
 				});
 			} catch (error) {
 				console.error("Error al cargar totales", error);
@@ -39,7 +42,7 @@ export default function Dashboard() {
 		cargarTotales();
 		const intervalo = setInterval(cargarTotales, 10000);
 		return () => clearInterval(intervalo);
-	}, []);
+	}, [permisos]);
 
 	const opciones = [
 		{

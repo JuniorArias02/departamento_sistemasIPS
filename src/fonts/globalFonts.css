@@ -1,0 +1,18 @@
+/* Textos */
+.inter-regular { font-family: 'Inter', sans-serif; font-weight: 400; }
+.inter-medium { font-family: 'Inter', sans-serif; font-weight: 500; }
+.inter-semibold { font-family: 'Inter', sans-serif; font-weight: 600; }
+.inter-bold { font-family: 'Inter', sans-serif; font-weight: 700; }
+
+/* Títulos */
+.poppins-regular { font-family: 'Poppins', sans-serif; font-weight: 400; }
+.poppins-semibold { font-family: 'Poppins', sans-serif; font-weight: 600; }
+.poppins-bold { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+/* Efecto especial para el texto del departamento */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #ffffff, #dbeafe);
+}

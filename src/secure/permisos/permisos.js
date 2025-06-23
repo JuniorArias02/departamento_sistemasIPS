@@ -29,8 +29,11 @@ export const PERMISOS = {
 		EDITAR: "editar_mantenimiento",
 		ELIMINAR: "eliminar_mantenimiento",
 		VER_TODOS: "ver_todos_mantenimientos",
-		VER_PROPIOS: "ver_propios_mantenimientos" 
+		VER_PROPIOS: "ver_propios_mantenimientos",
+		CONTAR_TODOS_PENDIENTES: 'contar_todos_pendientes_mantenimientos',
+		CONTAR_PROPIOS_PENDIENTES: 'contar_propios_pendientes_mantenimientos',
 	},
+
 	GESTION_PERMISOS: {
 		MENU_ITEM: "menu_item_permisos",
 		CREAR: "crear_permiso",
@@ -43,5 +46,13 @@ export const PERMISOS = {
 		EDITAR: "editar_inventario",
 		ELIMINAR: "eliminar_inventario",
 		EXPORTAR: "exportar_inventario"
-	}
+	},
+
+	ADMINISTRADOR_WEB: {
+		MENU_ITEM: 'menu_item_admin_web',
+		CREAR_AVISO_ACTUALIZACION: 'crear_aviso_actualizacion_web',
+		EDITAR_AVISO_ACTUALIZACION: 'editar_aviso_actualizacion_web',
+		ELIMINAR_AVISO_ACTUALIZACION: 'eliminar_aviso_actualizacion_web',
+		VER_AVISOS: 'ver_avisos_actualizacion_web',
+	},
 };
