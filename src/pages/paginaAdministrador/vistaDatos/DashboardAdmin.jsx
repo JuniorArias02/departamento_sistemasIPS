@@ -12,6 +12,9 @@ import { obtenerTotalUsuarios } from "../../../services/usuario_service";
 import RecentActivities from "../components/ux/RecentActivities";
 import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../const/routers/routers";
+import EmptyState from "../components/graficas/EmptyChart";
+import Swal from "sweetalert2";
+
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
 	const [mantenimiento, setMantenimiento] = useState([]);
@@ -244,29 +247,37 @@ export default function DashboardAdmin() {
 						change=""
 						icon={<PlusCircle className="w-6 h-6" />}
 						color="green"
+						onNavigate={() => {
+							Swal.fire({
+								icon: 'info',
+								title: 'Oops...',
+								text: 'No hay widgets disponibles para agregar',
+								confirmButtonColor: '#6366f1'
+							});
+						}}
 					/>
 
 				</div>
 
 				<div className="lg:col-span-2">
-					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 h-full">
-						{/* Header con título y botones */}
-						<div className="flex justify-between items-center mb-6">
-							<h2 className="text-lg font-semibold">
-								{["Inventario", "Mantenimiento", "Proximamente"][graficaIndex]}
+					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-4 md:p-6 h-full flex flex-col">
+						{/* Header */}
+						<div className="flex justify-between items-center mb-4 md:mb-6">
+							<h2 className="text-lg font-semibold text-gray-800">
+								{["Inventario", "Mantenimiento", "Próximamente"][graficaIndex]}
 							</h2>
 
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-1 md:gap-2">
 								<button
 									onClick={() => setGraficaIndex((prev) => (prev - 1 + 3) % 3)}
-									className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+									className="p-1 md:p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
 									aria-label="Gráfica anterior"
 								>
 									<ChevronLeft size={16} />
 								</button>
 								<button
 									onClick={() => setGraficaIndex((prev) => (prev + 1) % 3)}
-									className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+									className="p-1 md:p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
 									aria-label="Gráfica siguiente"
 								>
 									<ChevronRight size={16} />
@@ -274,34 +285,43 @@ export default function DashboardAdmin() {
 							</div>
 						</div>
 
-						{/* Contenedor de la gráfica con animación */}
-						<div className="h-100 relative overflow-hidden">
+						{/* Contenedor principal */}
+						<div className="flex-1 relative min-h-[400px]">
 							{loading ? (
-								<div className="w-full h-full animate-pulse bg-gray-100 rounded-xl flex flex-col gap-4 p-4">
-									<div className="h-6 bg-gray-300 rounded w-1/3" />
-									<div className="h-4 bg-gray-200 rounded w-1/4" />
-									<div className="flex-1 bg-gray-200 rounded" />
+								<div className="absolute inset-0 flex items-center justify-center">
+									<div className="w-full h-full animate-pulse bg-gray-100 rounded-xl" />
 								</div>
 							) : (
 								<AnimatePresence mode="wait">
 									<motion.div
 										key={graficaIndex}
-										initial={{ opacity: 0, x: 100 }}
+										initial={{ opacity: 0, x: graficaIndex > 1 ? 50 : -50 }}
 										animate={{ opacity: 1, x: 0 }}
-										exit={{ opacity: 0, x: -100 }}
-										transition={{ duration: 0.4 }}
-										className="absolute w-full h-full"
+										exit={{ opacity: 0, x: graficaIndex > 1 ? -50 : 50 }}
+										transition={{ duration: 0.3 }}
+										className="absolute inset-0"
 									>
-										{[<ChartPorUsuario data={inventario} diasFiltro={diasFiltro} />, <ChartPorUsuario data={mantenimiento} diasFiltro={diasFiltro} />][graficaIndex]}
+										{graficaIndex === 0 ? (
+											<ChartPorUsuario
+												data={inventario}
+												diasFiltro={diasFiltro}
+												title=""
+											/>
+										) : graficaIndex === 1 ? (
+											<ChartPorUsuario
+												data={mantenimiento}
+												diasFiltro={diasFiltro}
+												title=""
+											/>
+										) : (
+											<EmptyState />
+										)}
 									</motion.div>
 								</AnimatePresence>
 							)}
-
 						</div>
 					</div>
 				</div>
-
-
 				{/* Sidebar de actividad */}
 				<div className="space-y-6">
 					<div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6">
