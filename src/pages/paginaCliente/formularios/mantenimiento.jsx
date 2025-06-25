@@ -18,17 +18,126 @@ export default function FormularioMantenimientoFreezer() {
   const [loadingCoordinadores, setLoadingCoordinadores] = useState(false);
   const [sedes, setSedes] = useState([]);
   const [loadingSedes, setLoadingSedes] = useState(false);
+  const [isDragActive, setIsDragActive] = useState(false);
+  const [error, setError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [fileSizeInMB, setFileSizeInMB] = useState(0);
+
+  const [formData, setFormData] = useState({
+    titulo: "",
+    codigo: "",
+    modelo: "",
+    dependencia: "",
+    sede_id: "",
+    nombre_receptor: "",
+    imagen: "",
+    descripcion: "",
+    imageFile: null // Para guardar el archivo completo
+  });
+
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (mantenimientoEdit) {
       setFormData(mantenimientoEdit);
     }
   }, [mantenimientoEdit]);
 
+  const handleImageChange = (e) => {
+    setError(null);
+
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Mostrar tamaño del archivo
+    const sizeInMB = file.size / (1024 * 1024);
+    setFileSizeInMB(sizeInMB);
+
+    // Validar tipo de archivo
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      setError('Formato no válido. Solo se aceptan JPG, PNG, JPEG, WEBP o GIF.');
+      return;
+    }
+
+    // Validar tamaño (90MB máximo)
+    const maxSize = 90 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(`El archivo es demasiado grande (${sizeInMB.toFixed(2)} MB). Máximo permitido: 90MB.`);
+      return;
+    }
+
+    // Activar estado de carga
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    // Simular progreso
+    const simulateProgress = () => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          return 100;
+        }
+        const increment = sizeInMB > 50 ? 5 : 10;
+        return Math.min(prev + increment, 100);
+      });
+
+      if (uploadProgress < 100) {
+        setTimeout(simulateProgress, 200);
+      }
+    };
+
+    simulateProgress();
+
+    // Procesar la imagen
+    const reader = new FileReader();
+
+    reader.onloadstart = () => {
+      // proximamente para progreso real
+    };
+
+    reader.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const progress = Math.round((e.loaded / e.total) * 100);
+        setUploadProgress(progress);
+      }
+    };
+
+    reader.onloadend = () => {
+      setTimeout(() => {
+        setIsUploading(false);
+        setFormData({
+          ...formData,
+          imagen: reader.result,
+          imageFile: file
+        });
+      }, 500);
+    };
+
+    reader.onerror = () => {
+      setIsUploading(false);
+      setError('Error al leer el archivo. Inténtalo de nuevo.');
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const handleRemoveImage = () => {
-    setFormData({ ...formData, imagen: "" });
+    setFormData({
+      ...formData,
+      imagen: "",
+      imageFile: null
+    });
+    setError(null);
+    setIsUploading(false);
+    setUploadProgress(0);
+    setFileSizeInMB(0);
+
     const fileInput = document.getElementById('imagen');
     if (fileInput) fileInput.value = '';
   };
+
   useEffect(() => {
     const cargarCoordinadores = async () => {
       setLoadingCoordinadores(true);
@@ -49,6 +158,7 @@ export default function FormularioMantenimientoFreezer() {
 
     cargarCoordinadores();
   }, []);
+
   useEffect(() => {
     const cargarSedes = async () => {
       setLoadingSedes(true);
@@ -69,33 +179,10 @@ export default function FormularioMantenimientoFreezer() {
 
     cargarSedes();
   }, []);
-  const [formData, setFormData] = useState({
-    titulo: "",
-    codigo: "",
-    modelo: "",
-    dependencia: "",
-    sede_id: "",
-    nombre_receptor: "",
-    imagen: "",
-    descripcion: "",
-  });
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, imagen: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -104,14 +191,23 @@ export default function FormularioMantenimientoFreezer() {
 
     setLoading(true);
 
-    const datosConUsuario = {
-      ...formData,
-      creado_por: usuario?.id,
-    };
+    // Crear FormData para enviar archivos
+    const formDataToSend = new FormData();
+
+    // Agregar todos los campos del formulario
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === 'imageFile' && value) {
+        formDataToSend.append('imagen', value);
+      } else if (key !== 'imageFile') {
+        formDataToSend.append(key, value);
+      }
+    });
+
+    formDataToSend.append('creado_por', usuario?.id);
 
     try {
       if (mantenimientoEdit?.id) {
-        await actualizarEstadoMantenimiento(mantenimientoEdit.id, datosConUsuario);
+        await actualizarEstadoMantenimiento(mantenimientoEdit.id, formDataToSend);
         Swal.fire({
           icon: "success",
           title: "¡Actualizado!",
@@ -120,7 +216,7 @@ export default function FormularioMantenimientoFreezer() {
           showConfirmButton: false,
         });
       } else {
-        await crearMantenimiento(datosConUsuario);
+        await crearMantenimiento(formDataToSend);
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",
@@ -129,7 +225,7 @@ export default function FormularioMantenimientoFreezer() {
           showConfirmButton: false,
         });
 
-        // Limpieza completa de todos los campos
+        // Limpieza completa
         setFormData({
           titulo: "",
           codigo: "",
@@ -139,13 +235,12 @@ export default function FormularioMantenimientoFreezer() {
           nombre_receptor: "",
           imagen: "",
           descripcion: "",
+          imageFile: null
         });
 
-        // Limpiar también el input de archivo (necesario para permitir subir la misma imagen otra vez)
+        // Limpiar input de archivo
         const fileInput = document.getElementById('imagen');
-        if (fileInput) {
-          fileInput.value = '';
-        }
+        if (fileInput) fileInput.value = '';
       }
     } catch (err) {
       console.error(err);
@@ -158,6 +253,7 @@ export default function FormularioMantenimientoFreezer() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 bg-gray-50">
@@ -298,20 +394,28 @@ export default function FormularioMantenimientoFreezer() {
               Imagen <span className="text-red-500">*</span>
             </label>
             <div
-              className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-200 ${formData.imagen ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200 hover:border-blue-300 bg-gray-50/30'} backdrop-blur-sm`}
+              className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-200 ${formData.imagen
+                ? 'border-green-200 bg-green-50/30'
+                : isDragActive
+                  ? 'border-blue-400 bg-blue-50/50'
+                  : 'border-gray-200 hover:border-blue-300 bg-gray-50/30'
+                } backdrop-blur-sm`}
               onDragOver={(e) => {
                 e.preventDefault();
-                e.currentTarget.classList.add('border-blue-400', 'bg-blue-50/50');
+                setIsDragActive(true);
+              }}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                setIsDragActive(true);
               }}
               onDragLeave={(e) => {
                 e.preventDefault();
-                if (!formData.imagen) {
-                  e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50/50');
-                }
+                setIsDragActive(false);
               }}
               onDrop={(e) => {
                 e.preventDefault();
-                if (e.dataTransfer.files.length > 0) {
+                setIsDragActive(false);
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                   handleImageChange({ target: { files: e.dataTransfer.files } });
                 }
               }}
@@ -325,6 +429,29 @@ export default function FormularioMantenimientoFreezer() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 required
               />
+
+              {/* Estado de carga */}
+              {isUploading && (
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl">
+                  <div className="w-12 h-12 mb-4 relative">
+                    {/* Spinner de carga */}
+                    <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-spin"></div>
+                    <div className="absolute inset-1 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-700">Procesando imagen...</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {uploadProgress}% completado - {fileSizeInMB.toFixed(2)} MB
+                  </p>
+                  {/* Barra de progreso */}
+                  <div className="w-3/4 bg-gray-200 rounded-full h-2 mt-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
               {!formData.imagen ? (
                 <div className="space-y-2">
                   <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -335,15 +462,19 @@ export default function FormularioMantenimientoFreezer() {
                   <p className="text-sm text-gray-600">
                     <span className="font-medium text-blue-600">Haz clic para subir</span> o arrastra y suelta
                   </p>
-                  <p className="text-xs text-gray-400">Formatos: PNG, JPG, JPEG (Máx. 5MB)</p>
+                  <p className="text-xs text-gray-400">Formatos: PNG, JPG, JPEG (Máx. 90MB)</p>
+                  {error && <p className="text-xs text-red-500">{error}</p>}
                 </div>
               ) : (
                 <div className="relative">
                   <img
                     src={formData.imagen}
                     alt="Vista previa"
-                    className="mx-auto h-32 object-contain rounded-lg border border-gray-200/80 shadow-sm"
+                    className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
                   />
+                  <div className="mt-2 text-xs text-gray-500">
+                    Tamaño: {(formData.imageFile?.size / (1024 * 1024)).toFixed(2)} MB
+                  </div>
                   <button
                     type="button"
                     onClick={handleRemoveImage}
@@ -358,7 +489,6 @@ export default function FormularioMantenimientoFreezer() {
               )}
             </div>
           </motion.div>
-
           {/* Campo de descripción */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}

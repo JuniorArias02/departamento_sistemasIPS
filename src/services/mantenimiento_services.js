@@ -32,7 +32,6 @@ export const actualizarEstadoMantenimiento = async (id, datos) => {
 
 export const crearMantenimiento = async (datos) => {
 	try {
-		console.log("datos de entrada",datos)
 		const response = await axios.post(CREAR_MANTENIMIENTO, datos);
 		return response.data;
 	} catch (error) {
