@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+
 export const SidebarItem = ({ icon, text, onClick, sidebarOpen, isActive = false, badge }) => (
   <motion.li
     whileHover={{ scale: 1.02 }}
@@ -8,7 +9,7 @@ export const SidebarItem = ({ icon, text, onClick, sidebarOpen, isActive = false
     <div className="relative">
       <button
         onClick={onClick}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
+        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${isActive
             ? 'bg-white/10 text-white'
             : 'text-white/70 hover:bg-white/5 hover:text-white'
           }`}
@@ -16,13 +17,13 @@ export const SidebarItem = ({ icon, text, onClick, sidebarOpen, isActive = false
         <div className="relative flex-shrink-0">
           {icon}
           {badge && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center inter-regular">
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center inter-regular">
               {badge}
             </span>
           )}
         </div>
 
-        <div className="min-w-[120px] overflow-hidden">
+        <div className="min-w-[110px] overflow-hidden">
           <AnimatePresence mode="wait">
             {sidebarOpen ? (
               <motion.span
@@ -38,7 +39,7 @@ export const SidebarItem = ({ icon, text, onClick, sidebarOpen, isActive = false
                   x: -10,
                   transition: { duration: 0.1 }
                 }}
-                className="poppins-semibold block truncate text-[15px] "
+                className="poppins-medium block truncate text-[14px]"
               >
                 {text}
               </motion.span>

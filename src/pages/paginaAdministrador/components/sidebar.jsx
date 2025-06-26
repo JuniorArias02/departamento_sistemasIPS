@@ -129,7 +129,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			>
 				{/* Perfil usuario - Versión optimizada */}
 				<motion.div
-					className="flex items-center gap-3 mb-8 p-1 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-3 mt-4"
+					className="flex items-center gap-2 mb-6 p-1 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 mx-2 mt-3"
 					whileHover={{ scale: 1.02 }}
 					transition={{ type: "spring", stiffness: 200 }}
 				>
@@ -137,9 +137,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						<img
 							src={avatarSrc}
 							alt="Avatar"
-							className="w-12 h-12 rounded-full object-cover border-2 border-white/20"
+							className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
 						/>
-						<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-indigo-900"></div>
+						<div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-indigo-900"></div>
 					</div>
 
 					<AnimatePresence>
@@ -159,10 +159,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								}}
 								className="overflow-hidden"
 							>
-								<p className="font-semibold poppins-semibold  text-white/90 truncate max-w-[180px]">
+								<p className="font-medium poppins-medium text-sm text-white/90 truncate max-w-[160px]">
 									{usuario?.nombre_completo || "Usuario"}
 								</p>
-								<p className="text-xs inter-regular text-white/60 truncate max-w-[180px]">
+								<p className="text-[11px] inter-regular text-white/60 truncate max-w-[160px]">
 									{usuario?.rol}
 								</p>
 							</motion.div>
@@ -170,13 +170,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 					</AnimatePresence>
 				</motion.div>
 
+
 				{/* Menú principal */}
-				<ul className="space-y-1 px-3">
+				<ul className="space-y-2 px-4">
 					{permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
 							{/* Ítems del menú */}
 							<SidebarItem
-								icon={<Home size={20} />}
+								icon={<Home size={18} />}
 								text="Inicio"
 								onClick={() => {
 									navigate(RUTAS.ADMIN.ROOT);
@@ -188,7 +189,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							{/* Menú Sistema */}
 							<SidebarCollapsible
-								icon={<ServerCog size={20} />} // o algún ícono como <Settings size={20} />
+								icon={<ServerCog size={18} />} // o algún ícono como <Settings size={18} />
 								text="Sistema"
 								isOpen={menuSistemaOpen}
 								onClick={() => permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM)
@@ -215,7 +216,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							{/* Menú Usuarios */}
 							<SidebarCollapsible
-								icon={<Users size={20} />}
+								icon={<Users size={18} />}
 								text="Usuarios"
 								isOpen={menuUsuariosOpen}
 								onClick={() => permisos.includes(PERMISOS.USUARIOS.MENU_ITEM)
@@ -253,7 +254,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							{/* Menú Roles */}
 							<SidebarCollapsible
-								icon={<Shield size={20} />}
+								icon={<Shield size={18} />}
 								text="Gestión de Roles"
 								isOpen={menuRolesOpen}
 								onClick={() =>
@@ -286,7 +287,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							{/* Gestión de Permisos */}
 							<SidebarCollapsible
-								icon={<KeyRound size={20} />}
+								icon={<KeyRound size={18} />}
 								text="Gestión de Permisos"
 								isOpen={menuPermisosOpen}
 								onClick={() =>
@@ -327,7 +328,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 							{/* Menú Formularios */}
 							<SidebarCollapsible
-								icon={<FileText size={20} />}
+								icon={<FileText size={18} />}
 								text="Formularios"
 								isOpen={menuFormulariosOpen}
 								onClick={() => setMenuFormulariosOpen(!menuFormulariosOpen)}
@@ -358,7 +359,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								<SidebarItem
 									icon={
 										<div className={`relative ${animarCampana ? "animate-bell" : ""}`}>
-											<Bell size={20} />
+											<Bell size={18} />
 											{nuevosFormularios > 0 && (
 												<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
 													{nuevosFormularios}
@@ -399,7 +400,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-red-600/30 text-red-400 hover:text-red-200 transition-colors group"
 							title="Cerrar sesión"
 						>
-							<LogOut size={20} className="group-hover:rotate-180 transition-transform" />
+							<LogOut size={18} className="group-hover:rotate-180 transition-transform" />
 							{sidebarOpen && (
 								<motion.span
 									initial={{ opacity: 0, x: -10 }}
@@ -421,7 +422,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								onClick={() => navigate(RUTAS.ADMIN.ROOT)}
 								className="p-3 rounded-full hover:bg-white/10 transition-colors"
 							>
-								<Home size={20} />
+								<Home size={18} />
 							</button>
 						</Tooltip>
 
@@ -431,7 +432,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									onClick={() => navigate(RUTAS.ADMIN.USUARIOS.ROOT)}
 									className="p-3 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer"
 								>
-									<Users size={20} />
+									<Users size={18} />
 									{nuevosFormularios > 0 && (
 										<span className="absolute top-1 right-1 bg-red-500 rounded-full w-2 h-2"></span>
 									)}
