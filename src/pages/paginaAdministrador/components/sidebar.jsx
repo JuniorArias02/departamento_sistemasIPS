@@ -61,7 +61,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 					setNuevosFormularios(0);
 				}
 			} else {
-				setNuevosFormularios(0); // por si pierde el permiso en caliente
+				setNuevosFormularios(0);
 			}
 		};
 
@@ -95,7 +95,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
     ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
   `}
-				initial={isMobile ? { x: "-100%" } : "closed"}
+				initial={isMobile ? { x: "-100%" } : { width: "4.5rem" }} // Valor inicial definido
 				animate={isMobile
 					? sidebarOpen ? { x: 0 } : { x: "-100%" }
 					: sidebarOpen ? "open" : "closed"
@@ -113,7 +113,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						},
 					},
 					closed: {
-						width: "5rem",
+						width: "4.5rem",
 						transition: {
 							type: "spring",
 							damping: 30,
@@ -124,7 +124,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						},
 					},
 				} : undefined}
-				transition={{ type: "spring", damping: 25, stiffness: 200 }}
 				style={{ willChange: "transform, width" }}
 			>
 				{/* Perfil usuario - Versión optimizada */}

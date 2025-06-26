@@ -31,14 +31,17 @@ export const actualizarEstadoMantenimiento = async (id, datos) => {
 };
 
 export const crearMantenimiento = async (datos) => {
-	try {
-		const response = await axios.post(CREAR_MANTENIMIENTO, datos);
-		return response.data;
-	} catch (error) {
-		throw new Error(
-			error?.response?.data?.mensaje || "Error al crear el mantenimiento freezer",
-		);
-	}
+  try {
+    const response = await axios.post(CREAR_MANTENIMIENTO, datos); 
+    return response.data;
+  } catch (error) {
+    console.error("Detalles del error:", error?.response?.data);
+    throw new Error(
+      error?.response?.data?.error || 
+      error?.response?.data?.mensaje || 
+      "Error al crear el mantenimiento freezer"
+    );
+  }
 };
 
 

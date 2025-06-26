@@ -197,11 +197,12 @@ export default function FormularioMantenimientoFreezer() {
     // Agregar todos los campos del formulario
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'imageFile' && value) {
-        formDataToSend.append('imagen', value);
-      } else if (key !== 'imageFile') {
+        formDataToSend.append('imagen', value); // solo este va al backend
+      } else if (key !== 'imageFile' && value !== null && value !== undefined) {
         formDataToSend.append(key, value);
       }
     });
+
 
     formDataToSend.append('creado_por', usuario?.id);
 
