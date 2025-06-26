@@ -66,7 +66,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 		};
 
 		fetchNuevosFormularios();
-		const interval = setInterval(fetchNuevosFormularios, 3000);
+		const interval = setInterval(fetchNuevosFormularios, 10000);
 		return () => clearInterval(interval);
 	}, [usuario?.id, permisos]);
 

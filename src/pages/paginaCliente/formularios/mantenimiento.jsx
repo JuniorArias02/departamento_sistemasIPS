@@ -9,6 +9,7 @@ import { crearMantenimiento, actualizarEstadoMantenimiento } from "../../../serv
 import { listarCoordinadores } from "../../../services/utils_service";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
+import imageCompression from 'browser-image-compression';
 
 export default function FormularioMantenimientoFreezer() {
   const { usuario, permisos } = useApp();
@@ -33,7 +34,7 @@ export default function FormularioMantenimientoFreezer() {
     nombre_receptor: "",
     imagen: "",
     descripcion: "",
-    imageFile: null // Para guardar el archivo completo
+    imageFile: null 
   });
 
   const [loading, setLoading] = useState(false);
@@ -44,84 +45,79 @@ export default function FormularioMantenimientoFreezer() {
     }
   }, [mantenimientoEdit]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     setError(null);
 
     const file = e.target.files?.[0];
-
     if (!file) return;
 
-    // Mostrar tamaño del archivo
     const sizeInMB = file.size / (1024 * 1024);
     setFileSizeInMB(sizeInMB);
 
-    // Validar tipo de archivo
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
     if (!validTypes.includes(file.type)) {
       setError('Formato no válido. Solo se aceptan JPG, PNG, JPEG, WEBP o GIF.');
       return;
     }
 
-    // Validar tamaño (90MB máximo)
     const maxSize = 90 * 1024 * 1024;
     if (file.size > maxSize) {
       setError(`El archivo es demasiado grande (${sizeInMB.toFixed(2)} MB). Máximo permitido: 90MB.`);
       return;
     }
 
-    // Activar estado de carga
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simular progreso
-    const simulateProgress = () => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          return 100;
-        }
-        const increment = sizeInMB > 50 ? 5 : 10;
-        return Math.min(prev + increment, 100);
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      // 🧠 Crear nombre con extensión real
+      const extMap = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/gif': 'gif'
+      };
+      const ext = extMap[compressedFile.type] || 'jpg';
+      const newFileName = `imagen_${Date.now()}.${ext}`;
+
+      // 🛠 Renombrar el archivo
+      const renamedFile = new File([compressedFile], newFileName, {
+        type: compressedFile.type,
+        lastModified: Date.now(),
       });
 
-      if (uploadProgress < 100) {
-        setTimeout(simulateProgress, 200);
-      }
-    };
+      const reader = new FileReader();
 
-    simulateProgress();
-
-    // Procesar la imagen
-    const reader = new FileReader();
-
-    reader.onloadstart = () => {
-      // proximamente para progreso real
-    };
-
-    reader.onprogress = (e) => {
-      if (e.lengthComputable) {
-        const progress = Math.round((e.loaded / e.total) * 100);
-        setUploadProgress(progress);
-      }
-    };
-
-    reader.onloadend = () => {
-      setTimeout(() => {
+      reader.onloadend = () => {
         setIsUploading(false);
         setFormData({
           ...formData,
           imagen: reader.result,
-          imageFile: file
+          imageFile: renamedFile
         });
-      }, 500);
-    };
+      };
 
-    reader.onerror = () => {
+      reader.onerror = () => {
+        setIsUploading(false);
+        setError('Error al leer el archivo. Inténtalo de nuevo.');
+      };
+
+      reader.readAsDataURL(renamedFile);
+    } catch (error) {
       setIsUploading(false);
-      setError('Error al leer el archivo. Inténtalo de nuevo.');
-    };
-
-    reader.readAsDataURL(file);
+      console.error(error);
+      setError('No se pudo comprimir la imagen.');
+    }
   };
+
 
   const handleRemoveImage = () => {
     setFormData({
@@ -197,12 +193,11 @@ export default function FormularioMantenimientoFreezer() {
     // Agregar todos los campos del formulario
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'imageFile' && value) {
-        formDataToSend.append('imagen', value); // solo este va al backend
-      } else if (key !== 'imageFile' && value !== null && value !== undefined) {
+        formDataToSend.append('imagen', value);
+      } else if (key !== 'imageFile') {
         formDataToSend.append(key, value);
       }
     });
-
 
     formDataToSend.append('creado_por', usuario?.id);
 
