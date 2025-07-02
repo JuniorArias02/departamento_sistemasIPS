@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO,GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
+import { LISTAR_MANTENIMIENTOS_POR_MES, CREAR_AGENDA_MANTENIMIENTO, CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO, GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
 
 
 export const listarMantenimientos = async (usuarioId) => {
@@ -31,17 +31,17 @@ export const actualizarEstadoMantenimiento = async (id, datos) => {
 };
 
 export const crearMantenimiento = async (datos) => {
-  try {
-    const response = await axios.post(CREAR_MANTENIMIENTO, datos); 
-    return response.data;
-  } catch (error) {
-    console.error("Detalles del error:", error?.response?.data);
-    throw new Error(
-      error?.response?.data?.error || 
-      error?.response?.data?.mensaje || 
-      "Error al crear el mantenimiento freezer"
-    );
-  }
+	try {
+		const response = await axios.post(CREAR_MANTENIMIENTO, datos);
+		return response.data;
+	} catch (error) {
+		console.error("Detalles del error:", error?.response?.data);
+		throw new Error(
+			error?.response?.data?.error ||
+			error?.response?.data?.mensaje ||
+			"Error al crear el mantenimiento freezer"
+		);
+	}
 };
 
 
@@ -69,5 +69,25 @@ export const fetchNotificacionesPendientes = async (usuarioId) => {
 	} catch (error) {
 		console.error('Error:', error.response?.data?.error || error.message);
 		return 0;
+	}
+};
+
+
+export const getMantenimientosPorMes = async (fecha) => {
+	const fechaISO = fecha.toISOString().split("T")[0]; // ej: "2025-07-01"
+	const { data } = await axios.get(LISTAR_MANTENIMIENTOS_POR_MES, {
+		params: { fecha: fechaISO }
+	});
+	console.log("Datos obtenidos:", data);
+	return data;
+};
+
+export const crearAgendaMantenimiento = async (datos) => {
+	try {
+		const { data } = await axios.post(CREAR_AGENDA_MANTENIMIENTO, datos);
+		return data;
+	} catch (error) {
+		console.error("Error creando mantenimiento agendado:", error);
+		throw error?.response?.data || { error: "Error desconocido" };
 	}
 };

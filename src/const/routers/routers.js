@@ -46,6 +46,7 @@ export const RUTAS = {
       CREAR_MANTENIMIENTO: `${DASHBOARD}/crear_mantenimiento`,
       VISTA_DATOS: `${DASHBOARD}/mantenimiento`,
       VER_DETALLES: `${DASHBOARD}/mantenimiento/detalles`,
+      AGENDA_MANTENIMIENTOS: `${DASHBOARD}/agenda_mantenimiento`,
     },
 
     SISTEMA: {

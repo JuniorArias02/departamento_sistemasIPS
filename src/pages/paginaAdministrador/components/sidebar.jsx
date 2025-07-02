@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { CalendarRange, CalendarDays, CalendarClock , Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuPermisosOpen, setMenuPermisosOpen] = useState(false);
 	const [menuSistemaOpen, setMenuSistemaOpen] = useState(false);
 	const [nuevosFormularios, setNuevosFormularios] = useState(0);
+	const [menuAgendamientoMantenimientoOpen, setMenuAgendamientoMantenimientoOpen] = useState(false);
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
@@ -377,6 +378,33 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								/>
 							)}
 
+							{/* MENU DE AGENDAMIENTO DE MANTENIMIENTOS */}
+							<SidebarCollapsible
+								icon={<CalendarRange size={18} />}
+								text="Agendar Mantenimiento"
+								isOpen={menuAgendamientoMantenimientoOpen}
+								onClick={() => setMenuAgendamientoMantenimientoOpen(!menuAgendamientoMantenimientoOpen)}
+								sidebarOpen={sidebarOpen}
+								isBeta={true}
+							>
+								<SidebarSubItem
+									icon={<CalendarDays size={16} />}
+									text="Ver Calendario"
+									onClick={() => {
+										navigate(RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
+								/>
+								<SidebarSubItem
+									icon={<CalendarClock  size={16} />}
+									text="Ver Programados"
+									onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+									sidebarOpen={sidebarOpen}
+									delay={0.2}
+								/>
+							</SidebarCollapsible>
 
 						</>
 					)}

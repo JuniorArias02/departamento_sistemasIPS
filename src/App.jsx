@@ -21,6 +21,8 @@ import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
 
+import CalendarioMantenimientos from "./pages/paginaCliente/calendarioMantenimiento/CalendarioMantenimientos";
+
 import FormularioCrearRol from "./pages/paginaAdministrador/formularios/crear_rol";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
@@ -236,9 +238,16 @@ function App() {
           />
 
           <Route
+            path={RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS}
+            element={
+              <CalendarioMantenimientos />
+            }
+          />
+
+          <Route
             path={RUTAS.USER.SISTEMA.VER_ACTUALIZACIONES}
             element={
-                <VistaActualizacionesWeb />
+              <VistaActualizacionesWeb />
             }
           />
 
