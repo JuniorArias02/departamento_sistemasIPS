@@ -78,7 +78,6 @@
   animation: bell 0.6s ease-in-out;
 }
 
-
 /* Estilo para la barra de scroll */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -100,8 +99,14 @@
 
 /* Animación de entrada */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -113,11 +118,11 @@
   width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
@@ -142,7 +147,9 @@
 }
 
 @keyframes stroke {
-  100% { stroke-dashoffset: 0; }
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* Animaciones de Animate.css (simplificadas) */
@@ -157,16 +164,52 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes headShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-5px) rotateY(-3deg); }
-  40% { transform: translateX(5px) rotateY(3deg); }
-  60% { transform: translateX(-5px) rotateY(-3deg); }
-  80% { transform: translateX(5px) rotateY(3deg); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px) rotateY(-3deg);
+  }
+  40% {
+    transform: translateX(5px) rotateY(3deg);
+  }
+  60% {
+    transform: translateX(-5px) rotateY(-3deg);
+  }
+  80% {
+    transform: translateX(5px) rotateY(3deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
+.fc .fc-daygrid-day-frame {
+  min-height: 80px;
+  padding: 2px;
+}
+.fc .fc-daygrid-event {
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: rgba(93, 14, 192, 0.05);
+}
+.fc .fc-daygrid-day-number {
+  padding: 4px;
+}
+.fc .fc-daygrid-more-link {
+  font-size: 0.75rem;
+}
+.fc .fc-daygrid-event-harness {
+  margin-bottom: 2px;
+}

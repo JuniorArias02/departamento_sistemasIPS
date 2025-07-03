@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useApp } from "../../../../store/AppContext";
 
 // PASO 1: Cambiamos las props que recibe el componente. Ya no es 'hora'.
-const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose }) => {
+const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose, personal }) => {
   const { usuario: usuarioContext } = useApp();
   const [sedes, setSedes] = useState([]);
   const [titulo, setTitulo] = useState("");
@@ -31,6 +31,19 @@ const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose }) => {
     cargarSedes();
   }, []);
 
+
+  const formatFecha = (fechaObj) => {
+    const pad = (n) => n.toString().padStart(2, '0');
+    const anio = fechaObj.getFullYear();
+    const mes = pad(fechaObj.getMonth() + 1);
+    const dia = pad(fechaObj.getDate());
+    const hora = pad(fechaObj.getHours());
+    const minuto = pad(fechaObj.getMinutes());
+    const segundo = pad(fechaObj.getSeconds());
+
+    return `${anio}-${mes}-${dia} ${hora}:${minuto}:${segundo}`;
+  };
+
   const handleGuardar = async () => {
     if (!titulo || !sedeId) {
       setError("El título y la sede son obligatorios");
@@ -41,17 +54,22 @@ const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose }) => {
     const fechaInicioCompleta = new Date(`${fecha.toDateString()} ${horaInicio}`);
     const horaFinNum = parseInt(horaFin.split(':')[0]) + 1;
     const horaFinFinal = `${horaFinNum.toString().padStart(2, '0')}:00`;
-    const fechaFinCompleta = new Date(`${fecha.toDateString()} ${horaFinFinal}`);
+    const fechaFinCompleta = new Date(`${fecha.toDateString()} ${horaFin}`);
+    fechaFinCompleta.setMinutes(fechaFinCompleta.getMinutes() + 15);
 
     try {
       await crearAgendaMantenimiento({
         titulo,
         descripcion,
         sede_id: parseInt(sedeId),
-        fecha_inicio: fechaInicioCompleta.toISOString().slice(0, 19).replace("T", " "),
-        fecha_fin: fechaFinCompleta.toISOString().slice(0, 19).replace("T", " "),
-        usuario_id: usuarioContext?.id,
+        fecha_inicio: formatFecha(fechaInicioCompleta),
+        fecha_fin: formatFecha(fechaFinCompleta),
+        usuario_id: usuarioContext.id,
+        usuario_asignado: personal?.id,
       });
+      console.log('Local', fechaInicioCompleta);
+      console.log('ISO', fechaInicioCompleta.toISOString());
+
       onClose();
     } catch (err) {
       setError(err?.error || "Error al crear el mantenimiento");

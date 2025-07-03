@@ -3,9 +3,16 @@ import ModalCrearMantenimiento from "./ModalCrearMantenimiento";
 import { Clock, ArrowLeft } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { getMantenimientosPorDia } from "../../../../services/mantenimiento_services";
+import { getMantenimientosPorDia, listarPersonalAsignable } from "../../../../services/mantenimiento_services";
+import { useApp } from "../../../../store/AppContext";
+import GuiaSeleccion from "./GuiaSeleccion"; // importa al inicio
 
 const HorasDiaView = ({ fecha }) => {
+  const { usuario } = useApp();
+  // const [mostrarGuia, setMostrarGuia] = useState(true);
+  const [personal, setPersonal] = useState([]);
+  const [personalSeleccionado, setPersonalSeleccionado] = useState(null);
+
   const navigate = useNavigate();
 
   // Refs y States principales
@@ -24,23 +31,48 @@ const HorasDiaView = ({ fecha }) => {
     return `${hora.toString().padStart(2, "0")}:${minuto.toString().padStart(2, "0")}`;
   });
 
+  // ESTO SE USA DESPUES
+  // useEffect(() => {
+  //   const isMobile = window.innerWidth <= 768;
+  //   const alreadyShown = localStorage.getItem('guiaMostrada');
+
+  //   if (isMobile && !alreadyShown) {
+  //     setMostrarGuia(true);
+  //     localStorage.setItem('guiaMostrada', 'true');
+  //   }
+  // }, []);
   // Cargar mantenimientos existentes
+  const cargar = async () => {
+    try {
+      const res = await getMantenimientosPorDia(fecha, personalSeleccionado.id);
+      const convertidos = res.map(item => ({
+        inicio: item.fecha_inicio.slice(11, 16),
+        fin: item.fecha_fin.slice(11, 16),
+        estado: item.esta_revisado ? 'completado' : 'pendiente',
+      }));
+      setBloques(convertidos);
+    } catch (err) {
+      console.error('Error al cargar bloques del día', err);
+    }
+  };
   useEffect(() => {
-    const cargar = async () => {
+    if (!personalSeleccionado) return;
+    cargar();
+  }, [fecha, personalSeleccionado]);
+
+
+  useEffect(() => {
+    const cargarPersonal = async () => {
       try {
-        const res = await getMantenimientosPorDia(fecha);
-        const convertidos = res.map(item => ({
-          inicio: item.fecha_inicio.slice(11, 16),
-          fin: item.fecha_fin.slice(11, 16),
-          estado: item.esta_revisado ? 'completado' : 'pendiente',
-        }));
-        setBloques(convertidos);
-      } catch (err) {
-        console.error('Error al cargar bloques del día', err);
+        const res = await listarPersonalAsignable(usuario.id);
+        setPersonal(res);
+      } catch (error) {
+        console.error("Error al listar personal asignable", error);
       }
     };
-    cargar();
-  }, [fecha]);
+
+    cargarPersonal();
+  }, [usuario]);
 
   // Verifica si el bloque ya está ocupado
   const esBloqueOcupado = (intervalo) =>
@@ -144,6 +176,47 @@ const HorasDiaView = ({ fecha }) => {
     };
   }, [isDragging]);
 
+  // deteectar dia de hoy 
+  const esHoy = () => {
+    const hoy = new Date();
+    return (
+      fecha.getDate() === hoy.getDate() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    );
+  };
+
+  const yaPasoIntervalo = (intervalo) => {
+    if (!esHoy()) return false;
+
+    const [h, m] = intervalo.split(":").map(Number);
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const minutoActual = ahora.getMinutes();
+
+    return h < horaActual || (h === horaActual && m < minutoActual);
+  };
+
+
+  const getHoraActual = () => {
+    const ahora = new Date();
+    const horas = ahora.getHours().toString().padStart(2, "0");
+    const minutos = Math.floor(ahora.getMinutes() / 15) * 15;
+    const minutosFormateados = minutos.toString().padStart(2, "0");
+    return `${horas}:${minutosFormateados}`;
+  };
+
+  const esFechaPasada = () => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const diaSeleccionado = new Date(fecha);
+    diaSeleccionado.setHours(0, 0, 0, 0);
+
+    return diaSeleccionado < hoy;
+  };
+
+
   return (
     <div className="w-full h-full p-4 md:p-6 bg-white overflow-y-auto">
       {/* ... tu cabecera ... */}
@@ -157,17 +230,48 @@ const HorasDiaView = ({ fecha }) => {
           <span> Horario del día - {fecha.toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long", })}</span>
         </h2>
       </div>
+      {personal.length > 0 && (
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700">Selecciona el personal</label>
+          <select
+            value={personalSeleccionado?.id || ''}
+            onChange={(e) => {
+              const encontrado = personal.find(p => p.id === parseInt(e.target.value));
+              setPersonalSeleccionado(encontrado);
+            }}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 text-sm focus:outline-none focus:ring focus:ring-violet-500"
+          >
+            <option value="">-- Seleccionar --</option>
+            {personal.map(p => (
+              <option key={p.id} value={p.id}>{p.nombre_completo}</option>
+            ))}
+          </select>
+        </div>
+      )}
       {/* Tooltip */}
       {isDragging && selectedIntervals.length > 0 && (
         <div className="fixed z-50 bg-[#5D0EC0] text-white text-xs px-3 py-1 rounded-full shadow-lg pointer-events-none"
           style={{ top: tooltipPos.y - 40, left: tooltipPos.x + 15 }}>
-          {selectedIntervals[0]} - {selectedIntervals[selectedIntervals.length - 1]}
+          Hora Inicio {selectedIntervals[0]} - Hora Fin {selectedIntervals[selectedIntervals.length - 1]}
         </div>
       )}
 
       {/* Timeline */}
       <div ref={seleccionRef} className="relative grid grid-cols-[auto_1fr] gap-x-4 select-none"
         onMouseLeave={() => setIsDragging(false)} style={{ touchAction: 'pan-y' }}>
+        {esHoy() && (
+          <div
+            className="absolute left-0 right-0 h-0.5 bg-red-500 z-10"
+            style={{
+              top: `${(intervalosDelDia.indexOf(getHoraActual()) + 1) * 20}px`,
+              width: '100%'
+            }}
+          >
+            <div className="absolute -top-2 -left-1 bg-red-500 text-white text-xs px-1 rounded">
+              Ahora
+            </div>
+          </div>
+        )}
 
         {intervalosDelDia.map((intervalo) => (
           <React.Fragment key={intervalo}>
@@ -181,16 +285,24 @@ const HorasDiaView = ({ fecha }) => {
             <div
               data-intervalo={intervalo}
               className={`relative h-5 cursor-pointer transition-colors duration-75 ease-in-out
-                ${intervalo.endsWith(":00") ? "border-t border-gray-300" : "border-t border-dashed border-gray-200/80"}
-                ${selectedIntervals.includes(intervalo) ? "bg-[#5D0EC0]/30" :
-                  esBloqueOcupado(intervalo) ? "bg-blue-400/60" : "hover:bg-violet-100/50"}
-              `}
+    ${intervalo.endsWith(":00") ? "border-t border-gray-300" : "border-t border-dashed border-gray-200/80"}
+    ${selectedIntervals.includes(intervalo)
+                  ? "bg-[#5D0EC0]/30"
+                  : esBloqueOcupado(intervalo)
+                    ? "bg-blue-400/60"
+                    : esFechaPasada()
+                      ? "bg-red-100 text-red-500"
+                      : yaPasoIntervalo(intervalo)
+                        ? "bg-red-100 text-red-500"
+                        : "hover:bg-violet-100/50"
+                }`}
               onMouseDown={(e) => handleMouseDown(intervalo, e)}
               onMouseEnter={() => handleMouseEnter(intervalo)}
 
             />
           </React.Fragment>
         ))}
+
       </div>
 
       <AnimatePresence>
@@ -199,14 +311,18 @@ const HorasDiaView = ({ fecha }) => {
             fecha={fecha}
             horaInicio={selectedIntervals[0]}
             horaFin={selectedIntervals[selectedIntervals.length - 1]}
+            personal={personalSeleccionado}
             onClose={() => {
               setIsModalOpen(false);
               setSelectedIntervals([]);
+              cargar();
             }}
           />
         )}
       </AnimatePresence>
+      {/* {mostrarGuia && <GuiaSeleccion onClose={() => setMostrarGuia(false)} />} */}
     </div>
+
   );
 };
 

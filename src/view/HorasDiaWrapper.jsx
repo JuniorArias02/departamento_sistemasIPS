@@ -4,7 +4,7 @@ import HorasDiaView from '../pages/paginaCliente/calendarioMantenimiento/compone
 
 const HorasDiaWrapper = () => {
   const { fecha } = useParams();
-  const fechaObj = new Date(fecha);
+  const fechaObj = new Date(`${fecha}T00:00:00-05:00`);
 
   return <HorasDiaView fecha={fechaObj} />;
 };

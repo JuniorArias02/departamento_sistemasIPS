@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LISTAR_MANTENIMIENTOS_POR_DIA, LISTAR_MANTENIMIENTOS_POR_MES, CREAR_AGENDA_MANTENIMIENTO, CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO, GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
+import { LISTAR_MANTENIMIENTOS_POR_DIA, LISTAR_MANTENIMIENTOS_POR_MES, LISTAR_PERSONAL_ASIGNABLE, CREAR_AGENDA_MANTENIMIENTO, CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO, GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
 
 
 export const listarMantenimientos = async (usuarioId) => {
@@ -96,4 +96,16 @@ export const getMantenimientosPorDia = async (fecha) => {
 	const fechaStr = fecha.toISOString().split('T')[0];
 	const res = await axios.get(`${LISTAR_MANTENIMIENTOS_POR_DIA}?fecha=${fechaStr}`);
 	return res.data;
+};
+
+export const listarPersonalAsignable = async (usuario_id) => {
+	try {
+		const res = await axios.post(LISTAR_PERSONAL_ASIGNABLE, {
+			usuario_id
+		});
+		return res.data;
+	} catch (error) {
+		console.error("Error al listar personal asignable:", error);
+		throw error;
+	}
 };

@@ -10,4 +10,5 @@ export const GRAFICA_MANTENIMIENTO = `${URL_PATH}controllers/mantenimiento/grafi
 export const LISTAR_MANTENIMIENTOS_POR_MES = `${URL_PATH}controllers/mantenimiento/listar_mantenimientos_por_fecha.php`;
 export const CREAR_AGENDA_MANTENIMIENTO = `${URL_PATH}controllers/mantenimiento/crear_agenda_mantenimiento.php`;
 export const LISTAR_MANTENIMIENTOS_POR_DIA = `${URL_PATH}controllers/mantenimiento/listar_mantenimientos_por_dia.php`;
+export const LISTAR_PERSONAL_ASIGNABLE = `${URL_PATH}controllers/mantenimiento/listar_personal_asignable.php`;
 
