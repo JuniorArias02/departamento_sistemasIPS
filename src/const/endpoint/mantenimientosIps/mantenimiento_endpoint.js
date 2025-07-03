@@ -9,3 +9,5 @@ export const ACTUALIZAR_ESTADO_MANTENIMIENTO = `${URL_PATH}controllers/mantenimi
 export const GRAFICA_MANTENIMIENTO = `${URL_PATH}controllers/mantenimiento/grafica_mantenimiento.php`;
 export const LISTAR_MANTENIMIENTOS_POR_MES = `${URL_PATH}controllers/mantenimiento/listar_mantenimientos_por_fecha.php`;
 export const CREAR_AGENDA_MANTENIMIENTO = `${URL_PATH}controllers/mantenimiento/crear_agenda_mantenimiento.php`;
+export const LISTAR_MANTENIMIENTOS_POR_DIA = `${URL_PATH}controllers/mantenimiento/listar_mantenimientos_por_dia.php`;
+

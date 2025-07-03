@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { listarSedes } from "../../../../services/sedes_service";
 import { crearAgendaMantenimiento } from "../../../../services/mantenimiento_services";
 import { X, Calendar, Clock, Building, Edit3, FileText, Save, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useApp } from "../../../../store/AppContext";
-const ModalCrearMantenimiento = ({ fecha, hora, onClose }) => {
+
+// PASO 1: Cambiamos las props que recibe el componente. Ya no es 'hora'.
+const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose }) => {
   const { usuario: usuarioContext } = useApp();
   const [sedes, setSedes] = useState([]);
   const [titulo, setTitulo] = useState("");
@@ -30,36 +32,53 @@ const ModalCrearMantenimiento = ({ fecha, hora, onClose }) => {
   }, []);
 
   const handleGuardar = async () => {
-    if (!titulo) {
-      setError("El título es obligatorio");
+    if (!titulo || !sedeId) {
+      setError("El título y la sede son obligatorios");
       return;
     }
-    if (!sedeId) {
-      setError("Debes seleccionar una sede");
-      return;
-    }
-
     setError("");
 
-    const fechaCompleta = new Date(`${fecha.toDateString()} ${hora}`);
-    const fechaAgendada = fechaCompleta.toISOString().slice(0, 19).replace("T", " ");
+    const fechaInicioCompleta = new Date(`${fecha.toDateString()} ${horaInicio}`);
+    const horaFinNum = parseInt(horaFin.split(':')[0]) + 1;
+    const horaFinFinal = `${horaFinNum.toString().padStart(2, '0')}:00`;
+    const fechaFinCompleta = new Date(`${fecha.toDateString()} ${horaFinFinal}`);
 
     try {
       await crearAgendaMantenimiento({
         titulo,
         descripcion,
         sede_id: parseInt(sedeId),
-        fecha_agendada: fechaAgendada,
+        fecha_inicio: fechaInicioCompleta.toISOString().slice(0, 19).replace("T", " "),
+        fecha_fin: fechaFinCompleta.toISOString().slice(0, 19).replace("T", " "),
         usuario_id: usuarioContext?.id,
       });
-
-      onClose(); // Cierra modal si todo bien
+      onClose();
     } catch (err) {
       setError(err?.error || "Error al crear el mantenimiento");
     }
   };
+
+  const formatearRangoHoras = () => {
+    if (!horaInicio) return "";
+    const [h, m] = horaFin.split(':').map(Number);
+
+    let endH = h;
+    let endM = m + 15;
+
+    if (endM >= 60) {
+      endM = 0;
+      endH += 1;
+    }
+
+    if (endH >= 24) {
+      endH = 0;
+    }
+    const horaFinalFormateada = `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+    return `${horaInicio} - ${horaFinalFormateada}`;
+  }
+
   return (
-    <div className="fixed inset-0  flex justify-center items-center z-50 ">
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <motion.div
         className="bg-white rounded-xl p-6 w-[90vw] max-w-md shadow-2xl border border-white/10"
         initial={{ scale: 0.9, opacity: 0 }}
@@ -88,93 +107,43 @@ const ModalCrearMantenimiento = ({ fecha, hora, onClose }) => {
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <Clock size={18} className="text-[#5D0EC0]" />
-            <span>{hora}</span>
+            {/* PASO 2: Mostramos el rango de horas formateado */}
+            <span>{formatearRangoHoras()}</span>
           </div>
         </div>
 
-        {/* Formulario */}
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              <Edit3 size={16} className="text-gray-500" />
-              Título del mantenimiento
+              <Edit3 size={16} className="text-gray-500" /> Título del mantenimiento
             </label>
-            <input
-              type="text"
-              placeholder="Ej: Revisión de equipos"
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent"
-            />
+            <input type="text" placeholder="Ej: Revisión de equipos" value={titulo} onChange={(e) => setTitulo(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent" />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              <FileText size={16} className="text-gray-500" />
-              Descripción (opcional)
+              <FileText size={16} className="text-gray-500" /> Descripción (opcional)
             </label>
-            <textarea
-              placeholder="Detalles del mantenimiento..."
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              rows={3}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent"
-            />
+            <textarea placeholder="Detalles del mantenimiento..." value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={3} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent" />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              <Building size={16} className="text-gray-500" />
-              Sede
+              <Building size={16} className="text-gray-500" /> Sede
             </label>
-            {isLoading ? (
-              <div className="p-3 bg-gray-100 rounded-lg animate-pulse">Cargando sedes...</div>
-            ) : (
-              <select
-                value={sedeId}
-                onChange={(e) => setSedeId(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2QzI4QzgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[center_right_1rem]"
-              >
+            {isLoading ? (<div className="p-3 bg-gray-100 rounded-lg animate-pulse">Cargando sedes...</div>) : (
+              <select value={sedeId} onChange={(e) => setSedeId(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5D0EC0] focus:border-transparent appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2QzI4QzgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[center_right_1rem]">
                 <option value="">Selecciona una sede</option>
-                {sedes.map((sede) => (
-                  <option key={sede.id} value={sede.id}>
-                    {sede.nombre}
-                  </option>
-                ))}
+                {sedes.map((sede) => (<option key={sede.id} value={sede.id}>{sede.nombre}</option>))}
               </select>
             )}
           </div>
-
           {error && (
-            <motion.div
-              className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <AlertCircle size={18} />
-              <span>{error}</span>
+            <motion.div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+              <AlertCircle size={18} /> <span>{error}</span>
             </motion.div>
           )}
-
           <div className="flex justify-end gap-3 pt-4">
-            <motion.button
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium transition-colors flex items-center gap-2"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              Cancelar
-            </motion.button>
-            <motion.button
-              onClick={handleGuardar}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#4E24CE] to-[#5D0EC0] text-white font-medium transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              disabled={!titulo || !sedeId}
-            >
-              <Save size={18} />
-              <span>Guardar Mantenimiento</span>
-            </motion.button>
+            <motion.button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium transition-colors flex items-center gap-2" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}> Cancelar </motion.button>
+            <motion.button onClick={handleGuardar} className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#4E24CE] to-[#5D0EC0] text-white font-medium transition-colors flex items-center gap-2 shadow-md hover:shadow-lg" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} disabled={!titulo || !sedeId}> <Save size={18} /> <span>Guardar Mantenimiento</span> </motion.button>
           </div>
         </div>
       </motion.div>

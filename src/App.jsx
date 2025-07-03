@@ -22,7 +22,7 @@ import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
 
 import CalendarioMantenimientos from "./pages/paginaCliente/calendarioMantenimiento/CalendarioMantenimientos";
-
+import HorasDiaView from "./pages/paginaCliente/calendarioMantenimiento/components/ModalHorasDia";
 import FormularioCrearRol from "./pages/paginaAdministrador/formularios/crear_rol";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
@@ -34,7 +34,9 @@ import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_per
 import CrearAvisoActualizacionWeb from "./pages/paginaAdministrador/formularios/crear_aviso_actualizacion_web";
 import VistaActualizacionesWeb from "./pages/paginaCliente/vistasDatos/vista_actualizaciones_web";
 
+
 import { RUTAS } from "./const/routers/routers";
+import HorasDiaWrapper from "./view/HorasDiaWrapper";
 function App() {
   const { usuario, permisos } = useApp();
 
@@ -242,6 +244,11 @@ function App() {
             element={
               <CalendarioMantenimientos />
             }
+          />
+
+          <Route
+            path={RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA_PATH} // <-- con :fecha
+            element={<HorasDiaWrapper />}
           />
 
           <Route

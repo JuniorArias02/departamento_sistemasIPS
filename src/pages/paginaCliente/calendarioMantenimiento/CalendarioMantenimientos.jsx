@@ -8,8 +8,10 @@ import ModalHorasDia from './components/ModalHorasDia';
 import { ChevronLeft, ChevronRight, Calendar, Plus, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DraggableButton } from './components/DraggableButton';
-
+import { RUTAS } from '../../../const/routers/routers';
+import { useNavigate } from 'react-router-dom';
 const CalendarioMantenimientos = () => {
+	const navigate = useNavigate();
 	const calendarRef = useRef(null);
 	const [events, setEvents] = useState([]);
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -25,13 +27,16 @@ const CalendarioMantenimientos = () => {
 			const formattedEvents = res.map(item => ({
 				id: item.id,
 				title: item.titulo,
-				start: new Date(item.fecha_agendada),
+				start: new Date(item.fecha_inicio),
+				end: new Date(item.fecha_fin),
 				backgroundColor: item.esta_revisado ? '#10B981' : '#F59E0B',
 				borderColor: 'transparent',
 				extendedProps: {
-					status: item.esta_revisado ? 'completado' : 'pendiente'
+					status: item.esta_revisado ? 'completado' : 'pendiente',
+					descripcion: item.descripcion // si la usas en el modal
 				}
 			}));
+
 
 			setEvents(formattedEvents);
 		} catch (err) {
@@ -46,7 +51,8 @@ const CalendarioMantenimientos = () => {
 	}, [currentMonth, currentYear]);
 
 	const handleDateClick = (arg) => {
-		setSelectedDate(arg.date);
+		const fechaFormateada = arg.date.toISOString().split('T')[0]; // yyyy-mm-dd
+		navigate(RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA(fechaFormateada));
 	};
 
 	const handlePrevMonth = () => {
@@ -203,7 +209,7 @@ const CalendarioMantenimientos = () => {
 			</AnimatePresence>
 
 			{/* Modal para seleccionar hora */}
-			<AnimatePresence>
+			{/* <AnimatePresence>
 				{selectedDate && (
 					<motion.div
 						initial={{ opacity: 0 }}
@@ -229,10 +235,10 @@ const CalendarioMantenimientos = () => {
 						</motion.div>
 					</motion.div>
 				)}
-			</AnimatePresence>
+			</AnimatePresence> */}
 
 			{/* Botón flotante para añadir evento */}
-			<DraggableButton setSelectedDate={setSelectedDate} />
+			{/* <DraggableButton setSelectedDate={setSelectedDate} /> */}
 		</div>
 	);
 };

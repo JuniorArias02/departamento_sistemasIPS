@@ -1,125 +1,208 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import ModalCrearMantenimiento from "./ModalCrearMantenimiento";
-import { X, Clock, ChevronRight, ChevronLeft, Sun, Moon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Clock, ArrowLeft } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { getMantenimientosPorDia } from "../../../../services/mantenimiento_services";
 
-const ModalHorasDia = ({ fecha, onClose }) => {
-  const [horaSeleccionada, setHoraSeleccionada] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
+const HorasDiaView = ({ fecha }) => {
+  const navigate = useNavigate();
 
-  // Dividir las horas en grupos de 12 (mañana/tarde)
-  const horasDelDia = Array.from({ length: 24 }, (_, i) => ({
-    hora: `${i.toString().padStart(2, '0')}:00`,
-    periodo: i < 12 ? 'AM' : 'PM'
-  }));
+  // Refs y States principales
+  const seleccionRef = useRef(null);
+  const [selectedIntervals, setSelectedIntervals] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [bloques, setBloques] = useState([]);
+  const [touchTimeout, setTouchTimeout] = useState(null);
 
-  const horasPorPagina = 12;
-  const paginas = [
-    horasDelDia.slice(0, 12), // Mañana (AM)
-    horasDelDia.slice(12, 24) // Tarde/Noche (PM)
-  ];
+  //Generar los intervalos del día (96 bloques de 15min)
+  const intervalosDelDia = Array.from({ length: 24 * 4 }, (_, i) => {
+    const hora = Math.floor(i / 4);
+    const minuto = (i % 4) * 15;
+    return `${hora.toString().padStart(2, "0")}:${minuto.toString().padStart(2, "0")}`;
+  });
 
-  const handleNextPage = () => {
-    setCurrentPage((prev) => (prev + 1) % paginas.length);
+  // Cargar mantenimientos existentes
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const res = await getMantenimientosPorDia(fecha);
+        const convertidos = res.map(item => ({
+          inicio: item.fecha_inicio.slice(11, 16),
+          fin: item.fecha_fin.slice(11, 16),
+          estado: item.esta_revisado ? 'completado' : 'pendiente',
+        }));
+        setBloques(convertidos);
+      } catch (err) {
+        console.error('Error al cargar bloques del día', err);
+      }
+    };
+    cargar();
+  }, [fecha]);
+
+  // Verifica si el bloque ya está ocupado
+  const esBloqueOcupado = (intervalo) =>
+    bloques.some(({ inicio, fin }) => intervalo >= inicio && intervalo < fin);
+
+  // Detecta si el puntero está en la mitad izquierda de la pantalla
+  const estaEnZonaIzquierda = (x) => x < window.innerWidth / 2;
+
+  // Mouse: Inicia selección
+  const handleMouseDown = (intervalo, e) => {
+    if (e.button === 2 || esBloqueOcupado(intervalo)) return;
+    if (!estaEnZonaIzquierda(e.clientX)) return;
+    setIsDragging(true);
+    setSelectedIntervals([intervalo]);
   };
 
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => (prev - 1 + paginas.length) % paginas.length);
+  // Mouse: Continúa selección
+  const handleMouseEnter = (intervalo) => {
+    if (!isDragging || esBloqueOcupado(intervalo)) return;
+
+    setSelectedIntervals((prev) => {
+      const all = [...prev, intervalo].sort();
+      const i1 = intervalosDelDia.indexOf(all[0]);
+      const i2 = intervalosDelDia.indexOf(all[all.length - 1]);
+      const rango = intervalosDelDia.slice(i1, i2 + 1);
+      return rango.some(esBloqueOcupado) ? prev : rango;
+    });
   };
+
+  //  Mouse: Finaliza selección
+  const handleMouseUp = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (selectedIntervals.length > 0) setIsModalOpen(true);
+  }, [isDragging, selectedIntervals]);
+
+  // Touch: Inicia desde zona izquierda
+  useEffect(() => {
+    const el = seleccionRef.current;
+    const handleTouchStartReal = (e) => {
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const intervalo = target?.dataset?.intervalo;
+
+      if (!intervalo || esBloqueOcupado(intervalo)) return;
+      if (!estaEnZonaIzquierda(touch.clientX)) return;
+
+      e.preventDefault(); // bloquea scroll
+      setIsDragging(true);
+      setSelectedIntervals([intervalo]);
+    };
+    el?.addEventListener("touchstart", handleTouchStartReal, { passive: false });
+    return () => el?.removeEventListener("touchstart", handleTouchStartReal);
+  }, []);
+
+  //  Touch: Movimiento y selección
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    if (!estaEnZonaIzquierda(touch.clientX)) return;
+
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (target?.dataset?.intervalo) {
+      handleMouseEnter(target.dataset.intervalo);
+    }
+  };
+
+  //  Touch: Finaliza selección
+  const handleTouchEnd = () => {
+    if (touchTimeout) {
+      clearTimeout(touchTimeout);
+      setTouchTimeout(null);
+    }
+
+    if (isDragging && selectedIntervals.length > 0) {
+      setIsModalOpen(true);
+    }
+
+    setIsDragging(false);
+  };
+
+  // Escuchar eventos globales
+  useEffect(() => {
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
+  }, [handleMouseUp]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+    const move = (e) => setTooltipPos({ x: e.clientX, y: e.clientY });
+    document.addEventListener("mousemove", move);
+    return () => document.removeEventListener("mousemove", move);
+  }, [isDragging]);
+
+  useEffect(() => {
+    document.addEventListener("touchmove", handleTouchMove, { passive: true });
+    document.addEventListener("touchend", handleTouchEnd);
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isDragging]);
 
   return (
-    <div className="fixed inset-0 bg-[#00000004] flex justify-center items-center z-50 backdrop-blur-xs">
-      <motion.div 
-        className="bg-white rounded-xl p-6 w-[90vw] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", damping: 20 }}
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <Clock className="text-[#5D0EC0]" size={20} />
-            <span>Horas disponibles - {fecha.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            <X size={20} />
-          </button>
+    <div className="w-full h-full p-4 md:p-6 bg-white overflow-y-auto">
+      {/* ... tu cabecera ... */}
+      <div className="mb-6 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-[#5D0EC0] hover:text-[#4E24CE] transition-colors">
+          <ArrowLeft size={20} />
+          <span className="hidden md:inline">Volver</span>
+        </button>
+        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <Clock className="text-[#5D0EC0]" size={20} />
+          <span> Horario del día - {fecha.toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long", })}</span>
+        </h2>
+      </div>
+      {/* Tooltip */}
+      {isDragging && selectedIntervals.length > 0 && (
+        <div className="fixed z-50 bg-[#5D0EC0] text-white text-xs px-3 py-1 rounded-full shadow-lg pointer-events-none"
+          style={{ top: tooltipPos.y - 40, left: tooltipPos.x + 15 }}>
+          {selectedIntervals[0]} - {selectedIntervals[selectedIntervals.length - 1]}
         </div>
+      )}
 
-        {/* Selector de periodo */}
-        <div className="flex justify-center items-center mb-4 gap-2">
-          <button 
-            onClick={handlePrevPage}
-            className="p-2 rounded-full hover:bg-[#4E24CE]/10 text-[#4E24CE]"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4E24CE]/10 to-[#5D0EC0]/10 rounded-full">
-            {currentPage === 0 ? (
-              <Sun className="text-yellow-500" size={18} />
-            ) : (
-              <Moon className="text-indigo-500" size={18} />
-            )}
-            <span className="font-medium text-sm">
-              {currentPage === 0 ? 'Mañana (AM)' : 'Tarde/Noche (PM)'}
-            </span>
-          </div>
-          
-          <button 
-            onClick={handleNextPage}
-            className="p-2 rounded-full hover:bg-[#4E24CE]/10 text-[#4E24CE]"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
+      {/* Timeline */}
+      <div ref={seleccionRef} className="relative grid grid-cols-[auto_1fr] gap-x-4 select-none"
+        onMouseLeave={() => setIsDragging(false)} style={{ touchAction: 'pan-y' }}>
 
-        {/* Grid de horas */}
-        <motion.div 
-          className="grid grid-cols-3 gap-3"
-          key={currentPage}
-          initial={{ opacity: 0, x: currentPage === 0 ? -20 : 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: currentPage === 0 ? -20 : 20 }}
-          transition={{ duration: 0.2 }}
-        >
-          {paginas[currentPage].map(({ hora, periodo }, i) => (
-            <motion.button
-              key={`${currentPage}-${i}`}
-              onClick={() => setHoraSeleccionada(hora)}
-              className={`p-3 rounded-lg text-center transition-all flex flex-col items-center
-                ${horaSeleccionada === hora 
-                  ? 'bg-gradient-to-br from-[#4E24CE] to-[#5D0EC0] text-white shadow-lg'
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200'}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="font-medium text-sm">{hora}</span>
-              <span className="text-xs opacity-70">{periodo}</span>
-            </motion.button>
-          ))}
-        </motion.div>
+        {intervalosDelDia.map((intervalo) => (
+          <React.Fragment key={intervalo}>
+            <div className="h-5 text-right pr-2">
+              {intervalo.endsWith(":00") && (
+                <span className="text-[11px] font-medium text-gray-400 relative -top-1.5">
+                  {intervalo}
+                </span>
+              )}
+            </div>
+            <div
+              data-intervalo={intervalo}
+              className={`relative h-5 cursor-pointer transition-colors duration-75 ease-in-out
+                ${intervalo.endsWith(":00") ? "border-t border-gray-300" : "border-t border-dashed border-gray-200/80"}
+                ${selectedIntervals.includes(intervalo) ? "bg-[#5D0EC0]/30" :
+                  esBloqueOcupado(intervalo) ? "bg-blue-400/60" : "hover:bg-violet-100/50"}
+              `}
+              onMouseDown={(e) => handleMouseDown(intervalo, e)}
+              onMouseEnter={() => handleMouseEnter(intervalo)}
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium transition-colors flex items-center gap-2"
-          >
-            Cancelar
-          </button>
-        </div>
-      </motion.div>
+            />
+          </React.Fragment>
+        ))}
+      </div>
 
-      {/* Modal para crear mantenimiento */}
       <AnimatePresence>
-        {horaSeleccionada && (
+        {isModalOpen && (
           <ModalCrearMantenimiento
             fecha={fecha}
-            hora={horaSeleccionada}
-            onClose={() => setHoraSeleccionada(null)}
+            horaInicio={selectedIntervals[0]}
+            horaFin={selectedIntervals[selectedIntervals.length - 1]}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedIntervals([]);
+            }}
           />
         )}
       </AnimatePresence>
@@ -127,5 +210,4 @@ const ModalHorasDia = ({ fecha, onClose }) => {
   );
 };
 
-export default ModalHorasDia;
-
+export default HorasDiaView;
