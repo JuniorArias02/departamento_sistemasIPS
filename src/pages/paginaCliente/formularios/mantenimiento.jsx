@@ -10,6 +10,7 @@ import { listarCoordinadores } from "../../../services/utils_service";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import imageCompression from 'browser-image-compression';
+import { IMAGEN_URL } from "../../../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
 
 export default function FormularioMantenimientoFreezer() {
   const { usuario, permisos } = useApp();
@@ -34,16 +35,21 @@ export default function FormularioMantenimientoFreezer() {
     nombre_receptor: "",
     imagen: "",
     descripcion: "",
-    imageFile: null 
+    imageFile: null
   });
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (mantenimientoEdit) {
-      setFormData(mantenimientoEdit);
+      setFormData((prev) => ({
+        ...prev,
+        ...mantenimientoEdit,
+        imageFile: null,
+      }));
     }
   }, [mantenimientoEdit]);
+
 
   const handleImageChange = async (e) => {
     setError(null);
@@ -200,14 +206,16 @@ export default function FormularioMantenimientoFreezer() {
     });
 
     formDataToSend.append('creado_por', usuario?.id);
-
+    formDataToSend.append("id", mantenimientoEdit.id);
     try {
       if (mantenimientoEdit?.id) {
-        await actualizarEstadoMantenimiento(mantenimientoEdit.id, formDataToSend);
+        await crearMantenimiento(formDataToSend);
         Swal.fire({
           icon: "success",
-          title: "¡Actualizado!",
-          text: "Mantenimiento actualizado correctamente",
+          title: mantenimientoEdit?.id ? "¡Actualizado!" : "¡Éxito!",
+          text: mantenimientoEdit?.id
+            ? "Mantenimiento actualizado correctamente"
+            : "Mantenimiento registrado correctamente",
           timer: 2000,
           showConfirmButton: false,
         });
@@ -231,7 +239,7 @@ export default function FormularioMantenimientoFreezer() {
           nombre_receptor: "",
           imagen: "",
           descripcion: "",
-          imageFile: null
+          imageFile: null,
         });
 
         // Limpiar input de archivo
@@ -423,7 +431,7 @@ export default function FormularioMantenimientoFreezer() {
                 accept="image/*"
                 onChange={handleImageChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                required
+                required={!formData.imagen}
               />
 
               {/* Estado de carga */}
@@ -463,14 +471,25 @@ export default function FormularioMantenimientoFreezer() {
                 </div>
               ) : (
                 <div className="relative">
-                  <img
-                    src={formData.imagen}
-                    alt="Vista previa"
-                    className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
-                  />
-                  <div className="mt-2 text-xs text-gray-500">
-                    Tamaño: {(formData.imageFile?.size / (1024 * 1024)).toFixed(2)} MB
-                  </div>
+                  {formData.imageFile ? (
+                    <img
+                      src={URL.createObjectURL(formData.imageFile)}
+                      alt="Vista previa"
+                      className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
+                    />
+                  ) : formData.imagen ? (
+                    <img
+                      src={`${IMAGEN_URL}/${formData.imagen}`}
+                      alt="Vista previa"
+                      className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
+                    />
+                  ) : null}
+                  {formData.imageFile && (
+                    <div className="mt-2 text-xs text-gray-500">
+                      Tamaño: {(formData.imageFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </div>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleRemoveImage}

@@ -42,6 +42,7 @@ const HorasDiaView = ({ fecha }) => {
   //   }
   // }, []);
   // Cargar mantenimientos existentes
+
   const cargar = async () => {
     try {
       const res = await getMantenimientosPorDia(fecha, personalSeleccionado.id);
@@ -83,6 +84,10 @@ const HorasDiaView = ({ fecha }) => {
 
   // Mouse: Inicia selección
   const handleMouseDown = (intervalo, e) => {
+    if (!personalSeleccionado) {
+      return; 
+    }
+
     if (e.button === 2 || esBloqueOcupado(intervalo)) return;
     if (!estaEnZonaIzquierda(e.clientX)) return;
     setIsDragging(true);

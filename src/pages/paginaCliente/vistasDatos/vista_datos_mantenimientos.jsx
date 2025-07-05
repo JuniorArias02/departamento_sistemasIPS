@@ -14,7 +14,8 @@ import {
 	Warehouse,
 	CheckCircle,
 	Clock,
-	ClipboardList
+	ClipboardList,
+	CalendarCheck
 } from 'lucide-react';
 import { PERMISOS } from "../../../secure/permisos/permisos";
 
@@ -186,6 +187,21 @@ export default function VistaDatosMantenimiento() {
 											{item.nombre_receptor_completo || 'Receptor no asignado'}
 										</span>
 									</div>
+									{item.agenda?.fecha_inicio && (
+										<div className="flex items-start">
+											<CalendarCheck className="flex-shrink-0 h-4 w-4 text-gray-400 mt-0.5 mr-2" />
+											<span className="text-sm text-gray-600">
+												{new Date(item.agenda.fecha_inicio).toLocaleString('es-CO', {
+													day: '2-digit',
+													month: 'short',
+													year: 'numeric',
+													hour: '2-digit',
+													minute: '2-digit',
+													hour12: true
+												})}
+											</span>
+										</div>
+									)}
 									<div className="flex items-start">
 										<Calendar className="flex-shrink-0 h-4 w-4 text-gray-400 mt-0.5 mr-2" />
 										<span className="text-sm text-gray-600">

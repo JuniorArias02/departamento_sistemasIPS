@@ -9,6 +9,7 @@ export const listarMantenimientos = async (usuarioId) => {
 			{ usuario_id: usuarioId }
 
 		);
+		console.log(response);
 		return response.data;
 	} catch (error) {
 		throw new Error(

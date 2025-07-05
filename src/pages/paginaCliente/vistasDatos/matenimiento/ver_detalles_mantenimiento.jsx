@@ -11,7 +11,7 @@ import {
 	AlertCircle,
 	Clipboard,
 	Hash,
-	Maximize2, Users,
+	Maximize2, Users, Edit3,
 
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -24,6 +24,7 @@ import Swal from 'sweetalert2';
 import { useState } from 'react';
 import { useApp } from '../../../../store/AppContext';
 import { PERMISOS } from '../../../../secure/permisos/permisos';
+import { RUTAS } from '../../../../const/routers/routers';
 
 export default function DetalleMantenimiento() {
 	const { state } = useLocation();
@@ -33,6 +34,12 @@ export default function DetalleMantenimiento() {
 
 	const item = mantenimiento;
 
+
+	const handleEditarMantenimiento = (data) => {
+		navigate(RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO, {
+			state: { mantenimiento: data }
+		});
+	}
 
 	const handleToggleRevisado = async (id, estaRevisadoActual) => {
 		const nuevoEstado = !estaRevisadoActual;
@@ -280,14 +287,50 @@ export default function DetalleMantenimiento() {
 									<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
 										<span className="text-sm text-gray-500">Revisión:</span>
 										<span className="text-sm font-medium text-right">
-											{new Date(item.fecha_revisado).toLocaleDateString('es-ES', {
+											{new Date(item.fecha_revisado).toLocaleString('es-CO', {
 												day: '2-digit',
 												month: 'short',
-												year: 'numeric'
+												year: 'numeric',
+												hour: '2-digit',
+												minute: '2-digit',
+												hour12: true
 											})}
 										</span>
 									</div>
 								)}
+								{item.agenda?.fecha_inicio && (
+									<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+										<span className="text-sm text-gray-500">Inicio agendado:</span>
+										<span className="text-sm font-medium text-right">
+											{new Date(item.agenda.fecha_inicio).toLocaleString('es-CO', {
+												day: '2-digit',
+												month: 'short',
+												year: 'numeric',
+												hour: '2-digit',
+												minute: '2-digit',
+												hour12: true
+											})}
+										</span>
+									</div>
+								)}
+
+								{item.agenda?.fecha_fin && (
+									<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+										<span className="text-sm text-gray-500">Fin agendado:</span>
+										<span className="text-sm font-medium text-right">
+											{new Date(item.agenda.fecha_fin).toLocaleString('es-CO', {
+												day: '2-digit',
+												month: 'short',
+												year: 'numeric',
+												hour: '2-digit',
+												minute: '2-digit',
+												hour12: true
+											})}
+										</span>
+									</div>
+								)}
+
+
 							</div>
 						</div>
 
@@ -314,13 +357,23 @@ export default function DetalleMantenimiento() {
 										<span className="text-sm font-medium text-right">{item.nombre_revisor}</span>
 									</div>
 								)}
+								{item.agenda?.nombre_agendador && (
+									<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+										<span className="text-sm text-gray-500">Agendado por:</span>
+										<span className="text-sm font-medium text-right">{item.agenda.nombre_agendador}</span>
+									</div>
+								)}
+
 							</div>
 						</div>
 
 						{/* Estado con micro-interacción */}
 						<motion.div
 							whileHover={{ scale: 1.02 }}
-							className={`rounded-2xl p-6 shadow-sm border ${item.esta_revisado ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
+							whileTap={{ scale: 0.98 }}
+							className={`rounded-2xl p-6 shadow-sm border ${item.esta_revisado
+									? 'bg-green-50 border-green-200'
+									: 'bg-yellow-50 border-yellow-200'
 								}`}
 						>
 							<h2 className="flex items-center gap-3 text-lg font-semibold mb-2">
@@ -332,22 +385,44 @@ export default function DetalleMantenimiento() {
 								<span>Estado actual</span>
 							</h2>
 
-							<p className="text-sm text-gray-600">
+							<p className="text-sm text-gray-600 mb-4">
 								{item.esta_revisado
 									? 'Este mantenimiento ha sido revisado y completado.'
 									: 'Este mantenimiento está pendiente de revisión.'}
 							</p>
 
-							{!item.esta_revisado && permisos.includes(PERMISOS.MARCAR_REVISADO_MANTENIMIENTO) && (
+							{!item.esta_revisado && permisos.includes(PERMISOS.MANTENIMIENTOS.MARCAR_REVISADO) && (
 								<button
 									onClick={() => handleToggleRevisado(item.id, item.esta_revisado)}
-									className="mt-4 w-full py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
+									className="w-full py-3 px-4 bg-gradient-to-r from-[#4E24CE] to-[#5D0EC0] text-white rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer"
 								>
-									Marcar como revisado
+									<CheckCircle
+										size={18}
+										className="transition-transform group-hover:scale-110"
+									/>
+									<span className="font-medium">Marcar como revisado</span>
 								</button>
 							)}
 						</motion.div>
-
+						{/* editar solo si NO está revisado */}
+						{!item.esta_revisado && permisos.includes(PERMISOS.MANTENIMIENTOS.EDITAR) && (
+							<motion.div
+								whileHover={{ scale: 1.02 }}
+								whileTap={{ scale: 0.98 }}
+								className="rounded-2xl p-6 shadow-sm border bg-yellow-50 border-yellow-200"
+							>
+								<button
+									onClick={() => handleEditarMantenimiento(item)}
+									className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-[#4E24CE] to-[#5D0EC0] text-white rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer"
+								>
+									<Edit3
+										size={18}
+										className="transition-transform group-hover:scale-110"
+									/>
+									<span className="font-medium">Editar mantenimiento</span>
+								</button>
+							</motion.div>
+						)}
 					</div>
 				</div>
 			</div>
