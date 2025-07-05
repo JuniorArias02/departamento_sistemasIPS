@@ -67,8 +67,8 @@ const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose, personal
         usuario_id: usuarioContext.id,
         usuario_asignado: personal?.id,
       });
-      console.log('Local', fechaInicioCompleta);
-      console.log('ISO', fechaInicioCompleta.toISOString());
+      // console.log('Local', fechaInicioCompleta);
+      // console.log('ISO', fechaInicioCompleta.toISOString());
 
       onClose();
     } catch (err) {

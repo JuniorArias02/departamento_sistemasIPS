@@ -9,7 +9,7 @@ export const listarMantenimientos = async (usuarioId) => {
 			{ usuario_id: usuarioId }
 
 		);
-		console.log(response);
+		// console.log(response);
 		return response.data;
 	} catch (error) {
 		throw new Error(
@@ -79,7 +79,7 @@ export const getMantenimientosPorMes = async (fecha) => {
 	const { data } = await axios.get(LISTAR_MANTENIMIENTOS_POR_MES, {
 		params: { fecha: fechaISO }
 	});
-	console.log("Datos obtenidos:", data);
+	// console.log("Datos obtenidos:", data);
 	return data;
 };
 
