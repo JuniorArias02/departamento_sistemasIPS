@@ -418,7 +418,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							hidden: { opacity: 0, x: -10 },
 							visible: { opacity: 1, x: 0 }
 						}}
-						transition={{ duration: 0.2, delay: 0.4 }} // Ajusta el delay como quieras
+						transition={{ duration: 0.2, delay: 0.4 }}
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
 					>
@@ -432,7 +432,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								<motion.span
 									initial={{ opacity: 0, x: -10 }}
 									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: 0.45 }} // Para que el texto entre un poco después del ícono
+									transition={{ delay: 0.45 }}
 									className="font-medium"
 								>
 									Cerrar Sesión

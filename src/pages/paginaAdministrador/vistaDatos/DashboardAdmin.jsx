@@ -336,6 +336,29 @@ export default function DashboardAdmin() {
 					</div>
 				</div>
 			</div>
+			<div className="max-w-7xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<div className="relative p-8 rounded-lg border-2 border-purple-400 border-dashed hover:shadow-purple-100 hover:shadow-md transition-all duration-300 min-h-[200px] flex flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm lg:col-span-3">
+					<div className="mb-4 p-4 rounded-full bg-purple-100 text-purple-600">
+						<svg
+							className="w-12 h-12"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="1.5"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+					</div>
+					<h3 className="text-xl font-medium text-black-800 mb-2">Próximamente</h3>
+					<p className="text-center text-black-600 text-sm">Nueva función en desarrollo</p>
+					<div className="mt-8"></div>
+				</div>
+			</div>
 		</main>
 	);
 }
