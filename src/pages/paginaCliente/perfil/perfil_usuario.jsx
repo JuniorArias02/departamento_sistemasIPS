@@ -4,6 +4,8 @@ import { User, Mail, Edit, Save, Lock, Phone, Eye, EyeOff } from 'lucide-react';
 import { obtenerMiPerfil, editarMiPerfil, cambiarContrasena } from '../../../services/perfil_services';
 import { useApp } from '../../../store/AppContext';
 import Swal from 'sweetalert2';
+import BackPage from '../components/BackPage';
+
 
 export default function PerfilUsuario(props) {
 	const { usuario } = useApp();
@@ -240,6 +242,7 @@ export default function PerfilUsuario(props) {
 			animate="visible"
 			variants={containerVariants}
 		>
+			<BackPage />
 			<motion.div
 				className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl relative"
 				variants={itemVariants}

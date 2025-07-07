@@ -77,10 +77,10 @@ export default function FormularioMantenimientoFreezer() {
 
     try {
       const options = {
-        maxSizeMB: 0.1,
+        maxSizeMB: 2,
         maxWidthOrHeight: 1280,
         useWebWorker: true,
-        initialQuality: 0.1,
+        initialQuality: 0.8,
         alwaysKeepResolution: false,
       };
 
