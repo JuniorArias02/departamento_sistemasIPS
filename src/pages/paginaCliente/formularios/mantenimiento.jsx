@@ -5,7 +5,7 @@ import { useApp } from "../../../store/AppContext";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { crearMantenimiento, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
+import { crearMantenimiento } from "../../../services/mantenimiento_services";
 import { listarCoordinadores } from "../../../services/utils_service";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
@@ -77,9 +77,11 @@ export default function FormularioMantenimientoFreezer() {
 
     try {
       const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+        initialQuality: 0.1,
+        alwaysKeepResolution: false,
       };
 
       const compressedFile = await imageCompression(file, options);
@@ -206,7 +208,10 @@ export default function FormularioMantenimientoFreezer() {
     });
 
     formDataToSend.append('creado_por', usuario?.id);
-    formDataToSend.append("id", mantenimientoEdit.id);
+    if (mantenimientoEdit?.id) {
+      formDataToSend.append("id", mantenimientoEdit.id);
+    }
+
     try {
       if (mantenimientoEdit?.id) {
         await crearMantenimiento(formDataToSend);
