@@ -34,6 +34,7 @@ import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_per
 import CrearAvisoActualizacionWeb from "./pages/paginaAdministrador/formularios/crear_aviso_actualizacion_web";
 import VistaActualizacionesWeb from "./pages/paginaCliente/vistasDatos/vista_actualizaciones_web";
 
+import ScrollToTop from "./hook/ScrollToTop";
 
 import { RUTAS } from "./const/routers/routers";
 import HorasDiaWrapper from "./view/HorasDiaWrapper";
@@ -58,6 +59,7 @@ function App() {
           }
         }}
       />
+      <ScrollToTop />
 
       <Routes>
         {/* Login */}
