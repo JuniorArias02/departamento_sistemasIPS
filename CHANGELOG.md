@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.1](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.0...v2.5.1) (2025-07-18)
+
+
+### Bug Fixes
+
+* correcion de api llamaod ([55e78da](https://github.com/JuniorArias02/formurioMedico/commit/55e78da6d33195f415a2761bcecd9296888b146b))
+
 ## [2.5.0](https://github.com/JuniorArias02/formurioMedico/compare/v2.4.4...v2.5.0) (2025-07-18)
 
 
