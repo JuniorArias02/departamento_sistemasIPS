@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { listarMantenimientos, actualizarEstadoMantenimiento } from "../../../services/mantenimiento_services";
+import { listarMantenimientos, actualizarEstadoMantenimiento, exportarInformeMantenimiento } from "../../../services/mantenimiento_services";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "../../../store/AppContext";
@@ -15,7 +15,9 @@ import {
 	CheckCircle,
 	Clock,
 	ClipboardList,
-	CalendarCheck
+	CalendarCheck,
+	Download,
+	Loader2
 } from 'lucide-react';
 import { PERMISOS } from "../../../secure/permisos/permisos";
 
@@ -24,11 +26,13 @@ export default function VistaDatosMantenimiento() {
 	const { usuario, permisos } = useApp();
 	const [mantenimientos, setMantenimientos] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [loadingExport, setLoadingExport] = useState(false);
 
 	const fetchData = async () => {
 		try {
 			setLoading(true);
 			const response = await listarMantenimientos(usuario.id);
+			console.log(response)
 			setMantenimientos(response.data);
 		} catch (error) {
 			console.error("Error cargando mantenimientos", error);
@@ -47,6 +51,25 @@ export default function VistaDatosMantenimiento() {
 			state: { mantenimientos: mantenimiento }
 		});
 	};
+
+	const handleExportar = async () => {
+		setLoadingExport(true);
+		try {
+			await exportarInformeMantenimiento(usuario.id);
+			Swal.fire({
+				icon: "success",
+				title: "Exportado",
+				text: "Archivo Excel descargado correctamente",
+				timer: 1500,
+				showConfirmButton: false,
+			});
+		} catch (error) {
+			Swal.fire("Error", error.message, "error");
+		} finally {
+			setLoadingExport(false);
+		}
+	};
+
 
 	const handleToggleRevisado = async (id, estaRevisadoActual) => {
 		const nuevoEstado = !estaRevisadoActual;
@@ -116,7 +139,26 @@ export default function VistaDatosMantenimiento() {
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-			<BackPage />
+			<div className="flex justify-between items-center mb-4">
+				<BackPage />
+
+				<div className="flex gap-3">
+					<button
+						onClick={() => {
+							handleExportar();
+						}}
+						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
+					>
+						{loadingExport ? (
+							<Loader2 className="w-5 h-5 animate-spin" />
+						) : (
+							<Download size={20} />
+						)}
+						<span>Exportar Excel</span>
+					</button>
+				</div>
+			</div>
+
 
 			{/* Encabezado mejorado */}
 			<header className="text-center space-y-3">

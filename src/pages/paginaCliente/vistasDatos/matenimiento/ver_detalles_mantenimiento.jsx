@@ -34,6 +34,14 @@ export default function DetalleMantenimiento() {
 
 	const item = mantenimiento;
 
+	let imagenes = [];
+
+	try {
+		imagenes = typeof item.imagen === 'string' ? JSON.parse(item.imagen) : item.imagen;
+	} catch (error) {
+		console.error("Error al parsear las imágenes:", error);
+	}
+
 
 	const handleEditarMantenimiento = (data) => {
 		navigate(RUTAS.USER.MANTENIMIENTO.CREAR_MANTENIMIENTO, {
@@ -58,7 +66,6 @@ export default function DetalleMantenimiento() {
 		if (!isConfirmed) return;
 
 		try {
-			// Mostrar loader mientras se procesa
 			Swal.fire({
 				title: 'Actualizando estado...',
 				allowOutsideClick: false,
@@ -176,23 +183,28 @@ export default function DetalleMantenimiento() {
 								</h2>
 
 								{item.imagen ? (
-									<div className="relative group">
-										<div className="aspect-video bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
-											<img
-												src={`${URL_PATH}${item.imagen}`}
-												alt={`Mantenimiento ${item.titulo}`}
-												className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-105"
-											/>
-										</div>
-										<div className="absolute bottom-6 right-6 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-											<button
-												onClick={() => window.open(`${URL_PATH}${item.imagen}`, '_blank')}
-												className="flex items-center gap-2 px-4 py-2 bg-white text-gray-800 rounded-full shadow-md hover:bg-gray-50 transition-all"
-											>
-												<Maximize2 size={16} />
-												<span>Expandir</span>
-											</button>
-										</div>
+									<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+										{item.imagen.map((imgPath, index) => (
+
+											<div key={index} className="relative group">
+												<div className="aspect-video bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
+													<img
+														src={`${URL_PATH}${imgPath}`}
+														alt={`Imagen ${index + 1}`}
+														className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-105"
+													/>
+												</div>
+												<div className="absolute bottom-6 right-6 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+													<button
+														onClick={() => window.open(`${URL_PATH}${imgPath}`, '_blank')}
+														className="flex items-center gap-2 px-4 py-2 bg-white text-gray-800 rounded-full shadow-md hover:bg-gray-50 transition-all"
+													>
+														<Maximize2 size={16} />
+														<span>Expandir</span>
+													</button>
+												</div>
+											</div>
+										))}
 									</div>
 								) : (
 									<div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
@@ -200,6 +212,7 @@ export default function DetalleMantenimiento() {
 										<p className="text-gray-400">No hay documentos adjuntos</p>
 									</div>
 								)}
+
 							</div>
 						</div>
 
@@ -372,8 +385,8 @@ export default function DetalleMantenimiento() {
 							whileHover={{ scale: 1.02 }}
 							whileTap={{ scale: 0.98 }}
 							className={`rounded-2xl p-6 shadow-sm border ${item.esta_revisado
-									? 'bg-green-50 border-green-200'
-									: 'bg-yellow-50 border-yellow-200'
+								? 'bg-green-50 border-green-200'
+								: 'bg-yellow-50 border-yellow-200'
 								}`}
 						>
 							<h2 className="flex items-center gap-3 text-lg font-semibold mb-2">

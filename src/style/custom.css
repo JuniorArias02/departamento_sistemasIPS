@@ -213,3 +213,20 @@
 .fc .fc-daygrid-event-harness {
   margin-bottom: 2px;
 }
+
+
+/* Scroll personalizado para el modal */
+.scroll-custom::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.scroll-custom::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 3px;
+}
+.scroll-custom::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}

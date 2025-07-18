@@ -34,6 +34,8 @@ import AsignarPermisos from "./pages/paginaAdministrador/formularios/asignar_per
 import CrearAvisoActualizacionWeb from "./pages/paginaAdministrador/formularios/crear_aviso_actualizacion_web";
 import VistaActualizacionesWeb from "./pages/paginaCliente/vistasDatos/vista_actualizaciones_web";
 
+import VerProgramados from "./pages/paginaCliente/calendarioMantenimiento/VerProgramados";
+
 import ScrollToTop from "./hook/ScrollToTop";
 
 import { RUTAS } from "./const/routers/routers";
@@ -244,12 +246,28 @@ function App() {
           <Route
             path={RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS}
             element={
-              <CalendarioMantenimientos />
+              permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_CALENDARIO) ? (
+                <CalendarioMantenimientos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
             }
           />
 
           <Route
-            path={RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA_PATH} // <-- con :fecha
+            path={RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA_PATH}
+            element={
+              permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_CALENDARIO) ? (
+                <HorasDiaWrapper />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA_PATH}
             element={<HorasDiaWrapper />}
           />
 
@@ -259,9 +277,7 @@ function App() {
               <VistaActualizacionesWeb />
             }
           />
-
-
-
+  
         </Route>
 
         {/* RUTAS DE ERROES DE PAGINA */}

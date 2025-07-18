@@ -1,5 +1,7 @@
+import packageJson from './package.json';
+
 export default function getVersion() {
-  const version = "2.4.3";
-  const releaseDate = "07/07/2025";
+  const version = packageJson.version;
+  const releaseDate = "16/07/2025"; 
   return { version, releaseDate };
 }

@@ -4,6 +4,8 @@ import { crearAgendaMantenimiento } from "../../../../services/mantenimiento_ser
 import { X, Calendar, Clock, Building, Edit3, FileText, Save, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useApp } from "../../../../store/AppContext";
+import Swal from 'sweetalert2';
+
 
 // PASO 1: Cambiamos las props que recibe el componente. Ya no es 'hora'.
 const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose, personal }) => {
@@ -67,8 +69,14 @@ const ModalCrearMantenimiento = ({ fecha, horaInicio, horaFin, onClose, personal
         usuario_id: usuarioContext.id,
         usuario_asignado: personal?.id,
       });
-      // console.log('Local', fechaInicioCompleta);
-      // console.log('ISO', fechaInicioCompleta.toISOString());
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Mantenimiento agendado!',
+        text: 'El mantenimiento se creó correctamente.',
+        timer: 2500,
+        showConfirmButton: false
+      });
 
       onClose();
     } catch (err) {

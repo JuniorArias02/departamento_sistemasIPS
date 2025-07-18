@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { CalendarRange, CalendarDays, CalendarClock , Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { CalendarRange, Bug, CalendarDays, ClipboardEdit, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,7 +29,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
-
+	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -67,9 +67,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 		};
 
 		fetchNuevosFormularios();
-		const interval = setInterval(fetchNuevosFormularios, 10000);
-		return () => clearInterval(interval);
+
 	}, [usuario?.id, permisos]);
+
 
 
 	const handleLogout = () => {
@@ -176,155 +176,167 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 					{permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
 							{/* Ítems del menú */}
-							<SidebarItem
-								icon={<Home size={18} />}
-								text="Inicio"
-								onClick={() => {
-									navigate(RUTAS.ADMIN.ROOT);
-									setTimeout(() => setSidebarOpen(false), 150);
-								}}
-								sidebarOpen={sidebarOpen}
-								isActive={location.pathname === RUTAS.ADMIN.ROOT}
-							/>
-
+							{permisos.includes(PERMISOS.SISTEMA.INGRESAR_DASHBOARDADMIN) && (
+								<SidebarItem
+									icon={<Home size={18} />}
+									text="Inicio"
+									onClick={() => {
+										navigate(RUTAS.ADMIN.ROOT);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
+									sidebarOpen={sidebarOpen}
+									isActive={location.pathname === RUTAS.ADMIN.ROOT}
+								/>
+							)}
 							{/* Menú Sistema */}
-							<SidebarCollapsible
-								icon={<ServerCog size={18} />} // o algún ícono como <Settings size={18} />
-								text="Sistema"
-								isOpen={menuSistemaOpen}
-								onClick={() => permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM)
-									? setMenuSistemaOpen(!menuSistemaOpen)
-									: mostrarAlertaSinPermiso()}
-								sidebarOpen={sidebarOpen}
-							>
-								<SidebarSubItem
-									icon={<Bell size={16} />}
-									text="Avisos Web"
-									onClick={() => {
-										if (permisos.includes(PERMISOS.ADMINISTRADOR_WEB.CREAR_AVISO_ACTUALIZACION)) {
-											navigate(RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB);
-											setTimeout(() => setSidebarOpen(false), 150);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
-									isActive={location.pathname === RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB}
-									sidebarOpen={sidebarOpen}
-									delay={0.1}
-								/>
-							</SidebarCollapsible>
-
-							{/* Menú Usuarios */}
-							<SidebarCollapsible
-								icon={<Users size={18} />}
-								text="Usuarios"
-								isOpen={menuUsuariosOpen}
-								onClick={() => permisos.includes(PERMISOS.USUARIOS.MENU_ITEM)
-									? setMenuUsuariosOpen(!menuUsuariosOpen)
-									: mostrarAlertaSinPermiso()}
-								sidebarOpen={sidebarOpen}
-							>
-								<SidebarSubItem
-									icon={<Eye size={16} />}
-									text="Ver Usuarios"
-									onClick={() => {
-										if (permisos.includes(PERMISOS.USUARIOS.VER_DATOS)) {
-											navigate(RUTAS.ADMIN.USUARIOS.ROOT);
-											setTimeout(() => setSidebarOpen(false), 150);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
-									isActive={location.pathname === RUTAS.ADMIN.USUARIOS.ROOT}
-									sidebarOpen={sidebarOpen}
-									delay={0.1}
-								/>
-								<SidebarSubItem
-									icon={<UserPlus size={16} />}
-									text="Crear Usuario"
+							{permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<ServerCog size={18} />} // o algún ícono como <Settings size={18} />
+									text="Sistema"
+									isOpen={menuSistemaOpen}
 									onClick={() =>
-										permisos.includes(PERMISOS.USUARIOS.CREAR)
-											? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
+										permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM)
+											? setMenuSistemaOpen(!menuSistemaOpen)
 											: mostrarAlertaSinPermiso()}
 									sidebarOpen={sidebarOpen}
-									delay={0.2}
-								/>
-							</SidebarCollapsible>
-
-
-							{/* Menú Roles */}
-							<SidebarCollapsible
-								icon={<Shield size={18} />}
-								text="Gestión de Roles"
-								isOpen={menuRolesOpen}
-								onClick={() =>
-									permisos.includes(PERMISOS.ROLES.MENU_ITEM)
-										? setMenuRolesOpen(!menuRolesOpen)
-										: mostrarAlertaSinPermiso()
-								}
-								sidebarOpen={sidebarOpen}
-							>
-								{permisos.includes(PERMISOS.ROLES.VER_LISTADO) && (
+								>
 									<SidebarSubItem
-										icon={<List size={16} />}
-										text="Listado de Roles"
-										onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
-										isActive={location.pathname === RUTAS.ADMIN.ROLES.VISTA_DATOS}
+										icon={<Bell size={16} />}
+										text="Avisos Web"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.ADMINISTRADOR_WEB.CREAR_AVISO_ACTUALIZACION)) {
+												navigate(RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB);
+												setTimeout(() => setSidebarOpen(false), 150);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										isActive={location.pathname === RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB}
 										sidebarOpen={sidebarOpen}
 										delay={0.1}
 									/>
-								)}
-								{permisos.includes(PERMISOS.ROLES.CREAR) && (
+								</SidebarCollapsible>
+							)}
+
+							{/* Menú Usuarios */}
+							{permisos.includes(PERMISOS.USUARIOS.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<Users size={18} />}
+									text="Usuarios"
+									isOpen={menuUsuariosOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.USUARIOS.MENU_ITEM)
+											? setMenuUsuariosOpen(!menuUsuariosOpen)
+											: mostrarAlertaSinPermiso()}
+									sidebarOpen={sidebarOpen}
+								>
 									<SidebarSubItem
-										icon={<PlusCircle size={16} />}
-										text="Crear Nuevo Rol"
-										onClick={() => navigate(RUTAS.ADMIN.ROLES.CREAR_ROL)}
+										icon={<Eye size={16} />}
+										text="Ver Usuarios"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.USUARIOS.VER_DATOS)) {
+												navigate(RUTAS.ADMIN.USUARIOS.ROOT);
+												setTimeout(() => setSidebarOpen(false), 150);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										isActive={location.pathname === RUTAS.ADMIN.USUARIOS.ROOT}
+										sidebarOpen={sidebarOpen}
+										delay={0.1}
+									/>
+									<SidebarSubItem
+										icon={<UserPlus size={16} />}
+										text="Crear Usuario"
+										onClick={() =>
+											permisos.includes(PERMISOS.USUARIOS.CREAR)
+												? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
+												: mostrarAlertaSinPermiso()}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
-								)}
-							</SidebarCollapsible>
+								</SidebarCollapsible>
+							)}
+
+
+							{/* Menú Roles */}
+							{permisos.includes(PERMISOS.ROLES.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<Shield size={18} />}
+									text="Gestión de Roles"
+									isOpen={menuRolesOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.ROLES.MENU_ITEM)
+											? setMenuRolesOpen(!menuRolesOpen)
+											: mostrarAlertaSinPermiso()
+									}
+									sidebarOpen={sidebarOpen}
+								>
+									{permisos.includes(PERMISOS.ROLES.VER_LISTADO) && (
+										<SidebarSubItem
+											icon={<List size={16} />}
+											text="Listado de Roles"
+											onClick={() => navigate(RUTAS.ADMIN.ROLES.VISTA_DATOS)}
+											isActive={location.pathname === RUTAS.ADMIN.ROLES.VISTA_DATOS}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+									{permisos.includes(PERMISOS.ROLES.CREAR) && (
+										<SidebarSubItem
+											icon={<PlusCircle size={16} />}
+											text="Crear Nuevo Rol"
+											onClick={() => navigate(RUTAS.ADMIN.ROLES.CREAR_ROL)}
+											sidebarOpen={sidebarOpen}
+											delay={0.2}
+										/>
+									)}
+								</SidebarCollapsible>
+							)}
 
 							{/* Gestión de Permisos */}
-							<SidebarCollapsible
-								icon={<KeyRound size={18} />}
-								text="Gestión de Permisos"
-								isOpen={menuPermisosOpen}
-								onClick={() =>
-									permisos.includes(PERMISOS.GESTION_PERMISOS.MENU_ITEM)
-										? setMenuPermisosOpen(!menuPermisosOpen)
-										: mostrarAlertaSinPermiso()
-								}
-								sidebarOpen={sidebarOpen}
-							>
-								<SidebarSubItem
-									icon={<ShieldPlus size={16} />}
-									text="Crear Permiso"
-									onClick={() => {
-										if (permisos.includes(PERMISOS.GESTION_PERMISOS.CREAR)) {
-											navigate(RUTAS.CREAR_PERMISO);
-											setTimeout(() => setSidebarOpen(false), 150);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
+							{permisos.includes(PERMISOS.GESTION_PERMISOS.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<KeyRound size={18} />}
+									text="Gestión de Permisos"
+									isOpen={menuPermisosOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.GESTION_PERMISOS.MENU_ITEM)
+											? setMenuPermisosOpen(!menuPermisosOpen)
+											: mostrarAlertaSinPermiso()
+									}
 									sidebarOpen={sidebarOpen}
-									delay={0.1}
-								/>
-								<SidebarSubItem
-									icon={<UserCog size={16} />}
-									text="Asignar Permisos"
-									onClick={() => {
-										if (permisos.includes(PERMISOS.GESTION_PERMISOS.ASIGNAR)) {
-											navigate(RUTAS.ADMIN.PERMISOS.ASIGNAR);
-										} else {
-											mostrarAlertaSinPermiso();
-										}
-									}}
-									sidebarOpen={sidebarOpen}
-									delay={0.2}
-								/>
-							</SidebarCollapsible>
+								>
+									<SidebarSubItem
+										icon={<ShieldPlus size={16} />}
+										text="Crear Permiso"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_PERMISOS.CREAR)) {
+												navigate(RUTAS.CREAR_PERMISO);
+												setTimeout(() => setSidebarOpen(false), 150);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.1}
+									/>
+									<SidebarSubItem
+										icon={<UserCog size={16} />}
+										text="Asignar Permisos"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_PERMISOS.ASIGNAR)) {
+												navigate(RUTAS.ADMIN.PERMISOS.ASIGNAR);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.2}
+									/>
+								</SidebarCollapsible>
+							)}
+
 
 							{/* Menú Formularios */}
 							<SidebarCollapsible
@@ -379,32 +391,74 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							)}
 
 							{/* MENU DE AGENDAMIENTO DE MANTENIMIENTOS */}
-							<SidebarCollapsible
-								icon={<CalendarRange size={18} />}
-								text="Agendar Mantenimiento"
-								isOpen={menuAgendamientoMantenimientoOpen}
-								onClick={() => setMenuAgendamientoMantenimientoOpen(!menuAgendamientoMantenimientoOpen)}
+							{permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<CalendarRange size={18} />}
+									text="Agendar Mantenimiento"
+									isOpen={menuAgendamientoMantenimientoOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.MENU_ITEM)
+											? setMenuAgendamientoMantenimientoOpen(!menuAgendamientoMantenimientoOpen)
+											: mostrarAlertaSinPermiso()
+									}
+									sidebarOpen={sidebarOpen}
+									isBeta={true}
+								>
+									{permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_CALENDARIO) && (
+										<SidebarSubItem
+											icon={<CalendarDays size={16} />}
+											text="Ver Calendario"
+											onClick={() => {
+												navigate(RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS);
+												setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+									{/* {permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_PROGRAMADOS) && (
+										<SidebarSubItem
+											icon={<CalendarClock size={16} />}
+											text="Ver Programados"
+											onClick={() => navigate(RUTAS.USER.MANTENIMIENTO.VER_PROGRAMADOS)}
+											sidebarOpen={sidebarOpen}
+											delay={0.2}
+										/>
+									)} */}
+								</SidebarCollapsible>
+							)}
+
+							{/* reporte */}
+							{/* <SidebarCollapsible
+								icon={<Bug size={18} />}
+								text="Reportes"
+								isOpen={menuReportesOpen}
+								onClick={() => setMenuReportesOpen(!menuReportesOpen)}
 								sidebarOpen={sidebarOpen}
-								isBeta={true}
+								isBeta={false} 
 							>
 								<SidebarSubItem
-									icon={<CalendarDays size={16} />}
-									text="Ver Calendario"
+									icon={<ClipboardEdit size={16} />}
+									text="Reportar Problema"
 									onClick={() => {
-										navigate(RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS);
+										navigate(RUTAS.USER.REPORTES.REPORTAR_PROBLEMA);
 										setTimeout(() => setSidebarOpen(false), 150);
 									}}
 									sidebarOpen={sidebarOpen}
 									delay={0.1}
 								/>
+
 								<SidebarSubItem
-									icon={<CalendarClock  size={16} />}
-									text="Ver Programados"
-									onClick={() => navigate(RUTAS.PAGINA_CONSTRUCCION)}
+									icon={<FileSearch size={16} />}
+									text="Ver Reportes"
+									onClick={() => {
+										navigate(RUTAS.USER.REPORTES.LISTADO);
+										setTimeout(() => setSidebarOpen(false), 150);
+									}}
 									sidebarOpen={sidebarOpen}
 									delay={0.2}
 								/>
-							</SidebarCollapsible>
+							</SidebarCollapsible> */}
 
 						</>
 					)}

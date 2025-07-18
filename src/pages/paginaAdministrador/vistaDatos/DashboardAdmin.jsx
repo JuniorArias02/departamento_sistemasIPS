@@ -31,12 +31,7 @@ export default function DashboardAdmin() {
 	});
 
 	useEffect(() => {
-		refrescarTodo();
-
-		const intervalo = setInterval(() => {
-			refrescarTodo();
-		}, 60000);
-		return () => clearInterval(intervalo);
+		refrescarTodo(); // se ejecuta solo una vez al montar
 	}, []);
 
 

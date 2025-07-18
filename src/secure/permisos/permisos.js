@@ -33,6 +33,12 @@ export const PERMISOS = {
 		CONTAR_TODOS_PENDIENTES: 'contar_todos_pendientes_mantenimientos',
 		CONTAR_PROPIOS_PENDIENTES: 'contar_propios_pendientes_mantenimientos',
 	},
+	AGENDAMIENTO_MANTENIMIENTOS: {
+		MENU_ITEM: "menu_item_agendamiento_mantenimientos",
+		VER_CALENDARIO: "ver_calendario_mantenimientos",
+		VER_PROGRAMADOS: "ver_programados_mantenimientos",
+		CREAR_AGENDA: "crear_agenda_mantenimientos"
+	},
 
 	GESTION_PERMISOS: {
 		MENU_ITEM: "menu_item_permisos",

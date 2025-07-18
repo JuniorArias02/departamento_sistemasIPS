@@ -33,10 +33,11 @@ export default function FormularioMantenimientoFreezer() {
     dependencia: "",
     sede_id: "",
     nombre_receptor: "",
-    imagen: "",
     descripcion: "",
-    imageFile: null
+    imagenes: [],
+    imageFiles: []
   });
+
 
   const [loading, setLoading] = useState(false);
 
@@ -44,102 +45,99 @@ export default function FormularioMantenimientoFreezer() {
     if (mantenimientoEdit) {
       setFormData((prev) => ({
         ...prev,
-        ...mantenimientoEdit,
+        titulo: mantenimientoEdit.titulo,
+        codigo: mantenimientoEdit.codigo,
+        modelo: mantenimientoEdit.modelo,
+        dependencia: mantenimientoEdit.dependencia,
+        sede_id: mantenimientoEdit.sede_id,
+        nombre_receptor: mantenimientoEdit.nombre_receptor,
+        descripcion: mantenimientoEdit.descripcion,
+        imagenes: mantenimientoEdit.imagen
+          ? (mantenimientoEdit.imagen).map(img => `${IMAGEN_URL}${img}`)
+          : [],
         imageFile: null,
       }));
     }
   }, [mantenimientoEdit]);
 
 
+
   const handleImageChange = async (e) => {
     setError(null);
 
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    const totalImages = formData.imageFiles.length + files.length;
 
-    const sizeInMB = file.size / (1024 * 1024);
-    setFileSizeInMB(sizeInMB);
-
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
-      setError('Formato no válido. Solo se aceptan JPG, PNG, JPEG, WEBP o GIF.');
+    if (totalImages > 3) {
+      setError("Solo puedes subir un máximo de 3 imágenes.");
       return;
     }
 
-    const maxSize = 90 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setError(`El archivo es demasiado grande (${sizeInMB.toFixed(2)} MB). Máximo permitido: 90MB.`);
-      return;
-    }
+    for (let file of files) {
+      const sizeInMB = file.size / (1024 * 1024);
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        setError('Formato no válido. Solo se aceptan JPG, PNG, JPEG, WEBP o GIF.');
+        continue;
+      }
 
-    setIsUploading(true);
-    setUploadProgress(0);
+      if (file.size > 90 * 1024 * 1024) {
+        setError(`El archivo ${file.name} es demasiado grande (${sizeInMB.toFixed(2)} MB).`);
+        continue;
+      }
 
-    try {
-      const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1280,
-        useWebWorker: true,
-        initialQuality: 0.8,
-        alwaysKeepResolution: false,
-      };
+      setIsUploading(true);
+      setUploadProgress(0);
 
-      const compressedFile = await imageCompression(file, options);
-
-      // 🧠 Crear nombre con extensión real
-      const extMap = {
-        'image/jpeg': 'jpg',
-        'image/png': 'png',
-        'image/webp': 'webp',
-        'image/gif': 'gif'
-      };
-      const ext = extMap[compressedFile.type] || 'jpg';
-      const newFileName = `imagen_${Date.now()}.${ext}`;
-
-      // 🛠 Renombrar el archivo
-      const renamedFile = new File([compressedFile], newFileName, {
-        type: compressedFile.type,
-        lastModified: Date.now(),
-      });
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setIsUploading(false);
-        setFormData({
-          ...formData,
-          imagen: reader.result,
-          imageFile: renamedFile
+      try {
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+          initialQuality: 0.8,
         });
-      };
 
-      reader.onerror = () => {
+        const extMap = {
+          'image/jpeg': 'jpg',
+          'image/png': 'png',
+          'image/webp': 'webp',
+          'image/gif': 'gif'
+        };
+        const ext = extMap[compressedFile.type] || 'jpg';
+        const newFileName = `imagen_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+
+        const renamedFile = new File([compressedFile], newFileName, {
+          type: compressedFile.type,
+          lastModified: Date.now(),
+        });
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          setFormData((prev) => ({
+            ...prev,
+            imagenes: [...prev.imagenes, reader.result],
+            imageFiles: [...prev.imageFiles, renamedFile]
+          }));
+          setIsUploading(false);
+        };
+
+        reader.readAsDataURL(renamedFile);
+      } catch (error) {
         setIsUploading(false);
-        setError('Error al leer el archivo. Inténtalo de nuevo.');
-      };
-
-      reader.readAsDataURL(renamedFile);
-    } catch (error) {
-      setIsUploading(false);
-      console.error(error);
-      setError('No se pudo comprimir la imagen.');
+        console.error(error);
+        setError('No se pudo comprimir una imagen.');
+      }
     }
   };
 
 
-  const handleRemoveImage = () => {
-    setFormData({
-      ...formData,
-      imagen: "",
-      imageFile: null
-    });
-    setError(null);
-    setIsUploading(false);
-    setUploadProgress(0);
-    setFileSizeInMB(0);
-
-    const fileInput = document.getElementById('imagen');
-    if (fileInput) fileInput.value = '';
+  const handleRemoveImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      imagenes: prev.imagenes.filter((_, i) => i !== index),
+      imageFiles: prev.imageFiles.filter((_, i) => i !== index),
+    }));
   };
 
   useEffect(() => {
@@ -195,16 +193,18 @@ export default function FormularioMantenimientoFreezer() {
 
     setLoading(true);
 
-    // Crear FormData para enviar archivos
     const formDataToSend = new FormData();
 
-    // Agregar todos los campos del formulario
+    // Agrega los campos normales
     Object.entries(formData).forEach(([key, value]) => {
-      if (key === 'imageFile' && value) {
-        formDataToSend.append('imagen', value);
-      } else if (key !== 'imageFile') {
+      if (key !== 'imageFiles' && key !== 'imagenes') {
         formDataToSend.append(key, value);
       }
+    });
+
+    // Agrega cada imagen comprimida
+    formData.imageFiles.forEach((file) => {
+      formDataToSend.append('imagenes[]', file);
     });
 
     formDataToSend.append('creado_por', usuario?.id);
@@ -213,28 +213,20 @@ export default function FormularioMantenimientoFreezer() {
     }
 
     try {
-      if (mantenimientoEdit?.id) {
-        await crearMantenimiento(formDataToSend);
-        Swal.fire({
-          icon: "success",
-          title: mantenimientoEdit?.id ? "¡Actualizado!" : "¡Éxito!",
-          text: mantenimientoEdit?.id
-            ? "Mantenimiento actualizado correctamente"
-            : "Mantenimiento registrado correctamente",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      } else {
-        await crearMantenimiento(formDataToSend);
-        Swal.fire({
-          icon: "success",
-          title: "¡Éxito!",
-          text: "Mantenimiento registrado correctamente",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+      await crearMantenimiento(formDataToSend);
 
-        // Limpieza completa
+      Swal.fire({
+        icon: "success",
+        title: mantenimientoEdit?.id ? "¡Actualizado!" : "¡Éxito!",
+        text: mantenimientoEdit?.id
+          ? "Mantenimiento actualizado correctamente"
+          : "Mantenimiento registrado correctamente",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      if (!mantenimientoEdit?.id) {
+        // Limpiar todo si es nuevo
         setFormData({
           titulo: "",
           codigo: "",
@@ -242,12 +234,11 @@ export default function FormularioMantenimientoFreezer() {
           dependencia: "",
           sede_id: "",
           nombre_receptor: "",
-          imagen: "",
           descripcion: "",
-          imageFile: null,
+          imagenes: [],
+          imageFiles: [],
         });
 
-        // Limpiar input de archivo
         const fileInput = document.getElementById('imagen');
         if (fileInput) fileInput.value = '';
       }
@@ -461,7 +452,7 @@ export default function FormularioMantenimientoFreezer() {
                 </div>
               )}
 
-              {!formData.imagen ? (
+              {formData.imagenes.length === 0 ? (
                 <div className="space-y-2">
                   <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -475,36 +466,26 @@ export default function FormularioMantenimientoFreezer() {
                   {error && <p className="text-xs text-red-500">{error}</p>}
                 </div>
               ) : (
-                <div className="relative">
-                  {formData.imageFile ? (
-                    <img
-                      src={URL.createObjectURL(formData.imageFile)}
-                      alt="Vista previa"
-                      className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
-                    />
-                  ) : formData.imagen ? (
-                    <img
-                      src={`${IMAGEN_URL}/${formData.imagen}`}
-                      alt="Vista previa"
-                      className="mx-auto max-h-48 object-contain rounded-lg border border-gray-200/80 shadow-sm"
-                    />
-                  ) : null}
-                  {formData.imageFile && (
-                    <div className="mt-2 text-xs text-gray-500">
-                      Tamaño: {(formData.imageFile.size / (1024 * 1024)).toFixed(2)} MB
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                  {formData.imagenes.map((img, index) => (
+                    <div key={index} className="relative group border border-gray-200 rounded-lg overflow-hidden">
+                      <img
+                        src={img}
+                        alt={`imagen-${index}`}
+                        className="w-full h-32 object-contain bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-md"
+                        title="Eliminar imagen"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
                     </div>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-all duration-200 shadow-md hover:scale-110"
-                    title="Eliminar imagen"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                  ))}
                 </div>
               )}
             </div>

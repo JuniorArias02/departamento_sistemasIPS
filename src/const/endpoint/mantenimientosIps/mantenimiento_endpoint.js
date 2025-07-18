@@ -12,3 +12,4 @@ export const CREAR_AGENDA_MANTENIMIENTO = `${URL_PATH}controllers/mantenimiento/
 export const LISTAR_MANTENIMIENTOS_POR_DIA = `${URL_PATH}controllers/mantenimiento/listar_mantenimientos_por_dia.php`;
 export const LISTAR_PERSONAL_ASIGNABLE = `${URL_PATH}controllers/mantenimiento/listar_personal_asignable.php`;
 export const IMAGEN_URL = `${URL_PATH}`;
+export const EXPORTAR_INFORME_MANTENIMIENTO = `${URL_PATH}export/exportar_informe_mantenimiento.php`;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LISTAR_MANTENIMIENTOS_POR_DIA, LISTAR_MANTENIMIENTOS_POR_MES, LISTAR_PERSONAL_ASIGNABLE, CREAR_AGENDA_MANTENIMIENTO, CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO, GRAFICA_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
+import { LISTAR_MANTENIMIENTOS_POR_DIA, LISTAR_MANTENIMIENTOS_POR_MES, LISTAR_PERSONAL_ASIGNABLE, CREAR_AGENDA_MANTENIMIENTO, CREAR_MANTENIMIENTO, CONTAR_MANTENIMIENTO, ELIMINAR_MANTENIMIENTO, LISTAR_MANTENIMIENTOS, CONTAR_MANTENIMIENTOS_PENDIENTES, ACTUALIZAR_ESTADO_MANTENIMIENTO, GRAFICA_MANTENIMIENTO, EXPORTAR_INFORME_MANTENIMIENTO } from "../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
 
 
 export const listarMantenimientos = async (usuarioId) => {
@@ -17,6 +17,23 @@ export const listarMantenimientos = async (usuarioId) => {
 		);
 	}
 };
+
+
+
+export const eliminarEventoMantenimiento = async (id, usuario_id) => {
+  try {
+    const response = await axios.post(ELIMINAR_MANTENIMIENTO, {
+      id,
+      usuario_id
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error?.response?.data?.error || "Error al eliminar mantenimiento"
+    );
+  }
+};
+
 
 
 
@@ -74,14 +91,17 @@ export const fetchNotificacionesPendientes = async (usuarioId) => {
 };
 
 
-export const getMantenimientosPorMes = async (fecha) => {
+export const getMantenimientosPorMes = async (fecha, usuario_id) => {
 	const fechaISO = fecha.toISOString().split("T")[0]; // ej: "2025-07-01"
 	const { data } = await axios.get(LISTAR_MANTENIMIENTOS_POR_MES, {
-		params: { fecha: fechaISO }
+		params: {
+			fecha: fechaISO,
+			usuario_id: usuario_id
+		}
 	});
-	// console.log("Datos obtenidos:", data);
 	return data;
 };
+
 
 export const crearAgendaMantenimiento = async (datos) => {
 	try {
@@ -93,11 +113,12 @@ export const crearAgendaMantenimiento = async (datos) => {
 	}
 };
 
-export const getMantenimientosPorDia = async (fecha) => {
+export const getMantenimientosPorDia = async (fecha, usuario_id) => {
 	const fechaStr = fecha.toISOString().split('T')[0];
-	const res = await axios.get(`${LISTAR_MANTENIMIENTOS_POR_DIA}?fecha=${fechaStr}`);
+	const res = await axios.get(`${LISTAR_MANTENIMIENTOS_POR_DIA}?fecha=${fechaStr}&usuario_id=${usuario_id}`);
 	return res.data;
 };
+
 
 export const listarPersonalAsignable = async (usuario_id) => {
 	try {
@@ -108,5 +129,30 @@ export const listarPersonalAsignable = async (usuario_id) => {
 	} catch (error) {
 		console.error("Error al listar personal asignable:", error);
 		throw error;
+	}
+};
+
+export const exportarInformeMantenimiento = async (idTecnico) => {
+	try {
+		const response = await axios.post(
+			EXPORTAR_INFORME_MANTENIMIENTO,
+			{ tecnico_id: idTecnico },
+			{ responseType: "blob" }
+		);
+
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "informe.xlsx");
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+
+		return true;
+	} catch (error) {
+		console.error("Error al generar informe:", error);
+		throw new Error(
+			error?.response?.data?.mensaje || "Error al generar informe"
+		);
 	}
 };

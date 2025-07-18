@@ -47,7 +47,7 @@ export const RUTAS = {
       VISTA_DATOS: `${DASHBOARD}/mantenimiento`,
       VER_DETALLES: `${DASHBOARD}/mantenimiento/detalles`,
       AGENDA_MANTENIMIENTOS: `${DASHBOARD}/agenda_mantenimiento`,
-
+      VER_PROGRAMADOS:`${DASHBOARD}/agenda_programadas`,
       HORAS_DEL_DIA_PATH: `${DASHBOARD}/mantenimiento/horas/:fecha`,
       HORAS_DEL_DIA: (fecha) => `${DASHBOARD}/mantenimiento/horas/${fecha}`,
     },

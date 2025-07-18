@@ -150,10 +150,12 @@ export default function VistaDatosUsuarios() {
 					<table className="w-full text-left">
 						<thead className="bg-gradient-to-r from-indigo-50 to-violet-50 text-gray-600">
 							<tr>
-								<th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">Usuario</th>
-								<th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">Rol</th>
-								<th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">Estado</th>
-								<th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider text-right">Acciones</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Usuario</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Correo</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Teléfono</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Rol</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Estado</th>
+								<th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider text-right">Acciones</th>
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-200">
@@ -165,23 +167,29 @@ export default function VistaDatosUsuarios() {
 									transition={{ duration: 0.2 }}
 									className="hover:bg-gray-50/80 transition-colors"
 								>
-									<td className="px-6 py-4">
-										<div className="flex items-center gap-3">
-											<div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+									<td className="px-4 py-3">
+										<div className="flex items-center gap-2">
+											<div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
 												{u.foto ? (
 													<img src={u.foto} alt={u.nombre_completo} className="w-full h-full rounded-full object-cover" />
 												) : (
-													<User className="w-5 h-5 text-indigo-600" />
+													<User className="w-4 h-4 text-indigo-600" />
 												)}
 											</div>
 											<div>
-												<div className="font-medium text-gray-800">{u.nombre_completo}</div>
-												<div className="text-sm text-gray-500">{u.usuario}</div>
+												<div className="font-medium text-gray-800 text-sm">{u.nombre_completo}</div>
+												<div className="text-xs text-gray-500">{u.usuario}</div>
 											</div>
 										</div>
 									</td>
-									<td className="px-6 py-4">
-										<span className={`px-2.5 py-1 rounded-full text-xs font-medium ${u.rol === 'admin'
+									<td className="px-4 py-3">
+										<div className="text-xs text-gray-800 break-words">{u.correo}</div>
+									</td>
+									<td className="px-4 py-3">
+										<div className="text-xs text-gray-800">{u.telefono}</div>
+									</td>
+									<td className="px-4 py-3">
+										<span className={`px-2 py-0.5 rounded-full text-xs font-medium ${u.rol === 'admin'
 											? 'bg-indigo-100 text-indigo-800'
 											: u.rol === 'editor'
 												? 'bg-purple-100 text-purple-800'
@@ -190,44 +198,43 @@ export default function VistaDatosUsuarios() {
 											{u.rol}
 										</span>
 									</td>
-									<td className="px-6 py-4">
-										<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+									<td className="px-4 py-3">
+										<span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${u.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
 											}`}>
 											{u.estado ? (
 												<>
-													<span className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
+													<span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
 													Activo
 												</>
 											) : (
 												<>
-													<span className="w-2 h-2 rounded-full bg-gray-500 mr-1.5"></span>
+													<span className="w-2 h-2 rounded-full bg-gray-500 mr-1"></span>
 													Inactivo
 												</>
 											)}
 										</span>
 									</td>
-									<td className="px-6 py-4 text-right">
+									<td className="px-4 py-3 text-right">
 										<div className="flex justify-end gap-2">
 											{permisos.includes(PERMISOS.USUARIOS.EDITAR) && (
 												<button
 													onClick={() => handleEditar(u)}
-													className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+													className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
 													title="Editar"
 												>
-													<Pencil size={16} />
+													<Pencil size={14} />
 												</button>
 											)}
 
 											{permisos.includes(PERMISOS.USUARIOS.ELIMINAR) && (
 												<button
 													onClick={() => handleEliminar(u.id)}
-													className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+													className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
 													title="Eliminar"
 												>
-													<Trash2 size={16} />
+													<Trash2 size={14} />
 												</button>
 											)}
-
 										</div>
 									</td>
 								</motion.tr>

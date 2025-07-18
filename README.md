@@ -57,3 +57,19 @@ Contiene funciones y herramientas generales que se usan en toda la app.
 ---
 
 💡 Esta estructura ayuda a mantener el proyecto bien organizado, facilitando su mantenimiento y escalabilidad.
+
+
+| Tipo        | Uso                                      |
+| ----------- | ---------------------------------------- |
+| `feat:`     | ✨ Nueva funcionalidad                    |
+| `fix:`      | 🐛 Corrección de errores                 |
+| `chore:`    | 🔧 Cambios internos o mantenimiento      |
+| `docs:`     | 📚 Cambios en documentación              |
+| `style:`    | 🎨 Cambios de estilo (formato, espacios) |
+| `refactor:` | 🔁 Mejora de código sin cambiar lógica   |
+| `test:`     | ✅ Agregar o modificar tests              |
+
+feat: agregar botón de exportar PDF
+fix: corregido error al validar email
+docs: actualizar instrucciones en el README
+chore: actualizar dependencias

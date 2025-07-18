@@ -102,7 +102,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
 
           {/* Notificaciones (opcional) */}
           <button
-            className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
+            className="p-2 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer"
             aria-label="Notificaciones"
             onClick={() => navigate(RUTAS.USER.SISTEMA.VER_ACTUALIZACIONES)}
           >
