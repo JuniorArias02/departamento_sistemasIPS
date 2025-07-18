@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.6](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.5...v2.5.6) (2025-07-18)
+
+
+### Bug Fixes
+
+* se elimino console log ([caa13c7](https://github.com/JuniorArias02/formurioMedico/commit/caa13c74c4ca3984a90209db0bc8e87bb7fb2e5e))
+
 ### [2.5.5](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.4...v2.5.5) (2025-07-18)
 
 
