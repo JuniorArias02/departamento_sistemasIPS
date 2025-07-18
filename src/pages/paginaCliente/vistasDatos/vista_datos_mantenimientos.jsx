@@ -146,6 +146,7 @@ export default function VistaDatosMantenimiento() {
 						onClick={() => {
 							handleExportar();
 						}}
+						disabled={loadingExport}
 						className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
 					>
 						{loadingExport ? (
@@ -155,6 +156,7 @@ export default function VistaDatosMantenimiento() {
 						)}
 						<span>Exportar Excel</span>
 					</button>
+
 				</div>
 			</div>
 

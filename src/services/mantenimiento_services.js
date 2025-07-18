@@ -132,11 +132,11 @@ export const listarPersonalAsignable = async (usuario_id) => {
 	}
 };
 
-export const exportarInformeMantenimiento = async (idTecnico) => {
+export const exportarInformeMantenimiento = async (idUsuario) => {
 	try {
 		const response = await axios.post(
 			EXPORTAR_INFORME_MANTENIMIENTO,
-			{ tecnico_id: idTecnico },
+			{ usuario_id: idUsuario },
 			{ responseType: "blob" }
 		);
 
