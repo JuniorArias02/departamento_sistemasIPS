@@ -61,12 +61,11 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
       }
     });
   };
-
   return (
     <>
-      <nav className="bg-gradient-to-r from-indigo-700 to-violet-800 text-white px-6 py-3 shadow-lg flex justify-between items-center border-b border-white/10">
-        {/* Parte izquierda */}
-        <div className="flex items-center gap-5">
+      <nav className="bg-gradient-to-r from-indigo-700 to-violet-800 text-white px-4 py-2 sm:px-6 sm:py-3 shadow-lg flex justify-between items-center border-b border-white/10">
+        {/* Parte izquierda - más compacta */}
+        <div className="flex items-center gap-3">
           {permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
             <motion.button
               onClick={toggleSidebar}
@@ -86,62 +85,63 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
                 }}
               >
                 {sidebarOpen ? (
-                  <X size={24} className="text-white/90" />
+                  <X size={20} className="text-white/90" />
                 ) : (
-                  <Menu size={24} className="text-white/90" />
+                  <Menu size={20} className="text-white/90" />
                 )}
               </motion.div>
             </motion.button>
           )}
 
-          <DepartamentoSistemas />
+          <div className="scale-90 sm:scale-100 origin-left">
+            <DepartamentoSistemas />
+          </div>
         </div>
 
-        {/* Parte derecha */}
-        <div className="flex items-center gap-4">
-
-          {/* Notificaciones (opcional) */}
+        {/* Parte derecha - optimizada para móvil */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Notificaciones */}
           <button
-            className="p-2 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer"
+            className="p-1 sm:p-2 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer"
             aria-label="Notificaciones"
             onClick={() => navigate(RUTAS.USER.SISTEMA.VER_ACTUALIZACIONES)}
           >
-            <Bell className="w-5 h-5 text-white/90" />
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white/90" />
             {cantidadActualizaciones > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                 {cantidadActualizaciones}
               </span>
             )}
           </button>
+
+          {/* Menú usuario */}
           <div className="relative" ref={menuRef}>
-            {/* Click para mostrar menú */}
             <div
-              className="flex items-center gap-3 cursor-pointer"
+              className="flex items-center gap-2 cursor-pointer"
               onClick={toggleMenu}
             >
               <div className="hidden sm:flex flex-col items-end">
-                <span className="font-medium text-white/90">
+                <span className="font-medium text-white/90 text-sm">
                   {usuario?.nombre_completo || "Usuario"}
                 </span>
                 <span className="text-xs text-white/60">
                   {usuario?.rol || "Administrador"}
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 hover:border-white/40">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 hover:border-white/40">
                 {usuario?.foto ? (
                   <img src={usuario.foto} className="w-full h-full rounded-full object-cover" />
                 ) : (
-                  <User className="w-5 h-5 text-white/80" />
+                  <User className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white/80" />
                 )}
               </div>
             </div>
 
-            {/* Menú */}
             {mostrarMenu && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-50">
                 <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                  <div className="font-medium">{usuario?.nombre_completo}</div>
-                  <div className="text-xs text-gray-500">{usuario?.email}</div>
+                  <div className="font-medium truncate">{usuario?.nombre_completo}</div>
+                  <div className="text-xs text-gray-500 truncate">{usuario?.email}</div>
                 </div>
                 <a
                   onClick={() => {
@@ -168,15 +168,6 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
               </div>
             )}
           </div>
-          {/* Botón de salir - versión móvil */}
-          <button
-            onClick={handleLogout}
-            className="sm:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
-          >
-            <LogOut className="w-5 h-5 text-white/90" />
-          </button>
         </div>
       </nav>
     </>
