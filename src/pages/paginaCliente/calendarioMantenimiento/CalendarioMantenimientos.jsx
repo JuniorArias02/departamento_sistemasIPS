@@ -47,7 +47,6 @@ const CalendarioMantenimientos = () => {
           imagen: item.imagen
         }
       }));
-      console.log("Eventos formateados", formattedEvents);
       setEvents(formattedEvents);
     } catch (err) {
       console.error("Error al cargar mantenimientos", err);
@@ -118,8 +117,6 @@ const CalendarioMantenimientos = () => {
 
 
   const handleDelete = async () => {
-    console.log("Evento seleccionado:", selectEvent.extendedProps.mantenimiento_id, usuario.id);
-
     if (!selectEvent) return;
 
     const result = await Swal.fire({

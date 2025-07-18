@@ -155,7 +155,6 @@ export const exportarInventariosCliente = async () => {
     const blob = new Blob([buffer], { type: "application/octet-stream" });
     saveAs(blob, "inventario.xlsx");
 
-
     console.log("Excel exportado correctamente.");
   } catch (error) {
     console.error("Error exportando desde el cliente:", error);
