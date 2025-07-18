@@ -32,7 +32,6 @@ export default function VistaDatosMantenimiento() {
 		try {
 			setLoading(true);
 			const response = await listarMantenimientos(usuario.id);
-			console.log(response)
 			setMantenimientos(response.data);
 		} catch (error) {
 			console.error("Error cargando mantenimientos", error);
