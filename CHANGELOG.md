@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.5](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.4...v2.5.5) (2025-07-18)
+
+
+### Bug Fixes
+
+* correcion de boton de exportar informes y se acomodo un poco el navbar ([3812d19](https://github.com/JuniorArias02/formurioMedico/commit/3812d1944e47f857b9f669d1e1e029a2651afa63))
+
 ### [2.5.4](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.3...v2.5.4) (2025-07-18)
 
 ### [2.5.3](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.2...v2.5.3) (2025-07-18)
