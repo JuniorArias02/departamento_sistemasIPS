@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.7](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.5.6...v2.5.7) (2025-08-02)
+
 ### [2.5.6](https://github.com/JuniorArias02/formurioMedico/compare/v2.5.5...v2.5.6) (2025-07-18)
 
 
