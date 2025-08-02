@@ -30,7 +30,7 @@ export default function BackPage({
       onClick={handleBack}
       whileHover={{ x: -3 }}
       whileTap={{ scale: 0.97 }}
-      className="group relative flex items-center gap-2 bg-white/80 hover:bg-white text-gray-700 font-medium py-2.5 px-5 rounded-xl transition-all duration-300 cursor-pointer border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 backdrop-blur-sm"
+      className="group relative flex items-center gap-2 bg-white/80 hover:bg-white text-gray-700 font-medium py-2.5 px-5 rounded-xl transition-all duration-300 cursor-pointer border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 backdrop-blur-sm mb-5"
     >
       {/* Flecha con animación */}
       <motion.div

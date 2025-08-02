@@ -47,7 +47,7 @@ export const RUTAS = {
       VISTA_DATOS: `${DASHBOARD}/mantenimiento`,
       VER_DETALLES: `${DASHBOARD}/mantenimiento/detalles`,
       AGENDA_MANTENIMIENTOS: `${DASHBOARD}/agenda_mantenimiento`,
-      VER_PROGRAMADOS:`${DASHBOARD}/agenda_programadas`,
+      VER_PROGRAMADOS: `${DASHBOARD}/agenda_programadas`,
       HORAS_DEL_DIA_PATH: `${DASHBOARD}/mantenimiento/horas/:fecha`,
       HORAS_DEL_DIA: (fecha) => `${DASHBOARD}/mantenimiento/horas/${fecha}`,
     },
@@ -55,5 +55,14 @@ export const RUTAS = {
     SISTEMA: {
       VER_ACTUALIZACIONES: `${DASHBOARD}/ver_actualizaciones`,
     },
+    
+    EQUIPOS: {
+      ROOT: `${DASHBOARD}/equipos`,
+      CREAR_EQUIPO: `${DASHBOARD}/crear_equipo`,
+      DETALLE_EQUIPO: `${DASHBOARD}/detalle_equipo`,
+      CREAR_ACTA_ENTREGA: `${DASHBOARD}/crear_acta_entrega`,
+      CREAR_ACTA_MANTENIMIENTO: `${DASHBOARD}/crear_acta_mantenimiento`,
+    },
+
   }
 };

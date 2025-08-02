@@ -3,7 +3,7 @@ import { obtenerGraficaInventario } from "../../../services/inventario_services"
 import { obtenerGraficaMantenimiento } from "../../../services/mantenimiento_services";
 import { ChartPorUsuario } from "../components/graficas/renderChartPorUsuario";
 import { formatearFechas } from "../../../hook/formatearFecha";
-import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { CalendarDays, ChevronDown, RefreshCw, Package2, Users, ClipboardList, PlusCircle, ChevronLeft, ChevronRight, ArrowRight,Laptop, Plus, ClipboardSignature, Wrench, ListTodo  } from "lucide-react";
 import { PieChart } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { obtenerTotalInventario } from "../../../services/inventario_services";
@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../const/routers/routers";
 import EmptyState from "../components/graficas/EmptyChart";
 import Swal from "sweetalert2";
+import SeccionEquiposComputo from "./components/sectionEquiposComputo";
+import SummaryCard from "./components/SummaryCard";
 
 export default function DashboardAdmin() {
 	const [inventario, setInventario] = useState([]);
@@ -90,59 +92,7 @@ export default function DashboardAdmin() {
 		);
 	}
 
-	const SummaryCard = ({
-		title,
-		value,
-		change,
-		onNavigate,
-		icon,
-		color,
-		isLoading = false
-	}) => {
-		const colorClasses = {
-			blue: 'from-blue-50 to-blue-100 text-blue-600',
-			green: 'from-green-50 to-green-100 text-green-600',
-			orange: 'from-orange-50 to-orange-100 text-orange-600',
-			red: 'from-red-50 to-red-100 text-red-600',
-			indigo: 'from-indigo-50 to-indigo-100 text-indigo-600'
-		};
-
-		return (
-			<div
-				className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-all duration-300 group hover:border-indigo-100"
-				onClick={onNavigate}
-			>
-				<div className="flex justify-between items-start">
-					<div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
-						{icon}
-					</div>
-
-					{change && (
-						<span className="text-xs font-medium text-indigo-600 flex items-center gap-1.5 hover:text-indigo-800 transition-colors px-2 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100">
-							{change === "ver" ? (
-								<>
-									Ver más
-									<ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
-								</>
-							) : (
-								change
-							)}
-						</span>
-					)}
-				</div>
-
-				<h3 className="text-sm text-gray-500 mt-5 mb-1 font-medium">{title}</h3>
-
-				{isLoading ? (
-					<div className="h-8 w-3/4 bg-gray-100 rounded-md animate-pulse mt-2"></div>
-				) : (
-					<p className="text-2xl font-semibold mt-1 text-gray-800">
-						{value}
-					</p>
-				)}
-			</div>
-		);
-	};
+	
 
 	// Componente de item de actividad (ActivityItem)
 	const ActivityItem = ({ user, action, time, icon }) => (
@@ -209,7 +159,7 @@ export default function DashboardAdmin() {
 			</header>
 
 			{/* Grid principal */}
-			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 				{/* Tarjetas de resumen */}
 				<div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 					<SummaryCard
@@ -331,29 +281,10 @@ export default function DashboardAdmin() {
 					</div>
 				</div>
 			</div>
-			<div className="max-w-7xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<div className="relative p-8 rounded-lg border-2 border-purple-400 border-dashed hover:shadow-purple-100 hover:shadow-md transition-all duration-300 min-h-[200px] flex flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm lg:col-span-3">
-					<div className="mb-4 p-4 rounded-full bg-purple-100 text-purple-600">
-						<svg
-							className="w-12 h-12"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="1.5"
-								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-					</div>
-					<h3 className="text-xl font-medium text-black-800 mb-2">Próximamente</h3>
-					<p className="text-center text-black-600 text-sm">Nueva función en desarrollo</p>
-					<div className="mt-8"></div>
+				<div>
+
+				<SeccionEquiposComputo />
 				</div>
-			</div>
 		</main>
 	);
 }

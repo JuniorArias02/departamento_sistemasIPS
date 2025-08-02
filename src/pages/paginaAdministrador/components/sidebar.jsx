@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { CalendarRange, Bug, CalendarDays, ClipboardEdit, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { CalendarRange, Bug, CalendarDays, ClipboardEdit, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog, Laptop, Plus, ClipboardSignature, ListTodo } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +30,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
 	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
+	const [menuEquiposOpen, setMenuEquiposOpen] = useState(false);
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -402,7 +403,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											: mostrarAlertaSinPermiso()
 									}
 									sidebarOpen={sidebarOpen}
-									isBeta={true}
 								>
 									{permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_CALENDARIO) && (
 										<SidebarSubItem
@@ -425,6 +425,83 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											delay={0.2}
 										/>
 									)} */}
+								</SidebarCollapsible>
+							)}
+
+							{/* equipos de computo */}
+							{permisos.includes(PERMISOS.GESTION_EQUIPOS.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<Laptop size={18} />}
+									text="Equipos de Cómputo"
+									isOpen={menuEquiposOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.GESTION_EQUIPOS.MENU_ITEM)
+											? setMenuEquiposOpen(!menuEquiposOpen)
+											: mostrarAlertaSinPermiso()
+									}
+									sidebarOpen={sidebarOpen}
+									isBeta={true}
+								>
+									{/* Subitem 1: Agregar Equipo */}
+									<SidebarSubItem
+										icon={<Plus size={16} />}  // Icono simple de "+"
+										text="Agregar Equipo"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.AGREGAR)) {
+												navigate(RUTAS.USER.EQUIPOS.CREAR_EQUIPO);
+												setTimeout(() => setSidebarOpen(false), 150);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.1}
+									/>
+
+									{/* Subitem 2: Crear Acta de Entrega */}
+									<SidebarSubItem
+										icon={<ClipboardSignature size={16} />}  // Icono de acta con firma
+										text="Crear Acta de Entrega"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA)) {
+												navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.2}
+									/>
+
+									{/* Subitem 3: Crear Mantenimiento */}
+									<SidebarSubItem
+										icon={<Wrench size={16} />}
+										text="Crear Mantenimiento"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_MANTENIMIENTO)) {
+												navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.3}
+									/>
+
+									{/* Subitem 4: Ver Equipos */}
+									<SidebarSubItem
+										icon={<ListTodo size={16} />}
+										text="Ver Equipos de Cómputo"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.VER)) {
+												navigate(RUTAS.USER.EQUIPOS.ROOT);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.4}
+									/>
 								</SidebarCollapsible>
 							)}
 

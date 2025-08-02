@@ -16,7 +16,7 @@ import DetalleMantenimiento from "./pages/paginaCliente/vistasDatos/matenimiento
 import VistaDatosUsuarios from "./pages/paginaAdministrador/vistaDatos/vista_datos_usuarios";
 import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsuario";
 
-import DashboardAdmin from "./pages/paginaAdministrador/vistaDatos/DashboardAdmin";
+import DashboardAdmin from "./pages/paginaAdministrador/dashboard/DashboardAdmin";
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
@@ -24,6 +24,13 @@ import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_
 import CalendarioMantenimientos from "./pages/paginaCliente/calendarioMantenimiento/CalendarioMantenimientos";
 import HorasDiaView from "./pages/paginaCliente/calendarioMantenimiento/components/ModalHorasDia";
 import FormularioCrearRol from "./pages/paginaAdministrador/formularios/crear_rol";
+
+import FormularioEquipo from "./pages/paginaCliente/equiposComputo/page/formulario_equipo";
+import VistaVerEquipos from "./pages/paginaCliente/equiposComputo/page/ver_equipos";
+import DetalleEquipo from "./pages/paginaCliente/equiposComputo/page/detalle_equipo";
+import VistaCrearActaEntrega from "./pages/paginaCliente/equiposComputo/page/crear_acta_entrega";
+import VistaCrearMantenimientoEquipo from "./pages/paginaCliente/equiposComputo/page/crear_mantenimiento";
+
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
@@ -230,6 +237,41 @@ function App() {
             }
           />
 
+          <Route
+            path={RUTAS.USER.EQUIPOS.CREAR_EQUIPO}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.AGREGAR) ? (
+                <FormularioEquipo />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+           <Route
+            path={RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA) ? (
+                <VistaCrearActaEntrega />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          
+           <Route
+            path={RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_MANTENIMIENTO) ? (
+                <VistaCrearMantenimientoEquipo />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
 
           {/* vistaDatos */}
           <Route
@@ -237,6 +279,28 @@ function App() {
             element={
               permisos.includes(PERMISOS.INVENTARIO.VER_FORMULARIO) ? (
                 <VistaDatosInventarios />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.USER.EQUIPOS.ROOT}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.VER) ? (
+                <VistaVerEquipos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+            <Route
+            path={RUTAS.USER.EQUIPOS.DETALLE_EQUIPO}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.VER) ? (
+                <DetalleEquipo />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
               )
@@ -277,7 +341,7 @@ function App() {
               <VistaActualizacionesWeb />
             }
           />
-  
+
         </Route>
 
         {/* RUTAS DE ERROES DE PAGINA */}

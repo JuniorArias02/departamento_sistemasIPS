@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { obtenerTotalInventario } from '../../services/inventario_services';
 import { obtenerTotalMantenimiento } from "../../services/mantenimiento_services";
-import { Eye, ClipboardList, Wrench } from "lucide-react";
+import { obtenerTotalEquipos } from '../../services/pc_equipos_services';
+import { Eye, ClipboardList, Wrench, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContadorAnimado } from "../../hook/useContadorAnimado";
 import { RUTAS } from "../../const/routers/routers";
@@ -15,7 +16,8 @@ export default function Dashboard() {
 
 	const [totales, setTotales] = useState({
 		inventario: 0,
-		mantenimiento: 0
+		mantenimiento: 0,
+		equipos: 0
 	});
 
 	useEffect(() => {
@@ -28,12 +30,17 @@ export default function Dashboard() {
 					permisos.includes(PERMISOS.MANTENIMIENTOS.VER_DATOS)
 						? obtenerTotalMantenimiento()
 						: Promise.resolve(0),
+					permisos.includes(PERMISOS.GESTION_EQUIPOS.VER_FORMULARIO)
+						? obtenerTotalEquipos()
+						: Promise.resolve(0)
 				]);
 
 				setTotales({
 					inventario: resultados[0],
 					mantenimiento: resultados[1],
+					equipos: resultados[2]
 				});
+
 			} catch (error) {
 				console.error("Error al cargar totales", error);
 			}
@@ -60,15 +67,23 @@ export default function Dashboard() {
 			total: totales.mantenimiento,
 			permisoFormulario: PERMISOS.MANTENIMIENTOS.VER_FORMULARIO,
 			permisoVerDatos: PERMISOS.MANTENIMIENTOS.VER_DATOS
+		},
+		{
+			titulo: "Equipos de Cómputo",
+			ruta: RUTAS.USER.EQUIPOS.CREAR_EQUIPO,
+			verRuta: RUTAS.USER.EQUIPOS.ROOT,
+			total: totales.equipos.total,
+			permisoFormulario: PERMISOS.GESTION_EQUIPOS.VER_FORMULARIO,
+			permisoVerDatos: PERMISOS.GESTION_EQUIPOS.VER
 		}
 	];
 
 	const iconos = [
 		<ClipboardList className="h-10 w-10 text-yellow-600" />,
-		<Wrench className="h-10 w-10 text-red-600" />
+		<Wrench className="h-10 w-10 text-red-600" />,
+		<Monitor className="h-10 w-10 text-red-600" />   
 	];
 
-	// Aquí usas el hook para animar el total de cada opción
 	const opcionesConAnimacion = opciones.map(op => ({
 		...op,
 		totalAnimado: useContadorAnimado(op.total, 1000)

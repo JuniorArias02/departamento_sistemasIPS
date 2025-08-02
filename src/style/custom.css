@@ -214,7 +214,6 @@
   margin-bottom: 2px;
 }
 
-
 /* Scroll personalizado para el modal */
 .scroll-custom::-webkit-scrollbar {
   width: 6px;
@@ -229,4 +228,28 @@
 }
 .scroll-custom::-webkit-scrollbar-thumb:hover {
   background: #8b5cf6;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(79, 70, 229, 0.2);
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
