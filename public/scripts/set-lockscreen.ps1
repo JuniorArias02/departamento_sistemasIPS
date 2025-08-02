@@ -1,38 +1,19 @@
-# Ruta donde se guardará la imagen localmente
-$imgPath = "$env:ProgramData\loc# Ruta donde se guardará la imagen localmente
-$imgPath = "$env:ProgramData\lockscreen.png"
+# Ruta local donde se guardará la imagen
+$imgPath = "$env:ProgramData\lockscreen.jpg"
 
-# URL de la imagen (asegúrate de que esté accesible públicamente sin /public/)
-$imgURL = "https://departamento-sistemasips.vercel.app/imgdesktop.png"
+# URL pública de tu nueva imagen .jpg
+$imgURL = "https://departamento-sistemasips.vercel.app/imgdesktop.jpg"
 
-# Descarga la imagen
+# Descargar la imagen
 Invoke-WebRequest -Uri $imgURL -OutFile $imgPath
 
-# Crea la clave del registro si no existe
+# Crear clave del registro si no existe
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
 
-# Establece la imagen como fondo de pantalla de bloqueo
+# Establecer imagen como fondo de pantalla de bloqueo
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "LockScreenImage" -Value $imgPath
 
-# (Opcional) Asegura que el Lock Screen esté habilitado
+# Asegurar que el lock screen esté activo
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value 0
 
 Write-Output "✅ Fondo de bloqueo actualizado correctamente."
-kscreen.png"
-
-# URL de la imagen (asegúrate de que esté accesible públicamente sin /public/)
-$imgURL = "https://departamento-sistemasips.vercel.app/imgdesktop.png"
-
-# Descarga la imagen
-Invoke-WebRequest -Uri $imgURL -OutFile $imgPath
-
-# Crea la clave del registro si no existe
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
-
-# Establece la imagen como fondo de pantalla de bloqueo
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "LockScreenImage" -Value $imgPath
-
-# (Opcional) Asegura que el Lock Screen esté habilitado
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value 0
-
-Write-Output "Fondo de bloqueo actualizado correctamente."
