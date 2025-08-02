@@ -476,7 +476,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						whileTap={{ scale: 0.98 }}
 					>
 						<a
-							href="https://departamento-sistemasips.vercel.app/scripts/set-lockscreen.ps1"
+							href="https://departamento-sistemasips.vercel.app/scripts/lockscreen-script.zip"
 							download
 							className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-green-600/30 text-green-400 hover:text-green-200 transition-colors group"
 							title="Descargar script de bloqueo"
@@ -493,6 +493,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								</motion.span>
 							)}
 						</a>
+
 					</motion.li>
 
 
