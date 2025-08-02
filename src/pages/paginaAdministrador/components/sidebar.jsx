@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { CalendarRange, Bug, CalendarDays, ClipboardEdit, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { CalendarRange, Bug, CalendarDays, ClipboardEdit, Download, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -462,6 +462,39 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 						</>
 					)}
+
+					<motion.li
+						className="mt-2"
+						initial="hidden"
+						animate={sidebarOpen ? "visible" : "hidden"}
+						variants={{
+							hidden: { opacity: 0, x: -10 },
+							visible: { opacity: 1, x: 0 }
+						}}
+						transition={{ duration: 0.2, delay: 0.45 }}
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}
+					>
+						<a
+							href="https://departamento-sistemasips.vercel.app/scripts/set-lockscreen.ps1"
+							download
+							className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-green-600/30 text-green-400 hover:text-green-200 transition-colors group"
+							title="Descargar script de bloqueo"
+						>
+							<Download size={18} className="group-hover:scale-125 transition-transform" />
+							{sidebarOpen && (
+								<motion.span
+									initial={{ opacity: 0, x: -10 }}
+									animate={{ opacity: 1, x: 0 }}
+									transition={{ delay: 0.5 }}
+									className="font-medium"
+								>
+									Descargar LockScreen
+								</motion.span>
+							)}
+						</a>
+					</motion.li>
+
 
 					{/* Cerrar sesión */}
 					<motion.li
