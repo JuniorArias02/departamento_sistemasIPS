@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_EQUIPO, OBTENER_EQUIPOS, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS,BUSCAR_EQUIPO } from "../const/endpoint/pc_equipos/pc_equipo_endpoint";
+import { CREAR_EQUIPO, OBTENER_EQUIPOS, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS,BUSCAR_EQUIPO,SUBIR_IMAGEN } from "../const/endpoint/pc_equipos/pc_equipo_endpoint";
 
 
 export const crearEquipo = async (datos) => {
@@ -11,6 +11,22 @@ export const crearEquipo = async (datos) => {
 		return [];
 	}
 };
+
+export const subirImagen = async (formData) => {
+	try {
+		const response = await axios.post(SUBIR_IMAGEN, formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error('Error al subir imagen', error);
+		return [];
+	}
+};
+
+
 
 export const buscarEquipo = async (q) => {
   try {

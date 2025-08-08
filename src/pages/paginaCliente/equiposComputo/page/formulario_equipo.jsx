@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { crearEquipo, editarEquipo } from "../../../../services/pc_equipos_services";
+import { crearEquipo, editarEquipo, subirImagen } from "../../../../services/pc_equipos_services";
 import { listarSedes } from "../../../../services/sedes_service";
 import { obtenerAreaPorSede } from "../../../../services/area_services";
 import { obtenerPersonal } from "../../../../services/personal_services";
@@ -13,18 +13,22 @@ import {
 	Save,
 	X,
 	Key,
+	Image,
 
 } from 'lucide-react';
 import TabGeneral from '../components/formulario_equipo/tabs/TabGeneral';
 import TabHardware from '../components/formulario_equipo/tabs/TabHardware';
 import TabPerifericos from '../components/formulario_equipo/tabs/TabPerifericos';
 import TabLicencias from '../components/formulario_equipo/tabs/TabLicencias';
+import TabImagen from '../components/formulario_equipo/tabs/TabImagen';
 import BackPage from '../../components/BackPage';
 import { useLocation } from "react-router-dom";
 const FormularioEquipo = () => {
 	const { usuario } = useApp();
 	const location = useLocation();
 	const equipoComputoEdit = location.state?.equipo;
+	const [imagen, setImagen] = useState(null);
+
 
 	const [form, setForm] = useState({
 		id: equipoComputoEdit ? equipoComputoEdit.id : null,
@@ -39,6 +43,7 @@ const FormularioEquipo = () => {
 		numero_inventario: "",
 		sede_id: "",
 		area_id: "",
+		imagen_url: "",
 		responsable_id: "",
 		estado: "",
 		fecha_entrega: "",
@@ -81,6 +86,7 @@ const FormularioEquipo = () => {
 				tipo: equipoComputoEdit.tipo || "",
 				propiedad: equipoComputoEdit.propiedad || "",
 				ip_fija: equipoComputoEdit.ip_fija || "",
+				imagen_url: equipoComputoEdit.imagen_url || "",
 				numero_inventario: equipoComputoEdit.numero_inventario || "",
 				sede_id: equipoComputoEdit.sede_id || "",
 				area_id: equipoComputoEdit.area_id || "",
@@ -166,11 +172,16 @@ const FormularioEquipo = () => {
 	}, []);
 
 	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setForm(prev => ({
-			...prev,
-			[name]: value
-		}));
+		const { name, value, files } = e.target;
+
+		if (name === "imagen" && files?.length > 0) {
+			setImagen(files[0]);
+		} else {
+			setForm(prev => ({
+				...prev,
+				[name]: value
+			}));
+		}
 	};
 
 
@@ -179,87 +190,56 @@ const FormularioEquipo = () => {
 		setLoading(true);
 
 		try {
-			console.log("Datos del formulario:", form);
-
-			// 🔹 Si hay equipo, llama a editarEquipo
 			const res = equipoComputoEdit
 				? await editarEquipo(form)
 				: await crearEquipo(form);
 
 			if (res.status) {
+				const equipo_id = equipoComputoEdit
+					? equipoComputoEdit.id
+					: res.id || res.equipo_id;
+
+				// 🔥 Subir imagen solo si hay
+				if (imagen && equipo_id) {
+					const formData = new FormData();
+					formData.append("equipo_id", equipo_id);
+					formData.append("imagen", imagen);
+
+					await subirImagen(formData, {});
+
+				}
+
 				await Swal.fire({
 					title: '¡Éxito!',
-					text: res.message || (equipoComputoEdit ? 'Equipo actualizado correctamente' : 'Equipo creado correctamente'),
+					text: res.message,
 					icon: 'success',
 					confirmButtonColor: '#4f46e5',
 				});
 
-				// Si fue crear, limpias el formulario
 				if (!equipoComputoEdit) {
-					setForm({
-						id: equipoComputoEdit ? equipoComputoEdit.id : null,
-						usuario_id: usuario.id,
-						nombre_equipo: "",
-						marca: "",
-						modelo: "",
-						serial: "",
-						tipo: "",
-						propiedad: "",
-						ip_fija: "",
-						numero_inventario: "",
-						area_id: "",
-						responsable_id: "",
-						estado: "",
-						fecha_entrega: "",
-						descripcion_general: "",
-						garantia_meses: "",
-						forma_adquisicion: "",
-						observaciones: "",
-						repuestos_principales: "",
-						recomendaciones: "",
-						equipos_adicionales: "",
-						procesador: "",
-						memoria_ram: "",
-						disco_duro: "",
-						tarjeta_video: "",
-						tarjeta_red: "",
-						tarjeta_sonido: "",
-						usb: "",
-						unidad_cd: "",
-						parlantes: "",
-						drive: "",
-						monitor: "",
-						teclado: "",
-						mouse: "",
-						internet: "",
-						velocidad_red: "",
-						capacidad_disco: "",
-						windows: "",
-						office: "",
-						nitro: ""
-					});
+					resetForm();
+					setImagen(null);
 				}
 			} else {
 				await Swal.fire({
 					title: 'Error',
-					text: res.message || (equipoComputoEdit ? 'No se pudo actualizar el equipo' : 'No se pudo guardar el equipo'),
+					text: res.message,
 					icon: 'error',
 					confirmButtonColor: '#4f46e5',
 				});
-				console.log("Campos faltantes:", res.faltantes);
 			}
 		} catch (error) {
-			console.error('Error al guardar', error);
+			console.error("Error al guardar", error);
 			await Swal.fire({
 				title: 'Error',
-				text: equipoComputoEdit ? 'Hubo un problema al actualizar el equipo' : 'Hubo un problema al crear el equipo',
+				text: 'Hubo un problema',
 				icon: 'error',
 				confirmButtonColor: '#4f46e5',
 			});
 		} finally {
 			setLoading(false);
 		}
-	}
+	};
 
 
 	const resetForm = () => {
@@ -337,6 +317,13 @@ const FormularioEquipo = () => {
 				>
 					<Key className="mr-2 h-4 w-4" /> Licencias
 				</button>
+				<button
+					onClick={() => setActiveTab('imagen')}
+					className={`py-2 px-4 font-medium flex items-center ${activeTab === 'imagen' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'}`}
+				>
+					<Image className="mr-2 h-4 w-4" /> Imagen
+				</button>
+
 			</div>
 
 			<form onSubmit={handleSubmit}>
@@ -369,6 +356,15 @@ const FormularioEquipo = () => {
 						form={form}
 						setForm={setForm}
 					/>
+				)}
+
+				{activeTab === 'imagen' && (
+					<TabImagen
+						form={form}
+						handleChange={handleChange}
+						imagen={imagen}
+					/>
+
 				)}
 
 				{/* Observaciones y Descripción General (siempre visible) */}

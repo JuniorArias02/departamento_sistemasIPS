@@ -47,6 +47,7 @@ import {
 import BackPage from '../../components/BackPage';
 import EstadoBadge from '../components/ver_equipos/EstadoBadge';
 import TipoIcono from '../components/ver_equipos/TipoIcono';
+import { URL_IMAGE } from '../../../../const/api';
 
 const DetalleEquipo = () => {
 	const location = useLocation();
@@ -88,6 +89,7 @@ const DetalleEquipo = () => {
 				{/* Encabezado */}
 				<div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
 					<div className="flex items-center justify-between">
+
 						<div className="flex items-center">
 							<TipoIcono tipo={equipo.tipo} />
 							<h1 className="ml-3 text-2xl font-bold text-gray-900">
@@ -102,6 +104,15 @@ const DetalleEquipo = () => {
 						<Building className="w-4 h-4 mr-1" />
 						{equipo.sede_nombre} - {equipo.area_nombre}
 					</div>
+					{equipo.imagen_url && (
+						<div className="bg-gray-100 p-4 flex justify-center">
+							<img
+								src={`${URL_IMAGE}${equipo.imagen_url}`}
+								alt={`Imagen de ${equipo.nombre_equipo}`}
+								className="max-h-72 rounded-lg shadow-md object-contain"
+							/>
+						</div>
+					)}
 				</div>
 
 				{/* Contenido principal */}

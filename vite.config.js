@@ -8,6 +8,6 @@ export default defineConfig({
     allowedHosts: [
       'broke-bikini-pipes-beauty.trycloudflare.com',
       // agrega más si quieres
-    ]
+    ],
   }
 });

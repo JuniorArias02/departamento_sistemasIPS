@@ -7,19 +7,19 @@ import {
 	Laptop,
 	Wrench,
 	ClipboardSignature,
-	PlusCircle
+	PlusCircle,
+	BrushCleaning
 } from "lucide-react";
 import { obtenerTotalEquipos } from "../../../../services/pc_equipos_services";
 import { useEffect } from "react";
 import { obtenerTotalEntrega } from "../../../../services/pc_entregas_services";
-
+import { obtenerTotalMantenimiento } from "../../../../services/pc_mantenimientos_services";
 export default function SeccionEquiposComputo() {
 	const navigate = useNavigate();
-	// const [equipos, setEquipos] = useState([]);
-
 	const [totales, setTotales] = useState({
 		equipos: 0,
 		entrega: 0,
+		mantenimiento: 0
 	});
 
 	useEffect(() => {
@@ -29,11 +29,13 @@ export default function SeccionEquiposComputo() {
 
 	const cargarTotales = async () => {
 		try {
-			const [equipos, entrega] = await Promise.all([
+			const [equipos, entrega, mantenimiento] = await Promise.all([
 				obtenerTotalEquipos(),
-				obtenerTotalEntrega()
+				obtenerTotalEntrega(),
+				obtenerTotalMantenimiento()
+
 			]);
-			setTotales({ equipos: equipos.total, entrega: entrega.total });
+			setTotales({ equipos: equipos.total, entrega: entrega.total, mantenimiento: mantenimiento.total });
 		} catch (error) {
 			console.error("Error al cargar totales", error);
 		}
@@ -50,21 +52,26 @@ export default function SeccionEquiposComputo() {
 					title="Equipos de Cómputo"
 					value={totales.equipos}
 					change="ver"
-					onNavigate={() => navigate(RUTAS.USER.INVENTARIO.VER_INVENTARIO)}
+					onNavigate={() => navigate(RUTAS.USER.EQUIPOS.ROOT)}
 					icon={<Laptop className="w-6 h-6" />}
 					color="blue"
 				/>
-
 				<SummaryCard
 					title="Acta de Entrega"
 					value={totales.entrega}
 					change="ver"
-					onNavigate={() => navigate(RUTAS.USER.INVENTARIO.VER_INVENTARIO)}
+					onNavigate={() => navigate(RUTAS.USER.EQUIPOS.ROOT)}
 					icon={<ClipboardSignature className="w-6 h-6" />}
 					color="orange"
 				/>
-
-
+				<SummaryCard
+					title="Acta de Mantenimientos"
+					value={totales.mantenimiento}
+					change="ver"
+					onNavigate={() => navigate(RUTAS.USER.EQUIPOS.ROOT)}
+					icon={<BrushCleaning className="w-6 h-6" />}
+					color="red"
+				/>
 			</div>
 		</div>
 	)
