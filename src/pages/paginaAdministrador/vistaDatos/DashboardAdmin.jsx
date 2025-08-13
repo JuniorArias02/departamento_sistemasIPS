@@ -14,8 +14,10 @@ import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../const/routers/routers";
 import EmptyState from "../components/graficas/EmptyChart";
 import Swal from "sweetalert2";
+import { useApp } from "../../../store/AppContext";
 
 export default function DashboardAdmin() {
+	const { usuario } = useApp();
 	const [inventario, setInventario] = useState([]);
 	const [mantenimiento, setMantenimiento] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -58,8 +60,8 @@ export default function DashboardAdmin() {
 		setLoading(true);
 		try {
 			const [inv, man] = await Promise.all([
-				obtenerGraficaInventario(),
-				obtenerGraficaMantenimiento()
+				obtenerGraficaInventario(usuario.id),
+				obtenerGraficaMantenimiento(usuario.id)
 			]);
 
 			setInventario(formatearFechas(inv));
