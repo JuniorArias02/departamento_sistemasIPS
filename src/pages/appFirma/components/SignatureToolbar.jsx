@@ -1,6 +1,6 @@
 import { Eraser, Save, X, Pen } from 'lucide-react';
 
-const SignatureToolbar = ({ onBrushChange, onClear, onSave, onCancel }) => {
+const SignatureToolbar = ({ onBrushChange, onSave, onCancel }) => {
   const brushOptions = [
     { value: 8, label: "Fino", icon: <Pen size={14} /> },
     { value: 12, label: "Medio", icon: <Pen size={18} /> },
@@ -57,7 +57,7 @@ const SignatureToolbar = ({ onBrushChange, onClear, onSave, onCancel }) => {
         justifyContent: 'center',
         flexWrap: 'wrap'
       }}>
-        <button
+        {/* <button
           onClick={onClear}
           style={{
             display: 'flex',
@@ -73,7 +73,7 @@ const SignatureToolbar = ({ onBrushChange, onClear, onSave, onCancel }) => {
         >
           <Eraser size={18} />
           <span>Borrar</span>
-        </button>
+        </button> */}
 
         <button
           onClick={onSave}

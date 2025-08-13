@@ -55,7 +55,7 @@ export const RUTAS = {
     SISTEMA: {
       VER_ACTUALIZACIONES: `${DASHBOARD}/ver_actualizaciones`,
     },
-    
+
     EQUIPOS: {
       ROOT: `${DASHBOARD}/equipos`,
       CREAR_EQUIPO: `${DASHBOARD}/crear_equipo`,
@@ -63,6 +63,12 @@ export const RUTAS = {
       CREAR_ACTA_ENTREGA: `${DASHBOARD}/crear_acta_entrega`,
       CREAR_ACTA_MANTENIMIENTO: `${DASHBOARD}/crear_acta_mantenimiento`,
     },
+
+    GESTION_COMPRAS: {
+      ROOT: `${DASHBOARD}/pedidos`,
+      CREAR_PEDIDO: `${DASHBOARD}/crear_pedidos`,
+      DETALLE_PEDIDO: `${DASHBOARD}/detalle_pedido`,
+    }
 
   }
 };

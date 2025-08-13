@@ -1,8 +1,378 @@
-export default function GestionPedidos(){
-	return(
-		<>
-		<h1>HOLA MUNDO</h1>
-		<p>gestion pedidos</p>
-		</>
-	)
+import { useEffect, useState } from "react";
+import { obtenerPedidos } from "../../../../services/cp_pedidos_services";
+import {
+	ClipboardList,
+	Clock,
+	CheckCircle,
+	XCircle,
+	FileText,
+	User,
+	Calendar,
+	Search,
+	ChevronDown,
+	ChevronUp,
+	Filter,
+	ExternalLink,
+	Download
+} from 'lucide-react';
+import { URL_IMAGE2 } from "../../../../const/api";
+import { useNavigate } from "react-router-dom";
+import { RUTAS } from "../../../../const/routers/routers";
+
+export default function GestionPedidos() {
+	const navigate = useNavigate();
+	const [pedidos, setPedidos] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [expandedPedido, setExpandedPedido] = useState(null);
+	const [filters, setFilters] = useState({
+		estado: "todos",
+		tipo: "todos"
+	});
+	useEffect(() => {
+		const fetchPedidos = async () => {
+			let data; // se define aquí para usarla en todo el scope
+			try {
+				data = await obtenerPedidos();
+				console.log(data);
+				if (data.success) {
+					setPedidos(data.data);
+				} else {
+					setError("No se pudieron cargar los pedidos");
+				}
+			} catch (err) {
+				setError(err.message);
+			} finally {
+				setLoading(false);
+				setTimeout(() => {
+					if (data?.data?.length > 0) {
+						setExpandedPedido(data.data[0].id);
+					}
+				}, 300);
+			}
+		};
+		fetchPedidos();
+	}, []);
+
+	const toggleExpandPedido = (id) => {
+		setExpandedPedido(expandedPedido === id ? null : id);
+	};
+
+	const filteredPedidos = pedidos.filter(pedido => {
+		// Normalizar valores a string seguro
+		const consecutivo = String(pedido.consecutivo ?? "").toLowerCase();
+		const solicitante = String(pedido.proceso_solicitante ?? "").toLowerCase();
+		const elaborado = String(pedido.elaborado_por_nombre ?? "").toLowerCase();
+		const observacion = String(pedido.observacion ?? "").toLowerCase();
+
+		// Filtro por búsqueda
+		const matchesSearch =
+			consecutivo.includes(searchTerm.toLowerCase()) ||
+			solicitante.includes(searchTerm.toLowerCase()) ||
+			elaborado.includes(searchTerm.toLowerCase()) ||
+			observacion.includes(searchTerm.toLowerCase());
+
+		// Filtro por estado
+		const matchesEstado =
+			filters.estado === "todos" ||
+			String(pedido.estado_compras ?? "").toLowerCase() === filters.estado.toLowerCase();
+
+		// Filtro por tipo
+		const matchesTipo =
+			filters.tipo === "todos" ||
+			String(pedido.tipo_solicitud ?? "") === filters.tipo;
+
+		return matchesSearch && matchesEstado && matchesTipo;
+	});
+
+
+	const getEstadoColor = (estado) => {
+		switch (estado?.toLowerCase()) {
+			case 'aprobado':
+				return 'bg-green-100 text-green-800';
+			case 'pendiente':
+				return 'bg-yellow-100 text-yellow-800';
+			case 'rechazado':
+				return 'bg-red-100 text-red-800';
+			case 'en proceso':
+				return 'bg-blue-100 text-blue-800';
+			default:
+				return 'bg-gray-100 text-gray-800';
+		}
+	};
+
+	const getEstadoIcon = (estado) => {
+		switch (estado?.toLowerCase()) {
+			case 'aprobado':
+				return <CheckCircle size={16} className="text-green-500" />;
+			case 'pendiente':
+				return <Clock size={16} className="text-yellow-500" />;
+			case 'rechazado':
+				return <XCircle size={16} className="text-red-500" />;
+			case 'en proceso':
+				return <FileText size={16} className="text-blue-500" />;
+			default:
+				return <FileText size={16} className="text-gray-500" />;
+		}
+	};
+
+	if (loading) return (
+		<div className="flex justify-center items-center h-64">
+			<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+		</div>
+	);
+
+	if (error) return (
+		<div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+			<p className="font-bold">Error</p>
+			<p>{error}</p>
+		</div>
+	);
+
+	return (
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+				<h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+					<ClipboardList className="text-blue-600" size={24} />
+					Gestión de Pedidos
+				</h1>
+
+				<div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+					{/* Barra de búsqueda */}
+					<div className="relative flex-grow">
+						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<Search className="text-gray-400" size={18} />
+						</div>
+						<input
+							type="text"
+							placeholder="Buscar pedidos..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className="pl-10 pr-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						/>
+					</div>
+
+					{/* Filtros */}
+					<div className="flex gap-2">
+						<select
+							value={filters.estado}
+							onChange={(e) => setFilters({ ...filters, estado: e.target.value })}
+							className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						>
+							<option value="todos">Todos los estados</option>
+							<option value="pendiente">Pendiente</option>
+							<option value="aprobado">Aprobado</option>
+							<option value="rechazado">Rechazado</option>
+						</select>
+
+
+						<select
+							value={filters.tipo}
+							onChange={(e) => setFilters({ ...filters, tipo: e.target.value })}
+							className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						>
+							<option value="todos">Todos los tipos</option>
+							<option value="1">Recurrente</option>
+							<option value="2">Prioritaria</option>
+						</select>
+
+					</div>
+				</div>
+			</div>
+
+			{filteredPedidos.length === 0 ? (
+				<div className="bg-white rounded-lg shadow p-8 text-center">
+					<p className="text-gray-500">No se encontraron pedidos</p>
+				</div>
+			) : (
+				<div className="space-y-4">
+					{filteredPedidos.map((pedido) => (
+						<div
+							key={pedido.id}
+							className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-shadow"
+						>
+							{/* Encabezado de la carta */}
+							<div
+								className={`p-4 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${expandedPedido === pedido.id ? 'border-b border-gray-200' : ''}`}
+								onClick={() => toggleExpandPedido(pedido.id)}
+							>
+								<div className="flex items-center gap-3">
+									<div className={`px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(pedido.estado_compras)} flex items-center gap-2`}>
+										{getEstadoIcon(pedido.estado_compras)}
+										{pedido.estado_compras || 'Sin estado'}
+									</div>
+									<div>
+										<h3 className="font-medium text-gray-800">
+											Pedido #{pedido.consecutivo || pedido.id}
+										</h3>
+										<p className="text-sm text-gray-500">
+											{pedido.proceso_solicitante}
+										</p>
+									</div>
+								</div>
+
+								<div className="flex items-center gap-4">
+									<div className="hidden sm:block text-sm text-gray-500">
+										<span className="font-medium">Solicitante:</span> {pedido.elaborado_por_nombre}
+									</div>
+									<div className="text-sm text-gray-500 flex items-center gap-1">
+										<Calendar size={14} />
+										{new Date(pedido.fecha_solicitud).toLocaleDateString()}
+									</div>
+									<button className="text-blue-500 hover:text-blue-700">
+										{expandedPedido === pedido.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+									</button>
+								</div>
+							</div>
+
+							{/* Contenido expandible */}
+							{expandedPedido === pedido.id && (
+								<div className="p-4 border-t border-gray-100">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+										{/* Detalles del pedido */}
+										<div>
+											<h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+												<FileText size={16} />
+												Detalles del Pedido
+											</h4>
+											<div className="space-y-2">
+												<div className="flex justify-between">
+													<span className="text-gray-500">Tipo de solicitud:</span>
+													<span className="font-medium">
+														{pedido.tipo_solicitud_nombre || 'No especificado'}
+													</span>
+
+												</div>
+												<div className="flex justify-between">
+													<span className="text-gray-500">Fecha solicitud:</span>
+													<span className="font-medium">
+														{new Date(pedido.fecha_solicitud).toLocaleDateString()}
+													</span>
+												</div>
+												<div className="flex justify-between">
+													<span className="text-gray-500">Proceso solicitante:</span>
+													<span className="font-medium">{pedido.proceso_solicitante}</span>
+												</div>
+												<div className="flex justify-between">
+													<span className="text-gray-500">Elaborado por:</span>
+													<span className="font-medium">{pedido.elaborado_por_nombre}</span>
+												</div>
+												{pedido.observacion && (
+													<div className="mt-3">
+														<p className="text-gray-500 mb-1">Observaciones:</p>
+														<p className="text-gray-700 bg-gray-50 p-3 rounded">{pedido.observacion}</p>
+													</div>
+												)}
+											</div>
+										</div>
+
+										{/* Firmas */}
+										<div>
+											<h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+												<User size={16} />
+												Firmas
+											</h4>
+											<div className="space-y-4">
+												<div>
+													<p className="text-sm text-gray-500 mb-1">Elaborado por:</p>
+													{pedido.elaborado_por_firma ? (
+														<img
+															src={`${URL_IMAGE2}${pedido.elaborado_por_firma}`}
+															alt="Firma elaborado por"
+															className="h-16 border rounded"
+														/>
+													) : (
+														<p className="text-sm text-gray-400">Sin firma</p>
+													)}
+												</div>
+
+												{pedido.proceso_compra_firma && (
+													<div>
+														<p className="text-sm text-gray-500 mb-1">Proceso compra:</p>
+														<img
+															src={`${URL_IMAGE2}${pedido.proceso_compra_firma}`}
+															alt="Firma proceso compra"
+															className="h-16 border rounded"
+														/>
+														<p className="text-sm text-gray-500 mt-1">{pedido.proceso_compra_nombre}</p>
+													</div>
+												)}
+
+												{pedido.responsable_aprobacion_firma && (
+													<div>
+														<p className="text-sm text-gray-500 mb-1">Aprobación:</p>
+														<img
+															src={`${URL_IMAGE2}${pedido.responsable_aprobacion_firma}`}
+															alt="Firma responsable aprobación"
+															className="h-16 border rounded"
+														/>
+														<p className="text-sm text-gray-500 mt-1">{pedido.responsable_aprobacion_nombre}</p>
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
+
+									{/* Items del pedido */}
+									<div className="mt-6">
+										<h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+											<ClipboardList size={16} />
+											Ítems solicitados
+										</h4>
+										<div className="overflow-x-auto">
+											<table className="min-w-full divide-y divide-gray-200">
+												<thead className="bg-gray-50">
+													<tr>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
+													</tr>
+												</thead>
+												<tbody className="bg-white divide-y divide-gray-200">
+													{pedido.items?.map((item, index) => (
+														<tr key={index}>
+															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.nombre}</td>
+															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.cantidad}</td>
+															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 flex items-center gap-2">
+																{item.referencia_items ? `Referencia ${index + 1}` : "-"}
+																{item.referencia_items && (
+																	<button
+																		onClick={() => window.open(item.referencia_items, "_blank")}
+																		className="p-1 rounded hover:bg-gray-100"
+																		title={item.referencia_items}
+																	>
+																		<ExternalLink size={16} className="text-blue-500" />
+																	</button>
+																)}
+															</td>
+
+
+														</tr>
+													))}
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									{/* Acciones */}
+									<div className="mt-6 flex justify-end gap-3">
+										<button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+											<Download size={16} />
+											Exportar
+										</button>
+										<button className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+											onClick={() => { navigate(RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO, { state: { pedido } }) }}
+										>
+											Gestionar
+										</button>
+									</div>
+								</div>
+							)}
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
 }

@@ -13,7 +13,7 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
 
 	const save = async () => {
 		setIsSubmitting(true);
-		await onSaveSignature(dataURL); // Asume que onSaveSignature puede ser async
+		await onSaveSignature(dataURL);
 		setIsSubmitting(false);
 		onClose();
 	};
@@ -31,6 +31,7 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
 			alignItems: 'center',
 			zIndex: 1000,
 			backdropFilter: 'blur(4px)',
+		
 		}}>
 			<div style={{
 				backgroundColor: 'white',
@@ -41,12 +42,14 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
 				boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
 				transform: 'scale(0.95)',
 				animation: 'scaleIn 0.3s ease-out forwards',
+				
 			}}>
 				<div style={{
 					display: 'flex',
 					justifyContent: 'space-between',
 					alignItems: 'center',
 					marginBottom: '16px',
+					
 				}}>
 					<h2 style={{ margin: 0, color: '#333', fontSize: '1.5rem' }}>Firma aquí</h2>
 					<button
@@ -58,6 +61,7 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
 							cursor: 'pointer',
 							color: '#666',
 							padding: '4px',
+							
 						}}
 					>
 						✕
@@ -69,6 +73,7 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
 					borderRadius: '12px',
 					marginBottom: '16px',
 					overflow: 'hidden',
+						
 				}}>
 					<SignatureCanvas
 						brushSize={brush}

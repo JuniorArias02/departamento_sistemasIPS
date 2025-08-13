@@ -1,7 +1,46 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { CalendarRange, Bug, CalendarDays, ClipboardEdit, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog, Laptop, Plus, ClipboardSignature, ListTodo } from "lucide-react";
+
+import {
+	CalendarRange,
+	Store,
+	Bug,
+	CalendarDays,
+	Newspaper,
+	ClipboardEdit,
+	Download,
+	FileSearch,
+	ScrollText,
+	CalendarClock,
+	Wrench,
+	BellIcon,
+	ChevronDown,
+	ChevronUp,
+	Bell,
+	Menu,
+	ServerCog,
+	LogOut,
+	Home,
+	Users,
+	List,
+	FileText,
+	PlusSquare,
+	Eye,
+	Shield,
+	PlusCircle,
+	LockKeyhole,
+	Edit,
+	UserPlus,
+	KeyRound,
+	ShieldPlus,
+	UserCog,
+	Laptop,
+	Plus,
+	ClipboardSignature,
+	ListTodo
+} from "lucide-react";
+
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +65,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuSistemaOpen, setMenuSistemaOpen] = useState(false);
 	const [nuevosFormularios, setNuevosFormularios] = useState(0);
 	const [menuAgendamientoMantenimientoOpen, setMenuAgendamientoMantenimientoOpen] = useState(false);
+	const [menuGestionComprasOpen, setMenuGestionComprasOpen] = useState(false);
 	const [animarCampana, setAnimarCampana] = useState(false);
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
@@ -416,15 +456,47 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											delay={0.1}
 										/>
 									)}
-									{/* {permisos.includes(PERMISOS.AGENDAMIENTO_MANTENIMIENTOS.VER_PROGRAMADOS) && (
+								</SidebarCollapsible>
+							)}
+
+							{/* gestion compras  */}
+							{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<Store size={18} />}
+									text="Gestion Compras y pedidos"
+									isOpen={menuGestionComprasOpen}
+									onClick={() =>
+										permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM)
+											? setMenuGestionComprasOpen(!menuGestionComprasOpen)
+											: mostrarAlertaSinPermiso()
+									}
+									sidebarOpen={sidebarOpen}
+								>
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_PEDIDO) && (
 										<SidebarSubItem
-											icon={<CalendarClock size={16} />}
-											text="Ver Programados"
-											onClick={() => navigate(RUTAS.USER.MANTENIMIENTO.VER_PROGRAMADOS)}
+											icon={<Newspaper size={16} />}
+											text="Crear Pedido"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO);
+												setTimeout(() => setSidebarOpen(false), 150);
+											}}
 											sidebarOpen={sidebarOpen}
-											delay={0.2}
+											delay={0.1}
 										/>
-									)} */}
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+										<SidebarSubItem
+											icon={<ScrollText size={16} />}
+											text="Gestionar Pedidos"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.ROOT);
+												setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
 								</SidebarCollapsible>
 							)}
 
@@ -539,7 +611,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 						</>
 					)}
-
 					{/* Cerrar sesión */}
 					<motion.li
 						className="mt-6"

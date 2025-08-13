@@ -61,7 +61,6 @@ export const PERMISOS = {
 		ELIMINAR_AVISO_ACTUALIZACION: 'eliminar_aviso_actualizacion_web',
 		VER_AVISOS: 'ver_avisos_actualizacion_web',
 	},
-
 	GESTION_EQUIPOS: {
 		MENU_ITEM: "menu_item_equipos_computo",  // Permiso para ver el menú principal
 		AGREGAR: "agregar_equipo",  // Agregar nuevo equipo
@@ -72,5 +71,11 @@ export const PERMISOS = {
 		EDITAR: "editar_equipo",  // Editar equipos existentes
 		ELIMINAR: "eliminar_equipo",  // Eliminar equipos
 		EXPORTAR: "exportar_inventario_equipos"  // Exportar datos
-	}
+	},
+
+	GESTION_COMPRA_PEDIDOS: {
+		MENU_ITEM: 'menu_item_gestion_compra',
+		CREAR_PEDIDO: 'crear_pedido',
+		VER_PEDIDOS: 'ver_pedidos'
+	},
 };

@@ -31,6 +31,9 @@ import DetalleEquipo from "./pages/paginaCliente/equiposComputo/page/detalle_equ
 import VistaCrearActaEntrega from "./pages/paginaCliente/equiposComputo/page/crear_acta_entrega";
 import VistaCrearMantenimientoEquipo from "./pages/paginaCliente/equiposComputo/page/crear_mantenimiento";
 
+import CrearPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearPedido";
+import GestionPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/GestionPedidos";
+import PedidoDetalle from "./pages/paginaCliente/gestionPedidosCompras/page/PedidoDetalle";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
@@ -248,7 +251,7 @@ function App() {
             }
           />
 
-           <Route
+          <Route
             path={RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA}
             element={
               permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA) ? (
@@ -260,8 +263,8 @@ function App() {
           />
 
 
-          
-           <Route
+
+          <Route
             path={RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO}
             element={
               permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_MANTENIMIENTO) ? (
@@ -271,6 +274,18 @@ function App() {
               )
             }
           />
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_PEDIDO) ? (
+                <CrearPedido />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
 
 
           {/* vistaDatos */}
@@ -296,7 +311,7 @@ function App() {
             }
           />
 
-            <Route
+          <Route
             path={RUTAS.USER.EQUIPOS.DETALLE_EQUIPO}
             element={
               permisos.includes(PERMISOS.GESTION_EQUIPOS.VER) ? (
@@ -329,6 +344,28 @@ function App() {
             }
           />
 
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.ROOT}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) ? (
+                <GestionPedidos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) ? (
+                <PedidoDetalle />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
 
           <Route
             path={RUTAS.USER.MANTENIMIENTO.HORAS_DEL_DIA_PATH}

@@ -34,7 +34,7 @@ export const FirmaInput = ({ value, onChange, label = "Firma" }) => {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
         >
           {value ? 'Cambiar' : 'Agregar'}
         </button>

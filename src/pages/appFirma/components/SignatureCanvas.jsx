@@ -87,7 +87,7 @@ const SignatureCanvas = ({ brushSize = 8, onChange, color = '#000000' }) => {
 				}}
 				onMouseDown={startDrawing}
 				onMouseUp={endDrawing}
-				onMouseLeave={endDrawing} // Si el mouse sale del canvas
+				onMouseLeave={endDrawing}
 				onMouseMove={draw}
 				onTouchStart={startDrawing}
 				onTouchEnd={endDrawing}
