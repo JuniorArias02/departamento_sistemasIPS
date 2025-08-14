@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-
 import {
 	CalendarRange,
 	Store,
@@ -38,7 +37,8 @@ import {
 	Laptop,
 	Plus,
 	ClipboardSignature,
-	ListTodo
+	ListTodo,
+	Package
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -71,6 +71,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const isMobile = useIsMobile();
 	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
 	const [menuEquiposOpen, setMenuEquiposOpen] = useState(false);
+	const [menuComplementosOpen, setMenuComplementosOpen] = useState(false);
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -532,7 +533,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 									{/* Subitem 2: Crear Acta de Entrega */}
 									<SidebarSubItem
-										icon={<ClipboardSignature size={16} />} 
+										icon={<ClipboardSignature size={16} />}
 										text="Crear Acta de Entrega"
 										onClick={() => {
 											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA)) {
@@ -611,7 +612,30 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 						</>
 					)}
-					<motion.li
+
+					{/* Menú Complementos */}
+					<SidebarCollapsible
+						icon={<Package size={18} />} // Puedes cambiar el ícono si quieres
+						text="Complementos"
+						isOpen={menuComplementosOpen}
+						onClick={() => setMenuComplementosOpen(!menuComplementosOpen)}
+						sidebarOpen={sidebarOpen}
+					>
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar Hosts"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = '/hosts';
+								link.download = 'hosts';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}
+						/>
+
+
+					</SidebarCollapsible>					<motion.li
 						className="mt-2"
 						initial="hidden"
 						animate={sidebarOpen ? "visible" : "hidden"}
