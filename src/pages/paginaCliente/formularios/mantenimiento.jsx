@@ -427,7 +427,7 @@ export default function FormularioMantenimientoFreezer() {
                 accept="image/*"
                 onChange={handleImageChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                required={!formData.imagen}
+                required={!mantenimientoEdit?.id && !formData.imagen}
               />
 
               {/* Estado de carga */}
