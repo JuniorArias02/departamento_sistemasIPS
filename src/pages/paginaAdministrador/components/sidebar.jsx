@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../../store/AppContext";
-import { CalendarRange, Bug, CalendarDays, ClipboardEdit, Download, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
+import { CalendarRange, Bug, CalendarDays, ClipboardEdit, Download, Package, FileSearch, CalendarClock, Wrench, BellIcon, ChevronDown, ChevronUp, Bell, Menu, ServerCog, LogOut, Home, Users, List, FileText, PlusSquare, Eye, Shield, PlusCircle, LockKeyhole, Edit, UserPlus, KeyRound, ShieldPlus, UserCog } from "lucide-react";
 import { Tooltip } from "recharts";
 import useAvatar from "../../../hook/useAvatar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +30,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const avatarSrc = useAvatar(usuario?.nombre_completo, usuario?.avatar);
 	const isMobile = useIsMobile();
 	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
+	const [menuComplementosOpen, setMenuComplementosOpen] = useState(false);
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -462,6 +463,29 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 						</>
 					)}
+
+					{/* Menú Complementos */}
+					<SidebarCollapsible
+						icon={<Package size={18} />} // Puedes cambiar el ícono si quieres
+						text="Complementos"
+						isOpen={menuComplementosOpen}
+						onClick={() => setMenuComplementosOpen(!menuComplementosOpen)}
+						sidebarOpen={sidebarOpen}
+					>
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar Hosts"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = '/hosts';
+								link.download = 'hosts';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}
+						/>
+					</SidebarCollapsible>
+
 
 					<motion.li
 						className="mt-2"
