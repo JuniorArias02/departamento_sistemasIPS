@@ -20,17 +20,17 @@ export const listarMantenimientos = async (usuarioId) => {
 
 
 export const eliminarEventoMantenimiento = async (id, usuario_id) => {
-  try {
-    const response = await axios.post(ELIMINAR_MANTENIMIENTO, {
-      id,
-      usuario_id
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error?.response?.data?.error || "Error al eliminar mantenimiento"
-    );
-  }
+	try {
+		const response = await axios.post(ELIMINAR_MANTENIMIENTO, {
+			id,
+			usuario_id
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(
+			error?.response?.data?.error || "Error al eliminar mantenimiento"
+		);
+	}
 };
 
 
@@ -68,8 +68,10 @@ export const obtenerTotalMantenimiento = async () => {
 };
 
 
-export const obtenerGraficaMantenimiento = async () => {
-	const res = await axios.get(GRAFICA_MANTENIMIENTO);
+export const obtenerGraficaMantenimiento = async (id) => {
+	const res = await axios.post(GRAFICA_MANTENIMIENTO, {
+		id_usuario: id,
+	});
 	return res.data;
 };
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS } from "../const/endpoint/cp_pedidos/cp_pedidos_endpoint";
+import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO } from "../const/endpoint/cp_pedidos/cp_pedidos_endpoint";
 
 export const subirFirmaPedido = async (formData) => {
 	try {
@@ -25,6 +25,26 @@ export const crearPedido = async (datos) => {
 		return [];
 	}
 };
+export const rechazarPedido = async (datos) => {
+	try {
+		const response = await axios.post(RECHAZAR_PEDIDO, datos);
+		return response.data;
+	} catch (error) {
+		console.error('Error al rechazar pedido', error);
+		throw error;
+	}
+};
+
+export const aprobarPedido = async (datos) => {
+	try {
+		const { data } = await axios.post(APROBAR_PEDIDO, datos);
+		return data;
+	} catch (error) {
+		console.error('Error al aprobar pedido', error.response?.data || error.message);
+		throw error.response?.data || error;
+	}
+};
+
 
 export const obtenerPedidos = async () => {
 	try {

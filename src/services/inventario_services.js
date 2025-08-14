@@ -78,8 +78,10 @@ export const eliminarInventario = async (id_inventario, id_usuario) => {
 };
 
 
-export const obtenerGraficaInventario = async () => {
-  const res = await axios.get(GRAFICA_INVENTARIO);
+export const obtenerGraficaInventario = async (id) => {
+  const res = await axios.post(GRAFICA_INVENTARIO, {
+    id_usuario:id
+  });
   return res.data;
 };
 

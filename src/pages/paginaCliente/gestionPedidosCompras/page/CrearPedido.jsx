@@ -98,7 +98,7 @@ export default function CrearPedido() {
 			const formData = new FormData();
 			formData.append("id_pedido", pedidoId);
 			formData.append("tipo_firma", "elaborado_por_firma");
-			formData.append("firma", blob, "firma.png");
+			formData.append("firma", blob, "firma.png"); 
 
 			const resFirma = await subirFirmaPedido(formData);
 			if (!resFirma.success) throw new Error(resFirma.error || "Error subiendo firma");
