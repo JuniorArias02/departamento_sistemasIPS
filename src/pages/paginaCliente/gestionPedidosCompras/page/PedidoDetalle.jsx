@@ -26,6 +26,8 @@ import { rechazarPedido, aprobarPedido, subirFirmaPedido } from "../../../../ser
 import { useApp } from "../../../../store/AppContext";
 import Swal from "sweetalert2";
 import { FirmaInput } from "../../../appFirma/appFirmas";
+import { getEstadoIcon } from "../components/getEstadoIcon";
+import { getEstadoColor } from "../components/getEstadoColor";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();
@@ -36,40 +38,15 @@ export default function PedidoDetalle() {
   const [observacionRechazo, setObservacionRechazo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const data = location.state?.pedido || {};
+  const [tipoRechazo, setTipoRechazo] = useState("compras");
+
 
   useEffect(() => {
     console.log(data);
   }, []);
 
-  const getEstadoColor = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case 'aprobado':
-        return 'bg-green-100 text-green-800';
-      case 'pendiente':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'rechazado':
-        return 'bg-red-100 text-red-800';
-      case 'en proceso':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
 
-  const getEstadoIcon = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case 'aprobado':
-        return <CheckCircle size={16} className="text-green-500" />;
-      case 'pendiente':
-        return <Clock size={16} className="text-yellow-500" />;
-      case 'rechazado':
-        return <AlertCircle size={16} className="text-red-500" />;
-      case 'en proceso':
-        return <PenTool size={16} className="text-blue-500" />;
-      default:
-        return <FileText size={16} className="text-gray-500" />;
-    }
-  };
+
 
   function base64ToFile(base64, filename) {
     const arr = base64.split(",");
@@ -83,7 +60,6 @@ export default function PedidoDetalle() {
     return new File([u8arr], filename, { type: mime });
   }
 
-
   const handleAprobarPedido = async () => {
     Swal.fire({
       title: "¿Aprobar pedido?",
@@ -95,41 +71,48 @@ export default function PedidoDetalle() {
       confirmButtonText: "Sí, aprobar",
       cancelButtonText: "Cancelar"
     }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          if (!firmaAprobacion) {
-            Swal.fire("Error", "Debes agregar tu firma antes de aprobar", "error");
-            return;
-          }
+      if (!result.isConfirmed) return;
 
-          // Subir firma
-          const fileFirma = base64ToFile(firmaAprobacion, "firma.png");
-          await subirFirmaPedido({
-            id_pedido: data.id,
-            tipo_firma: "proceso_compra_firma",
-            firma: fileFirma
-          });
-
-
-          // Aprobar pedido
-          const respuesta = await aprobarPedido({
-            id_pedido: data.id,
-            id_usuario: usuario.id
-          });
-
-          Swal.fire("Aprobado", "El pedido ha sido aprobado con éxito", "success");
-          console.log(respuesta);
-
-          setShowFirmaAprobacionForm(false);
-
-        } catch (error) {
-          Swal.fire("Error", error?.mensaje || "No se pudo aprobar el pedido", "error");
+      try {
+        if (!firmaAprobacion) {
+          Swal.fire("Error", "Debes agregar tu firma antes de aprobar", "error");
+          return;
         }
+
+        const fileFirma = base64ToFile(firmaAprobacion, "firma.png");
+
+        const tipoFirma =
+          data.estado_compras === "aprobado"
+            ? "responsable_aprobacion_firma"
+            : "proceso_compra_firma";
+
+        // Subir firma
+        await subirFirmaPedido({
+          id_pedido: data.id,
+          tipo_firma: tipoFirma,
+          firma: fileFirma,
+          id_usuario: usuario.id
+        });
+
+        // Aprobar pedido
+        const respuesta = await aprobarPedido({
+          id_pedido: data.id,
+          id_usuario: usuario.id,
+          tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra"
+        });
+
+
+        Swal.fire("Aprobado", "El pedido ha sido aprobado con éxito", "success");
+        setShowFirmaAprobacionForm(false);
+        console.log(respuesta);
+
+      } catch (error) {
+        Swal.fire("Error", error?.mensaje || "No se pudo aprobar el pedido", "error");
       }
     });
   };
 
-  const handleRechazarPedido = async () => {
+  const handleRechazarPedido = async (tipo) => {
     Swal.fire({
       title: "¿Estás seguro?",
       text: "Esta acción rechazará el pedido de forma definitiva.",
@@ -146,7 +129,8 @@ export default function PedidoDetalle() {
           const payload = {
             id_pedido: data.id,
             id_usuario: usuario.id,
-            observacion_diligenciado: observacionRechazo
+            observacion_diligenciado: observacionRechazo,
+            tipo_rechazo: tipo
           };
 
           const respuesta = await rechazarPedido(payload);
@@ -157,8 +141,6 @@ export default function PedidoDetalle() {
             title: "Rechazado",
             text: "El pedido ha sido rechazado con éxito."
           });
-
-          // Aquí puedes actualizar la tabla o cerrar el modal
         } catch (error) {
           console.error("Error al rechazar pedido:", error);
           Swal.fire({
@@ -174,25 +156,25 @@ export default function PedidoDetalle() {
     });
   };
 
+
   const renderActionButtons = () => {
     switch (data.estado_compras?.toLowerCase()) {
       case 'pendiente':
         return (
           <>
             <button
-              onClick={() => setShowObservacionesForm(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              onClick={() => {
+                setTipoRechazo("compras");
+                setShowObservacionesForm(true);
+              }}
+              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
             >
               <X size={18} />
               Rechazar
             </button>
-            <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-              <RefreshCw size={18} />
-              En Proceso
-            </button>
             <button
               onClick={() => setShowFirmaAprobacionForm(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
             >
               <Check size={18} />
               Aprobar
@@ -205,13 +187,13 @@ export default function PedidoDetalle() {
           <>
             <button
               onClick={() => setShowObservacionesForm(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
             >
               <X size={18} />
               Rechazar
             </button>
             <button
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer">
               <Check size={18} />
               Aprobar
             </button>
@@ -219,18 +201,42 @@ export default function PedidoDetalle() {
         );
       case 'aprobado':
         return (
-          <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-            <Download size={18} />
-            Exportar PDF
-          </button>
+          <>
+            {data.estado_gerencia === 'pendiente' && (
+              <>
+                <button
+                  onClick={() => {
+                    setTipoRechazo("gerencia");
+                    setShowObservacionesForm(true);
+                  }}
+                  className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                >
+                  <X size={18} />
+                  Rechazar
+                </button>
+                <button
+                  onClick={() => setShowFirmaAprobacionForm(true)}
+                  className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                >
+                  <Check size={18} />
+                  Aprobar
+                </button>
+              </>
+            )}
+            <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+              <Download size={18} />
+              Exportar PDF
+            </button>
+          </>
         );
-      case 'rechazado':
-        return (
-          <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-            <Edit size={18} />
-            Editar Pedido
-          </button>
-        );
+      // posiblemente no se use o no es requerido
+      // case 'rechazado':
+      //   return (
+      //     <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+      //       <Edit size={18} />
+      //       Editar Pedido
+      //     </button>
+      //   );
       default:
         return (
           <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
@@ -311,6 +317,12 @@ export default function PedidoDetalle() {
                 <div className="bg-gray-50 p-3 rounded-lg text-gray-700 italic">
                   {data.observacion}
                 </div>
+              </div>
+            )}
+            {data.observacion_diligenciado && (
+              <div className="mt-3">
+                <p className="text-gray-500 mb-1">Motivo Rechazo:</p>
+                <p className="text-gray-700 bg-gray-50 p-3 rounded">{data.observacion_diligenciado}</p>
               </div>
             )}
           </div>
@@ -421,7 +433,7 @@ export default function PedidoDetalle() {
         <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <AlertCircle size={18} className="text-red-500" />
-            Motivo del Rechazo
+            Motivo del Rechazo {tipoRechazo === "gerencia" && "(Gerencia)"}
           </h3>
           <textarea
             value={observacionRechazo}
@@ -438,9 +450,10 @@ export default function PedidoDetalle() {
               Cancelar
             </button>
             <button
-              onClick={handleRechazarPedido}
+              onClick={() => handleRechazarPedido(tipoRechazo)}
               disabled={!observacionRechazo || isSubmitting}
-              className={`flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors ${(!observacionRechazo || isSubmitting) ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors ${(!observacionRechazo || isSubmitting) ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
             >
               {isSubmitting ? (
                 <>
@@ -461,10 +474,11 @@ export default function PedidoDetalle() {
         </div>
       )}
 
+
       {/* firma */}
       {showFirmaAprobacionForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black-300 bg-opacity-50">
-          <div className="w-full max-w-md bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#00000050] bg-opacity-80 ">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-xl  overflow-hidden">
             {/* Encabezado */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
               <div className="flex items-center justify-between">

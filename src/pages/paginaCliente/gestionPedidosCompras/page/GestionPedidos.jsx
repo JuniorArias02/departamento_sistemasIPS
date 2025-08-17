@@ -18,8 +18,13 @@ import {
 import { URL_IMAGE2 } from "../../../../const/api";
 import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../../const/routers/routers";
+import { useApp } from "../../../../store/AppContext";
+import { PERMISOS } from "../../../../secure/permisos/permisos";
+import { getEstadoIcon } from "../components/getEstadoIcon";
+import { getEstadoColor } from "../components/getEstadoColor";
 
 export default function GestionPedidos() {
+	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
 	const [pedidos, setPedidos] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -34,7 +39,7 @@ export default function GestionPedidos() {
 		const fetchPedidos = async () => {
 			let data; // se define aquí para usarla en todo el scope
 			try {
-				data = await obtenerPedidos();
+				data = await obtenerPedidos({ usuarioId: usuario.id });
 				console.log(data);
 				if (data.success) {
 					setPedidos(data.data);
@@ -87,35 +92,6 @@ export default function GestionPedidos() {
 	});
 
 
-	const getEstadoColor = (estado) => {
-		switch (estado?.toLowerCase()) {
-			case 'aprobado':
-				return 'bg-green-100 text-green-800';
-			case 'pendiente':
-				return 'bg-yellow-100 text-yellow-800';
-			case 'rechazado':
-				return 'bg-red-100 text-red-800';
-			case 'en proceso':
-				return 'bg-blue-100 text-blue-800';
-			default:
-				return 'bg-gray-100 text-gray-800';
-		}
-	};
-
-	const getEstadoIcon = (estado) => {
-		switch (estado?.toLowerCase()) {
-			case 'aprobado':
-				return <CheckCircle size={16} className="text-green-500" />;
-			case 'pendiente':
-				return <Clock size={16} className="text-yellow-500" />;
-			case 'rechazado':
-				return <XCircle size={16} className="text-red-500" />;
-			case 'en proceso':
-				return <FileText size={16} className="text-blue-500" />;
-			default:
-				return <FileText size={16} className="text-gray-500" />;
-		}
-	};
 
 	if (loading) return (
 		<div className="flex justify-center items-center h-64">
@@ -198,9 +174,22 @@ export default function GestionPedidos() {
 								onClick={() => toggleExpandPedido(pedido.id)}
 							>
 								<div className="flex items-center gap-3">
-									<div className={`px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(pedido.estado_compras)} flex items-center gap-2`}>
-										{getEstadoIcon(pedido.estado_compras)}
-										{pedido.estado_compras || 'Sin estado'}
+									<div
+										className={`px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(
+											permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO)
+												? pedido.estado_gerencia
+												: pedido.estado_compras
+										)
+											} flex items-center gap-2`}
+									>
+										{getEstadoIcon(
+											permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO)
+												? pedido.estado_gerencia
+												: pedido.estado_compras
+										)}
+										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO)
+											? pedido.estado_gerencia
+											: pedido.estado_compras || 'Sin estado'}
 									</div>
 									<div>
 										<h3 className="font-medium text-gray-800">
@@ -353,6 +342,14 @@ export default function GestionPedidos() {
 												</tbody>
 											</table>
 										</div>
+
+										{pedido.observacion_diligenciado && (
+											<div className="mt-3">
+												<p className="text-gray-500 mb-1">Motivo Rechazo
+													:</p>
+												<p className="text-gray-700 bg-gray-50 p-3 rounded">{pedido.observacion_diligenciado}</p>
+											</div>
+										)}
 									</div>
 
 									{/* Acciones */}

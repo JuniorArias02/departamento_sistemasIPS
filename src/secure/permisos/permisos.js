@@ -76,6 +76,7 @@ export const PERMISOS = {
 	GESTION_COMPRA_PEDIDOS: {
 		MENU_ITEM: 'menu_item_gestion_compra',
 		CREAR_PEDIDO: 'crear_pedido',
-		VER_PEDIDOS: 'ver_pedidos'
+		VER_PEDIDOS: 'ver_pedidos',
+		VER_PEDIDOS_ENCARGADO:'ver_pedidos_encargado'
 	},
 };

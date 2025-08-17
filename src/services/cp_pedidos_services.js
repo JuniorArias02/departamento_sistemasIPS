@@ -46,9 +46,9 @@ export const aprobarPedido = async (datos) => {
 };
 
 
-export const obtenerPedidos = async () => {
+export const obtenerPedidos = async (datos) => {
 	try {
-		const { data } = await axios.get(OBTENER_PEDIDOS);
+		const { data } = await axios.post(OBTENER_PEDIDOS,datos);
 		return data;
 	} catch (error) {
 		console.error("Error en obtenerPedidos:", error);
