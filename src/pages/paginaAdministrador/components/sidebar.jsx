@@ -577,15 +577,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									/>
 								</SidebarCollapsible>
 							)}
-
 							{/* reporte */}
-							{/* <SidebarCollapsible
+							<SidebarCollapsible
 								icon={<Bug size={18} />}
 								text="Reportes"
 								isOpen={menuReportesOpen}
 								onClick={() => setMenuReportesOpen(!menuReportesOpen)}
 								sidebarOpen={sidebarOpen}
-								isBeta={false} 
+								isBeta={false}
 							>
 								<SidebarSubItem
 									icon={<ClipboardEdit size={16} />}
@@ -608,7 +607,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									sidebarOpen={sidebarOpen}
 									delay={0.2}
 								/>
-							</SidebarCollapsible> */}
+							</SidebarCollapsible>
 
 						</>
 					)}
@@ -633,42 +632,19 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							sidebarOpen={sidebarOpen}
 							delay={0.1}
 						/>
-
-
-					</SidebarCollapsible>					<motion.li
-						className="mt-2"
-						initial="hidden"
-						animate={sidebarOpen ? "visible" : "hidden"}
-						variants={{
-							hidden: { opacity: 0, x: -10 },
-							visible: { opacity: 1, x: 0 }
-						}}
-						transition={{ duration: 0.2, delay: 0.45 }}
-						whileHover={{ scale: 1.02 }}
-						whileTap={{ scale: 0.98 }}
-					>
-						<a
-							href="https://departamento-sistemasips.vercel.app/scripts/lockscreen-script.zip"
-							download
-							className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-green-600/30 text-green-400 hover:text-green-200 transition-colors group"
-							title="Descargar script de bloqueo"
-						>
-							<Download size={18} className="group-hover:scale-125 transition-transform" />
-							{sidebarOpen && (
-								<motion.span
-									initial={{ opacity: 0, x: -10 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: 0.5 }}
-									className="font-medium"
-								>
-									Descargar LockScreen
-								</motion.span>
-							)}
-						</a>
-
-					</motion.li>
-
-
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar Imagen"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = '/imgdesktop.jpg';
+								link.download = 'img';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}
+						/>
+					</SidebarCollapsible>
 					{/* Cerrar sesión */}
 					<motion.li
 						className="mt-6"
@@ -728,7 +704,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 						)}
 					</div>
 				)}
-			</motion.aside>
+			</motion.aside >
 		</>
 	);
 }
