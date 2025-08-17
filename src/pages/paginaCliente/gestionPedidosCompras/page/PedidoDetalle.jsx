@@ -28,6 +28,7 @@ import Swal from "sweetalert2";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { getEstadoIcon } from "../components/getEstadoIcon";
 import { getEstadoColor } from "../components/getEstadoColor";
+import { exportarPedidoPdf } from "../../../../services/cp_pedidos_services";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();
@@ -223,7 +224,9 @@ export default function PedidoDetalle() {
                 </button>
               </>
             )}
-            <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+            <button
+            onClick={exportarPedidoPdf(data.id,)}
+            className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
               <Download size={18} />
               Exportar PDF
             </button>

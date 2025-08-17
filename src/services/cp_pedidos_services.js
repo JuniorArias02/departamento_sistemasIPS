@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO } from "../const/endpoint/cp_pedidos/cp_pedidos_endpoint";
+import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF} from "../const/endpoint/cp_pedidos/cp_pedidos_endpoint";
 
 export const subirFirmaPedido = async (formData) => {
 	try {
@@ -48,12 +48,63 @@ export const aprobarPedido = async (datos) => {
 
 export const obtenerPedidos = async (datos) => {
 	try {
-		const { data } = await axios.post(OBTENER_PEDIDOS,datos);
+		const { data } = await axios.post(OBTENER_PEDIDOS, datos);
 		return data;
 	} catch (error) {
 		console.error("Error en obtenerPedidos:", error);
 		throw new Error(
 			error?.response?.data?.error || "Error al listar los pedidos"
+		);
+	}
+};
+
+
+export const exportarPedido = async (pedidoId) => {
+	try {
+		const response = await axios.post(
+			EXPORTAR_PEDIDO,
+			{ id: pedidoId },
+			{ responseType: "blob" } 
+		);
+
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "pedido.xlsx");
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+
+		return true;
+	} catch (error) {
+		console.error("Error al exportar el pedido:", error);
+		throw new Error(
+			error?.response?.data?.mensaje || "Error al exportar el pedido"
+		);
+	}
+};
+
+export const exportarPedidoPdf = async (pedidoId) => {
+	try {
+		const response = await axios.post(
+			EXPORTAR_PDF,
+			{ id: pedidoId },
+			{ responseType: "blob" } 
+		);
+
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "pedido.pdf");
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+
+		return true;
+	} catch (error) {
+		console.error("Error al exportar el pedido:", error);
+		throw new Error(
+			error?.response?.data?.mensaje || "Error al exportar el pedido"
 		);
 	}
 };

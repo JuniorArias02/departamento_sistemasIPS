@@ -13,7 +13,8 @@ import {
 	ChevronUp,
 	Filter,
 	ExternalLink,
-	Download
+	Download,
+	Loader2 
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
 import { useNavigate } from "react-router-dom";
@@ -22,12 +23,16 @@ import { useApp } from "../../../../store/AppContext";
 import { PERMISOS } from "../../../../secure/permisos/permisos";
 import { getEstadoIcon } from "../components/getEstadoIcon";
 import { getEstadoColor } from "../components/getEstadoColor";
+import { exportarPedido } from "../../../../services/cp_pedidos_services";
+import Swal from "sweetalert2";
 
 export default function GestionPedidos() {
 	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
 	const [pedidos, setPedidos] = useState([]);
+	
 	const [loading, setLoading] = useState(true);
+	const [loadingExport, setLoadingExport] = useState(false);
 	const [error, setError] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [expandedPedido, setExpandedPedido] = useState(null);
@@ -35,6 +40,9 @@ export default function GestionPedidos() {
 		estado: "todos",
 		tipo: "todos"
 	});
+
+
+
 	useEffect(() => {
 		const fetchPedidos = async () => {
 			let data; // se define aquí para usarla en todo el scope
@@ -91,7 +99,30 @@ export default function GestionPedidos() {
 		return matchesSearch && matchesEstado && matchesTipo;
 	});
 
+	const handleExportarPedido = async (idpedido) => {
+		try {
+			setLoadingExport(true);
+			console.log(idpedido);
+			await exportarPedido(idpedido);
 
+			Swal.fire({
+				icon: "success",
+				title: "Exportación exitosa",
+				text: "El pedido se exportó correctamente",
+				timer: 2000,
+				showConfirmButton: false,
+			});
+		} catch (error) {
+			console.error(error);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "No se pudo exportar el pedido. Intenta nuevamente.",
+			});
+		} finally {
+			setLoadingExport(false); // 🔹 cuando termina quita el loading
+		}
+	};
 
 	if (loading) return (
 		<div className="flex justify-center items-center h-64">
@@ -354,10 +385,27 @@ export default function GestionPedidos() {
 
 									{/* Acciones */}
 									<div className="mt-6 flex justify-end gap-3">
-										<button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-											<Download size={16} />
-											Exportar
+										<button
+											onClick={() => handleExportarPedido(pedido.id)}
+											disabled={loadingExport}
+											className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${loading
+												? "bg-gray-200 text-gray-400 cursor-not-allowed"
+												: "text-gray-700 hover:bg-gray-50"
+												}`}
+										>
+											{loadingExport ? (
+												<>
+													<Loader2 size={16} className="animate-spin" />
+													Exportando...
+												</>
+											) : (
+												<>
+													<Download size={16} />
+													Exportar
+												</>
+											)}
 										</button>
+
 										<button className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
 											onClick={() => { navigate(RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO, { state: { pedido } }) }}
 										>
