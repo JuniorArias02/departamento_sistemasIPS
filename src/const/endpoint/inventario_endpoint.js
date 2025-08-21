@@ -1,4 +1,4 @@
-import { URL_PATH } from "../../api";
+import { URL_PATH } from "../api";
 
 export const CREAR_INVENTARIO = `${URL_PATH}controllers/inventario/crear_inventario.php`;
 export const CONTAR_INVENTARIO = `${URL_PATH}controllers/inventario/contar_inventarios.php`;

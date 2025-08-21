@@ -10,7 +10,7 @@ import { listarCoordinadores } from "../../../services/utils_service";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import imageCompression from 'browser-image-compression';
-import { IMAGEN_URL } from "../../../const/endpoint/mantenimientosIps/mantenimiento_endpoint";
+import { IMAGEN_URL } from "../../../const/endpoint/mantenimiento_endpoint";
 
 export default function FormularioMantenimientoFreezer() {
   const { usuario, permisos } = useApp();

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BUSCAR_PERIFERICO } from '../const/endpoint/pc_equipos/pc_equipo_endpoint';
+import { BUSCAR_PERIFERICO } from '../const/endpoint/pc_equipo_endpoint';
 
 export const buscarPerifericoo = async (termino) => {
 	try {

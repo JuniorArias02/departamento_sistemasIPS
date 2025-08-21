@@ -253,3 +253,43 @@
     transform: rotate(360deg);
   }
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+[data-framer-motion] {
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+.no-scrol-x {
+  overflow-x: hidden;
+}
+
+/* ===== Scroll global bonito ===== */
+::-webkit-scrollbar {
+  width: 8px; /* ancho */
+  height: 8px; /* alto en scroll X */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* sin fondo feo */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); /* color claro transparente */
+  border-radius: 9999px; /* redondito */
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4); /* un poco más visible al pasar */
+}
+
+/* Para Firefox */
+* {
+  scrollbar-width: thin; /* delgado */
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}

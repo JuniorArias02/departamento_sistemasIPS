@@ -27,7 +27,7 @@ export default function Layout() {
         </main>
 
         {/* Footer fijo abajo */}
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );

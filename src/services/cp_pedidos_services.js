@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF} from "../const/endpoint/cp_pedidos/cp_pedidos_endpoint";
+import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF} from "../const/endpoint/cp_pedidos_endpoint";
 
 export const subirFirmaPedido = async (formData) => {
 	try {

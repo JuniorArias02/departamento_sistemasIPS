@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LISTAR_SEDES } from "../const/endpoint/sede/sede_endpoint";
+import { LISTAR_SEDES } from "../const/endpoint/sede_endpoint";
 
 export const listarSedes = async () => {
   try {

@@ -8,7 +8,8 @@ import {
 	Loader2,
 	ChevronDown,
 	Check,
-	FileSearch
+	FileSearch,
+	CheckCircle
 } from 'lucide-react';
 import { listarRoles, asignarPermisos, obtenerPermisosRol } from '../../../services/rol_services';
 import Swal from 'sweetalert2';
@@ -51,6 +52,7 @@ export default function AsignarPermisos() {
 				setLoading(true);
 				setError(null);
 				const data = await obtenerPermisosRol(selectedRolId);
+				console.error('Permisos obtenidos:', data);
 				setPermisos(data);
 
 				const inicialSeleccionados = new Set(
@@ -115,7 +117,7 @@ export default function AsignarPermisos() {
 		}
 	};
 	return (
-		<div className="max-w-6xl mx-auto p-6 space-y-6">
+		<div className="max-w-7xl mx-auto p-6 space-y-6">
 			{/* Header con gradiente y efecto glassmorphism */}
 			<div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 backdrop-blur-lg bg-opacity-90 shadow-xl">
 				<div className="flex items-center gap-3">
@@ -161,9 +163,9 @@ export default function AsignarPermisos() {
 			)}
 
 			{/* Paneles con efecto neumorphism y transiciones */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 				{/* Panel de Rol - Efecto vidrio */}
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.05)] border border-white/20">
+				<div className="xl:col-span-1 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.05)] border border-white/20 h-fit">
 					<div className="flex items-center gap-3 mb-4">
 						<div className="p-2 bg-blue-100/50 rounded-lg">
 							<Users className="w-5 h-5 text-blue-600" />
@@ -171,7 +173,7 @@ export default function AsignarPermisos() {
 						<h2 className="text-xl font-semibold text-gray-800">Selección de Rol</h2>
 					</div>
 
-					<div className="relative">
+					<div className="relative mb-4">
 						<select
 							value={selectedRolId}
 							onChange={(e) => setSelectedRolId(e.target.value)}
@@ -187,37 +189,59 @@ export default function AsignarPermisos() {
 						</select>
 						<ChevronDown className="absolute left-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
 					</div>
+
+					{/* Información del rol seleccionado */}
+					{selectedRolId && (
+						<div className="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+							<h3 className="font-medium text-blue-800 mb-2">Información del Rol</h3>
+							{roles.find(r => r.id === selectedRolId)?.descripcion && (
+								<p className="text-sm text-blue-600">
+									{roles.find(r => r.id === selectedRolId)?.descripcion}
+								</p>
+							)}
+							<div className="mt-3 flex items-center text-sm text-blue-500">
+								<CheckCircle className="w-4 h-4 mr-1" />
+								<span>{selectedPermisos.size} permisos seleccionados</span>
+							</div>
+						</div>
+					)}
 				</div>
 
-				{/* Panel de Permisos - Lista interactiva */}
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.05)] border border-white/20">
-					<div className="flex justify-between items-center mb-4">
+				{/* Panel de Permisos - Lista interactiva MEJORADA */}
+				<div className="xl:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.05)] border border-white/20">
+					<div className="flex justify-between items-center mb-6">
 						<div className="flex items-center gap-3">
 							<div className="p-2 bg-blue-100/50 rounded-lg">
 								<Key className="w-5 h-5 text-blue-600" />
 							</div>
-							<h2 className="text-xl font-semibold text-gray-800">Permisos Disponibles</h2>
+							<div>
+								<h2 className="text-xl font-semibold text-gray-800">Permisos Disponibles</h2>
+								<p className="text-sm text-gray-500 mt-1">
+									Selecciona los permisos que deseas asignar al rol
+								</p>
+							</div>
 						</div>
-						<div className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+						<div className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
 							{selectedPermisos.size} seleccionados
 						</div>
 					</div>
 
 					{loading ? (
-						<div className="flex justify-center py-8">
-							<Loader2 className="animate-spin h-10 w-10 text-blue-600" />
+						<div className="flex flex-col items-center justify-center py-12">
+							<Loader2 className="animate-spin h-12 w-12 text-blue-600 mb-3" />
+							<p className="text-gray-500">Cargando permisos...</p>
 						</div>
 					) : permisos.length > 0 ? (
-						<div className="space-y-2 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
+						<div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
 							{permisos.map((permiso) => (
 								<label
 									key={permiso.id}
-									className={`flex items-center p-3 rounded-xl cursor-pointer transition-all duration-200 ${selectedPermisos.has(permiso.id)
-										? 'bg-blue-50/70 border border-blue-100'
-										: 'hover:bg-gray-50/50'
+									className={`flex items-start p-4 rounded-xl cursor-pointer transition-all duration-200 border ${selectedPermisos.has(permiso.id)
+										? 'bg-blue-50/70 border-blue-200 shadow-sm'
+										: 'bg-gray-50/30 border-gray-100 hover:bg-gray-50/70'
 										}`}
 								>
-									<div className="relative">
+									<div className="relative mt-0.5 mr-3 flex-shrink-0">
 										<input
 											type="checkbox"
 											checked={selectedPermisos.has(permiso.id)}
@@ -228,15 +252,41 @@ export default function AsignarPermisos() {
 											<Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
 										</div>
 									</div>
-									<span className="ml-3 text-gray-700">{permiso.nombre}</span>
+									<div className="flex-1 min-w-0">
+										<div className="flex items-start justify-between">
+											<div className="flex-1">
+												<div className="text-gray-800 font-medium">{permiso.nombre}</div>
+												<div className="text-gray-500 text-sm mt-2 leading-relaxed">
+													{permiso.descripcion}
+												</div>
+											</div>
+											{selectedPermisos.has(permiso.id) && (
+												<div className="ml-3 flex-shrink-0">
+													<CheckCircle className="w-5 h-5 text-blue-500" />
+												</div>
+											)}
+										</div>
+										{permiso.categoria && (
+											<div className="mt-2">
+												<span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+													{permiso.categoria}
+												</span>
+											</div>
+										)}
+									</div>
 								</label>
 							))}
 						</div>
 					) : (
-						<div className="text-center py-8">
-							<FileSearch className="w-10 h-10 mx-auto text-gray-300 mb-2" />
-							<p className="text-gray-500">
+						<div className="text-center py-12">
+							<FileSearch className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+							<h3 className="text-lg font-medium text-gray-500 mb-2">
 								{selectedRolId ? "No se encontraron permisos" : "Seleccione un rol para comenzar"}
+							</h3>
+							<p className="text-gray-400 text-sm">
+								{selectedRolId
+									? "Intenta con otro rol o verifica la conexión"
+									: "Elija un rol de la lista para visualizar sus permisos disponibles"}
 							</p>
 						</div>
 					)}
@@ -249,9 +299,9 @@ export default function AsignarPermisos() {
 					<button
 						onClick={handleSubmit}
 						disabled={!selectedRolId || loading}
-						className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 shadow-lg ${!selectedRolId || loading
-								? "bg-gray-300 text-gray-500 cursor-not-allowed"
-								: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl hover:from-blue-700 hover:to-indigo-700"
+						className={`px-8 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 shadow-lg ${!selectedRolId || loading
+							? "bg-gray-300 text-gray-500 cursor-not-allowed"
+							: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transform hover:-translate-y-0.5"
 							}`}
 					>
 						{loading ? (
@@ -267,7 +317,6 @@ export default function AsignarPermisos() {
 						)}
 					</button>
 				)}
-
 			</div>
 		</div>
 	);

@@ -31,6 +31,9 @@ import DetalleEquipo from "./pages/paginaCliente/equiposComputo/page/detalle_equ
 import VistaCrearActaEntrega from "./pages/paginaCliente/equiposComputo/page/crear_acta_entrega";
 import VistaCrearMantenimientoEquipo from "./pages/paginaCliente/equiposComputo/page/crear_mantenimiento";
 
+import CrearPersonalVista from "./pages/paginaCliente/personal/page/CrearPersonal";
+import GestionPersonalVista from "./pages/paginaCliente/personal/page/GestionPersonal";
+
 import CrearPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearPedido";
 import GestionPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/GestionPedidos";
 import PedidoDetalle from "./pages/paginaCliente/gestionPedidosCompras/page/PedidoDetalle";
@@ -218,6 +221,21 @@ function App() {
           />
 
           {/* formularios */}
+
+
+
+
+          <Route
+            path={RUTAS.USER.PERSONAL.CREAR_PERSONAL}
+            element={
+              permisos.includes(PERMISOS.GESTION_PERSONAL.CREAR) ? (
+                <CrearPersonalVista />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
           <Route
             path={RUTAS.USER.INVENTARIO.CREAR_INVENTARIO}
             element={
@@ -289,6 +307,20 @@ function App() {
 
 
           {/* vistaDatos */}
+          
+          <Route
+            path={RUTAS.USER.PERSONAL.ROOT}
+            element={
+              permisos.includes(PERMISOS.GESTION_PERSONAL.VER) ? (
+                <GestionPersonalVista />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+
           <Route
             path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}
             element={

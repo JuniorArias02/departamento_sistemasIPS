@@ -1,5 +1,5 @@
 import axios from "axios";
-import { OBTENER_TIPO_SOLICITUD } from "../const/endpoint/cp_tipo_solicitud/cp_tipo_solicitud";
+import { OBTENER_TIPO_SOLICITUD } from "../const/endpoint/cp_tipo_solicitud";
 
 export const obtenerTiposSolicitud = async () => {
 	try {

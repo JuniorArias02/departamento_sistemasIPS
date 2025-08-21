@@ -68,7 +68,14 @@ export const RUTAS = {
       ROOT: `${DASHBOARD}/pedidos`,
       CREAR_PEDIDO: `${DASHBOARD}/crear_pedidos`,
       DETALLE_PEDIDO: `${DASHBOARD}/detalle_pedido`,
-    }
+    },
+
+    PERSONAL: {
+      ROOT: `${DASHBOARD}/personal`,
+      CREAR_PERSONAL: `${DASHBOARD}/crear_personal`,
+      DETALLE_PERSONAL: `${DASHBOARD}/detalle_personal`,
+    },
+
 
   }
 };

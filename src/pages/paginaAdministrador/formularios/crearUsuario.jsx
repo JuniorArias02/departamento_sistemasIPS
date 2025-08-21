@@ -1,9 +1,9 @@
 // componente FormularioUsuarios.jsx
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle, Eye, Info, ShieldUser, LockKeyhole, EyeOff, ShieldCheck } from "lucide-react";
+import { User, Mail, Lock, Shield, ChevronDown, Loader2, Save, UserPlus, UserCircle, Eye, Info, ShieldUser, LockKeyhole, EyeOff, ShieldCheck,PenTool } from "lucide-react";
 import { motion } from "framer-motion";
-import { CrearUsuario, actualizarUsuario, obtenerUsuario } from "../../../services/usuario_service";
+import { CrearUsuario, actualizarUsuario, obtenerUsuario, subirFirmaUsuario } from "../../../services/usuario_service";
 import { listarRoles } from "../../../services/rol_services";
 import { useApp } from "../../../store/AppContext";
 import BackPage from "../../paginaCliente/components/BackPage";
@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../const/routers/routers";
 import { PERMISOS } from "../../../secure/permisos/permisos";
+import { FirmaInput } from "../../appFirma/appFirmas";
 
 export default function FormularioUsuarios() {
 	const { usuario: usuarioContext, permisos } = useApp();
@@ -98,11 +99,25 @@ export default function FormularioUsuarios() {
 		}
 	};
 
+	const base64ToFile = (base64, filename) => {
+		const arr = base64.split(",");
+		const mime = arr[0].match(/:(.*?);/)[1];
+		const bstr = atob(arr[1]);
+		let n = bstr.length;
+		const u8arr = new Uint8Array(n);
+		while (n--) {
+			u8arr[n] = bstr.charCodeAt(n);
+		}
+		return new File([u8arr], filename, { type: mime });
+	};
+
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (loading) return;
 
 		setLoading(true);
+
 		if (!formData.nombre_completo.trim() || !formData.usuario.trim() || !formData.rol_id || !formData.estado) {
 			Swal.fire({
 				icon: "warning",
@@ -112,13 +127,17 @@ export default function FormularioUsuarios() {
 			setLoading(false);
 			return;
 		}
+
 		try {
+			let usuarioCreado;
+
 			if (usuarioEdit) {
 				await actualizarUsuario({
 					...formData,
 					id_usuario_editor: usuarioContext.id,
 					id_usuario_objetivo: usuarioEdit.id,
 				});
+				usuarioCreado = { id: usuarioEdit.id };
 				Swal.fire({
 					icon: "success",
 					title: "¡Usuario actualizado!",
@@ -126,13 +145,14 @@ export default function FormularioUsuarios() {
 					timer: 2000,
 					showConfirmButton: false,
 				});
-				navigate(RUTAS.ADMIN.USUARIOS.ROOT);
 			} else {
-
-				await CrearUsuario({
+				// primero creas usuario
+				const res = await CrearUsuario({
 					...formData,
 					id_usuario_creador: usuarioContext.id,
 				});
+				usuarioCreado = res; // asumiendo que el backend te devuelve el usuario creado con su ID
+
 				Swal.fire({
 					icon: "success",
 					title: "¡Usuario creado!",
@@ -141,13 +161,25 @@ export default function FormularioUsuarios() {
 					showConfirmButton: false,
 				});
 			}
+
+			// si hay firma, la subimos
+			if (formData.firma_personal_cargo) {
+				const file = base64ToFile(formData.firma_personal_cargo, "firma.png");
+				const fd = new FormData();
+				fd.append("usuario_id", usuarioCreado.id); // ID del usuario
+				fd.append("firma_digital", file);
+
+				await subirFirmaUsuario(fd);
+			}
+
+			// reset form
 			setFormData({
 				nombre_completo: "",
 				usuario: "",
 				contrasena: "",
 				rol_id: "",
-				id_usuario_editor: usuarioContext.id,
-				id_usuario_objetivo: "",
+				estado: "",
+				firma_personal_cargo: "", // limpiar firma también
 			});
 		} catch (err) {
 			console.error(err);
@@ -239,6 +271,32 @@ export default function FormularioUsuarios() {
 					</div>
 				</motion.div>
 
+				<motion.div
+					initial={{ y: 20, opacity: 0 }}
+					animate={{ y: 0, opacity: 1 }}
+					transition={{ delay: 0.15, duration: 0.4 }}
+					className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] border border-gray-200/70 overflow-hidden"
+				>
+					<div className="p-6">
+						<div className="relative">
+							<div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full bg-violet-100/30 blur-xl z-0"></div>
+							<div className="relative z-10">
+								<h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+									<PenTool size={18} className="text-violet-500" />
+									Firma Personal
+								</h3>
+							</div>
+						</div>
+						<FirmaInput
+							value={formData.firma_personal_cargo}
+							onChange={(value) =>
+								setFormData({ ...formData, firma_personal_cargo: value })
+							}
+							label="Firma personal/cargo"
+						/>
+					</div>
+				</motion.div>
+
 				{/* Tarjeta de Seguridad y Rol */}
 				<motion.div
 					initial={{ y: 20, opacity: 0 }}
@@ -297,6 +355,7 @@ export default function FormularioUsuarios() {
 													passwordStrength < 5 ? 'Moderada' : 'Fuerte'}
 										</p>
 									</div>
+
 									<Lock size={16} className="absolute left-3 top-3 text-gray-400" />
 									<button
 										type="button"

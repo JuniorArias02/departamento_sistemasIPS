@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_EQUIPO, OBTENER_EQUIPOS, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS,BUSCAR_EQUIPO,SUBIR_IMAGEN } from "../const/endpoint/pc_equipos/pc_equipo_endpoint";
+import { CREAR_EQUIPO, OBTENER_EQUIPOS, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS,BUSCAR_EQUIPO,SUBIR_IMAGEN } from "../const/endpoint/pc_equipo_endpoint";
 
 
 export const crearEquipo = async (datos) => {

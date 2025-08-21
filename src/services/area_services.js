@@ -1,5 +1,5 @@
 import axios from "axios";
-import { OBTENER_AREAS_POR_SEDE, CREAR_AREA } from "../const/endpoint/areas/areas_endpoint";
+import { OBTENER_AREAS_POR_SEDE, CREAR_AREA } from "../const/endpoint/areas_endpoint";
 
 
 export const obtenerAreaPorSede = async (datos) => {

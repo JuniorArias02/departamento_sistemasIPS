@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: [
-      'broke-bikini-pipes-beauty.trycloudflare.com',
+      'placing-testimony-begun-bind.trycloudflare.com',
       // agrega más si quieres
     ],
   }

@@ -1,4 +1,4 @@
-import { CREAR_AVISO_ACTUALIZACION_WEB,LISTAR_AVISOS_ACTUALIZACIONES_WEB ,CONTAR_AVISOS_ACTUALIZACIONES_WEB} from "../const/endpoint/administrador_web/adaministrador_wen_endpoint";
+import { CREAR_AVISO_ACTUALIZACION_WEB,LISTAR_AVISOS_ACTUALIZACIONES_WEB ,CONTAR_AVISOS_ACTUALIZACIONES_WEB} from "../const/endpoint/adaministrador_wen_endpoint";
 import axios from "axios";
 
 export const crearAvisoActualizacionWeb = async (datos) => {

@@ -9,7 +9,7 @@ import {
   GRAFICA_INVENTARIO,
   CONTAR_INVENTARIO
 
-} from "../const/endpoint/inventario/inventario_endpoint";
+} from "../const/endpoint/inventario_endpoint";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 

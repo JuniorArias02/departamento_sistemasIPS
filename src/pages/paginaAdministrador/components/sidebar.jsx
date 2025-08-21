@@ -72,6 +72,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
 	const [menuEquiposOpen, setMenuEquiposOpen] = useState(false);
 	const [menuComplementosOpen, setMenuComplementosOpen] = useState(false);
+	const [menuPersonalOpen, setMenuPersonalOpen] = useState(false);
 
 	useEffect(() => {
 		if (nuevosFormularios > 0) {
@@ -134,8 +135,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			)}
 
 			<motion.aside
-				className={`
-    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-hidden
+				className={`scrollbar-hide 
+    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-y-auto  
     ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
   `}
 				initial={isMobile ? { x: "-100%" } : { width: "4.5rem" }} // Valor inicial definido
@@ -214,7 +215,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 
 				{/* Menú principal */}
-				<ul className="space-y-2 px-4">
+				<ul className="space-y-2 px-4 overflow-y-auto" >
 					{permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && (
 						<>
 							{/* Ítems del menú */}
@@ -608,7 +609,40 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									delay={0.2}
 								/>
 							</SidebarCollapsible>
+							
+							{permisos.includes(PERMISOS.GESTION_PERSONAL.MENU_ITEM) && (
+								<SidebarCollapsible
+									icon={<Users size={18} />}
+									text="Personal"
+									isOpen={menuPersonalOpen}
+									onClick={() => setMenuPersonalOpen(!menuPersonalOpen)}
+									sidebarOpen={sidebarOpen}
+									isBeta={false}
+								>
+									<SidebarSubItem
+										icon={<ClipboardEdit size={16} />}
+										text="Crear Personal"
+										onClick={() => {
+											navigate(RUTAS.USER.PERSONAL.CREAR_PERSONAL);
+											setTimeout(() => setSidebarOpen(false), 150);
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.1}
+									/>
 
+									<SidebarSubItem
+										icon={<FileSearch size={16} />}
+										text="Gestionar Personal"
+										onClick={() => {
+											navigate(RUTAS.USER.PERSONAL.ROOT);
+											setTimeout(() => setSidebarOpen(false), 150);
+										}}
+										sidebarOpen={sidebarOpen}
+										delay={0.2}
+									/>
+								</SidebarCollapsible>
+
+							)}
 						</>
 					)}
 
@@ -645,6 +679,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							delay={0.1}
 						/>
 					</SidebarCollapsible>
+
 					{/* Cerrar sesión */}
 					<motion.li
 						className="mt-6"

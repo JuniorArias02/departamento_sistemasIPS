@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PERSONAL,OBTENER_PERSONAL,BUSCAR_PERSONAL } from "../const/endpoint/personal/personal_endpoint";
+import { CREAR_PERSONAL,OBTENER_PERSONAL,BUSCAR_PERSONAL } from "../const/endpoint/personal_endpoint";
 
 export const crearPersonal = async (datos) => {
 	try {
@@ -13,16 +13,15 @@ export const crearPersonal = async (datos) => {
 
 
 export const obtenerPersonal = async () => {
-	try {
-		const response = await axios.post(OBTENER_PERSONAL); 
-		return response.data;
-	} catch (error) {
-		console.error('Error al obtener personal', error);
-		return [];
-	}
+  try {
+    const response = await axios.post(OBTENER_PERSONAL); 
+	console.log("Respuesta de obtenerPersonal:", response.data.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener personal", error);
+    return [];
+  }
 };
-
-
 export const buscarPersonal = async (q) => {
   try {
 	const res = await axios.get(`${BUSCAR_PERSONAL}?q=${encodeURIComponent(q)}`);

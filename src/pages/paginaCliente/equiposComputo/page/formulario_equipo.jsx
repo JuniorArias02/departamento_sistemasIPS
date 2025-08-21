@@ -23,7 +23,9 @@ import TabLicencias from '../components/formulario_equipo/tabs/TabLicencias';
 import TabImagen from '../components/formulario_equipo/tabs/TabImagen';
 import BackPage from '../../components/BackPage';
 import { useLocation } from "react-router-dom";
+
 const FormularioEquipo = () => {
+
 	const { usuario } = useApp();
 	const location = useLocation();
 	const equipoComputoEdit = location.state?.equipo;
@@ -70,7 +72,10 @@ const FormularioEquipo = () => {
 		capacidad_disco: "",
 		windows: "",
 		office: "",
-		nitro: ""
+		nitro: "",
+		equipos_adicionales: "",
+		recomendaciones: "",
+		repuestos_principales: "",
 	});
 
 	useEffect(() => {
@@ -116,7 +121,10 @@ const FormularioEquipo = () => {
 				capacidad_disco: equipoComputoEdit.capacidad_disco || "",
 				windows: equipoComputoEdit.windows || "",
 				office: equipoComputoEdit.office || "",
-				nitro: equipoComputoEdit.nitro || ""
+				nitro: equipoComputoEdit.nitro || "",
+				equipos_adicionales: equipoComputoEdit.equipos_adicionales || "",
+				recomendaciones: equipoComputoEdit.recomendaciones || "",
+				repuestos_principales: equipoComputoEdit.repuestos_principales || "",
 			});
 		}
 	}, [equipoComputoEdit]);
@@ -279,7 +287,10 @@ const FormularioEquipo = () => {
 			capacidad_disco: "",
 			windows: "",
 			office: "",
-			nitro: ""
+			nitro: "",
+			equipos_adicionales: "",
+			recomendaciones: "",
+			repuestos_principales: ""
 		});
 	};
 

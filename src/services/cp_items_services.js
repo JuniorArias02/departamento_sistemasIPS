@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_ITEMS } from "../const/endpoint/cp_items/cp_items_endpoint";
+import { CREAR_ITEMS } from "../const/endpoint/cp_items_endpoint";
 
 
 export const crearItems = async (items) => {

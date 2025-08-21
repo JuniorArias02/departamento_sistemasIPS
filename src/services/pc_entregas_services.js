@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_ACTA_ENTREGA, OBTENER_TOTAL_ENTREGA } from "../const/endpoint/pc_equipos/pc_equipo_endpoint";
+import { CREAR_ACTA_ENTREGA, OBTENER_TOTAL_ENTREGA } from "../const/endpoint/pc_equipo_endpoint";
 
 
 export const crearActaEntrega = async (formData) => {

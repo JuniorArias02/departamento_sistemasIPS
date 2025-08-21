@@ -1,5 +1,17 @@
 import axios from "axios";
-import { CREAR_USUARIO, LISTAR_USUARIOS, OBTENER_USUARIO, ACTUALIZAR_USUARIO, ELIMINAR_USUARIO,CONTAR_USUARIOS } from "../const/endpoint/usuario/usuario_endpoint";
+import { CREAR_USUARIO, LISTAR_USUARIOS, OBTENER_USUARIO, ACTUALIZAR_USUARIO, ELIMINAR_USUARIO,CONTAR_USUARIOS,SUBIR_FIRMA_USUARIO } from "../const/endpoint/usuario/usuario_endpoint";
+
+
+export const subirFirmaUsuario = async (formData) => {
+  try {
+    const response = await axios.post(SUBIR_FIRMA_USUARIO, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al subir la firma:", error);
+    return { status: false, message: "Fallo en la petición" };
+  }
+};
+
 
 export const CrearUsuario = async (datos) => {
   try {

@@ -51,7 +51,7 @@ export default function DepartamentoSistemas() {
 
         {/* Texto completo en todas las pantallas */}
         <span className="poppins-bold text-xl bg-clip-text bg-gradient-to-r from-white to-blue-100 text-transparent">
-          Departamento de Sistemas
+          
         </span>
       </div>
 
