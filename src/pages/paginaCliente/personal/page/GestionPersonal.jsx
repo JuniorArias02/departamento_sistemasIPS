@@ -9,7 +9,7 @@ export default function GestionPersonalVista() {
 	useEffect(() => {
 		const cargarDatos = async () => {
 			const data = await obtenerPersonal();
-			setPersonal(data);
+			setPersonal(data.data);
 			setLoading(false);
 		};
 		cargarDatos();

@@ -79,7 +79,6 @@ const FormularioEquipo = () => {
 	});
 
 	useEffect(() => {
-		console.log("Equipo a editar:", equipoComputoEdit);
 		if (equipoComputoEdit) {
 			setForm({
 				id: equipoComputoEdit.id || null,

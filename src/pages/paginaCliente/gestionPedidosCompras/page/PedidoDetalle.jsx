@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   ClipboardList,
@@ -40,14 +40,6 @@ export default function PedidoDetalle() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const data = location.state?.pedido || {};
   const [tipoRechazo, setTipoRechazo] = useState("compras");
-
-
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
-
-
 
   function base64ToFile(base64, filename) {
     const arr = base64.split(",");
@@ -105,7 +97,6 @@ export default function PedidoDetalle() {
 
         Swal.fire("Aprobado", "El pedido ha sido aprobado con éxito", "success");
         setShowFirmaAprobacionForm(false);
-        console.log(respuesta);
 
       } catch (error) {
         Swal.fire("Error", error?.mensaje || "No se pudo aprobar el pedido", "error");
@@ -135,7 +126,6 @@ export default function PedidoDetalle() {
           };
 
           const respuesta = await rechazarPedido(payload);
-          console.log("Pedido rechazado:", respuesta);
 
           Swal.fire({
             icon: "success",

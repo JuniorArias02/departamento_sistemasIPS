@@ -48,7 +48,6 @@ export default function GestionPedidos() {
 			let data; // se define aquí para usarla en todo el scope
 			try {
 				data = await obtenerPedidos({ usuarioId: usuario.id });
-				console.log(data);
 				if (data.success) {
 					setPedidos(data.data);
 				} else {
@@ -102,7 +101,6 @@ export default function GestionPedidos() {
 	const handleExportarPedido = async (idpedido) => {
 		try {
 			setLoadingExport(true);
-			console.log(idpedido);
 			await exportarPedido(idpedido);
 
 			Swal.fire({

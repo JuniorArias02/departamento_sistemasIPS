@@ -6,7 +6,6 @@ export const buscarPerifericoo = async (termino) => {
 		const response = await axios.get(BUSCAR_PERIFERICO, {
 			params: { buscar: termino }
 		});
-		console.log('Resultados de búsqueda:', response.data);
 		return response.data.data;
 	} catch (error) {
 		console.error('Error al encontrar periférico', error);

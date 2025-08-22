@@ -15,7 +15,6 @@ export const crearPersonal = async (datos) => {
 export const obtenerPersonal = async () => {
   try {
     const response = await axios.post(OBTENER_PERSONAL); 
-	console.log("Respuesta de obtenerPersonal:", response.data.data);
     return response.data;
   } catch (error) {
     console.error("Error al obtener personal", error);
