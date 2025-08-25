@@ -106,7 +106,7 @@ const VistaCrearMantenimientoEquipo = () => {
 				formData.append("firma_sistemas", firmaSistemasFile);
 
 				const resFirmas = await subirFirmaMantenimientoPC(formData);
-				console.log("Respuesta de subir firmas:", resFirmas);
+				// console.log("Respuesta de subir firmas:", resFirmas);
 			}
 
 			Swal.fire({

@@ -1,6 +1,8 @@
 // components/FirmaInput.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SignatureModal from './components/SignatureModal';
+import Portal from '../paginaCliente/components/Portal';
+
 
 export const FirmaInput = ({ value, onChange, label = "Firma" }) => {
   const [showModal, setShowModal] = useState(false);
@@ -8,13 +10,13 @@ export const FirmaInput = ({ value, onChange, label = "Firma" }) => {
   return (
     <div className="mb-4">
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      
+
       <div className="flex items-center gap-4">
         {value ? (
           <div className="relative group">
-            <img 
-              src={value} 
-              alt="Firma" 
+            <img
+              src={value}
+              alt="Firma"
               className="w-32 h-20 object-contain border rounded-md"
             />
             <button
@@ -41,14 +43,27 @@ export const FirmaInput = ({ value, onChange, label = "Firma" }) => {
       </div>
 
       {showModal && (
-        <SignatureModal
-          onClose={() => setShowModal(false)}
-          onSaveSignature={(data) => {
-            onChange(data);
-            setShowModal(false);
-          }}
-        />
+        <Portal>
+          <FullScreenOverlay>
+            <SignatureModal
+              onClose={() => setShowModal(false)}
+              onSaveSignature={(data) => {
+                onChange(data);
+                setShowModal(false);
+              }}
+            />
+          </FullScreenOverlay>
+        </Portal>
       )}
+    </div>
+  );
+};
+
+// Componente para el overlay de pantalla completa
+const FullScreenOverlay = ({ children }) => {
+  return (
+    <div className="fixed inset-0 z-50 bg-[#00000050] bg-opacity-70 flex items-center justify-center p-4">
+      {children}
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { User, Mail, Edit, Save, Lock, Phone, Eye, EyeOff } from 'lucide-react';
-import { obtenerMiPerfil, editarMiPerfil, cambiarContrasena } from '../../../services/perfil_services';
+import { obtenerMiPerfil, editarMiPerfil, cambiarContrasena, subirFirmaPerfil } from '../../../services/perfil_services';
 import { useApp } from '../../../store/AppContext';
 import Swal from 'sweetalert2';
 import BackPage from '../components/BackPage';
-
+import { FirmaInput } from '../../appFirma/appFirmas';
 
 export default function PerfilUsuario(props) {
 	const { usuario } = useApp();
@@ -14,8 +14,30 @@ export default function PerfilUsuario(props) {
 		usuario: '',
 		correo: '',
 		telefono: '',
-		rol_id: ''
+		rol_id: '',
+		firma_digital: ''
 	});
+
+	const handleFirmaUpload = async (file) => {
+		const formData = new FormData();
+		formData.append("usuario_id", userData.id);
+		formData.append("firma_digital", file);
+
+		const resp = await subirFirmaPerfil(formData);
+
+		if (resp.status) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setUserData({
+					...userData,
+					firma_digital: reader.result,
+				});
+			};
+			reader.readAsDataURL(file);
+		} else {
+			alert("Error al subir firma: " + resp.message);
+		}
+	};
 
 	const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 	const [showNewPassword, setShowNewPassword] = useState(false);
@@ -383,6 +405,8 @@ export default function PerfilUsuario(props) {
 								</div>
 							</div>
 
+
+
 							<div className="mt-6 flex justify-end space-x-3">
 								<button
 									onClick={() => setShowPasswordModal(false)}
@@ -517,6 +541,33 @@ export default function PerfilUsuario(props) {
 												<p className="mt-1 text-gray-800">{userData.telefono || 'No especificado'}</p>
 											)}
 										</div>
+										<div>
+											<FirmaInput
+												value={userData.firma_digital}
+												onChange={(value) =>
+													setUserData((prev) => ({ ...prev, firma_digital: value }))
+												}
+												label="Firma del elaborado por"
+											/>
+
+										</div>
+										<div>
+											<label className="block text-sm font-medium text-gray-500">
+												Subir firma (PNG)
+											</label>
+											<input
+												type="file"
+												accept="image/png"
+												onChange={(e) => {
+													const file = e.target.files[0];
+													if (file) {
+														handleFirmaUpload(file);
+													}
+												}}
+												className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+											/>
+										</div>
+
 									</div>
 								</motion.div>
 							</motion.div>

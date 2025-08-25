@@ -1,4 +1,4 @@
-import {useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   ClipboardList,
@@ -29,6 +29,10 @@ import { FirmaInput } from "../../../appFirma/appFirmas";
 import { getEstadoIcon } from "../components/getEstadoIcon";
 import { getEstadoColor } from "../components/getEstadoColor";
 import { exportarPedido } from "../../../../services/cp_pedidos_services";
+import AgregarFirmaModal from "../components/crearPedido/AgregarFirmaModal";
+import { agregarFirmaPorClave } from "../../../../services/usuario_service";
+import Portal from "../../components/Portal";
+import { FirmaAprobacionModal } from "../components/pedidoDetalle/FirmaAprobacionModal";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();
@@ -40,6 +44,28 @@ export default function PedidoDetalle() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const data = location.state?.pedido || {};
   const [tipoRechazo, setTipoRechazo] = useState("compras");
+  const [modalOpen, setModalOpen] = useState(false);
+
+
+  const manejarConfirmacion = async (contrasena) => {
+    const formData = new FormData();
+    formData.append("usuario_id", usuario.id);
+    formData.append("contrasena", contrasena);
+
+    const res = await agregarFirmaPorClave(formData);
+
+    if (res.status && res.firma) {
+      const firmaBase64 = res.firma.startsWith("data:image")
+        ? res.firma
+        : `data:image/png;base64,${res.firma}`;
+
+      setFirmaAprobacion(firmaBase64);
+      setModalOpen(false);
+    } else {
+      await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
+    }
+  };
+
 
   function base64ToFile(base64, filename) {
     const arr = base64.split(",");
@@ -52,9 +78,8 @@ export default function PedidoDetalle() {
     }
     return new File([u8arr], filename, { type: mime });
   }
-
   const handleAprobarPedido = async () => {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "¿Aprobar pedido?",
       text: "Esta acción aprobará el pedido seleccionado.",
       icon: "question",
@@ -62,46 +87,46 @@ export default function PedidoDetalle() {
       confirmButtonColor: "#16a34a",
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, aprobar",
-      cancelButtonText: "Cancelar"
-    }).then(async (result) => {
-      if (!result.isConfirmed) return;
-
-      try {
-        if (!firmaAprobacion) {
-          Swal.fire("Error", "Debes agregar tu firma antes de aprobar", "error");
-          return;
-        }
-
-        const fileFirma = base64ToFile(firmaAprobacion, "firma.png");
-
-        const tipoFirma =
-          data.estado_compras === "aprobado"
-            ? "responsable_aprobacion_firma"
-            : "proceso_compra_firma";
-
-        // Subir firma
-        await subirFirmaPedido({
-          id_pedido: data.id,
-          tipo_firma: tipoFirma,
-          firma: fileFirma,
-          id_usuario: usuario.id
-        });
-
-        // Aprobar pedido
-        const respuesta = await aprobarPedido({
-          id_pedido: data.id,
-          id_usuario: usuario.id,
-          tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra"
-        });
-
-
-        Swal.fire("Aprobado", "El pedido ha sido aprobado con éxito", "success");
-        setShowFirmaAprobacionForm(false);
-
-      } catch (error) {
-        Swal.fire("Error", error?.mensaje || "No se pudo aprobar el pedido", "error");
-      }
+      cancelButtonText: "Cancelar",
     });
+
+    if (!result.isConfirmed) return;
+
+    // Si no hay firma → abrir modal tuyo
+    if (!firmaAprobacion) {
+      setShowFirmaAprobacionForm(true); // abre tu Portal
+      return;
+    }
+
+    // Si ya hay firma → aprobar directo
+    setIsSubmitting(true);
+    try {
+      const fileFirma = base64ToFile(firmaAprobacion, "firma.png");
+      const tipoFirma =
+        data.estado_compras === "aprobado"
+          ? "responsable_aprobacion_firma"
+          : "proceso_compra_firma";
+
+      await subirFirmaPedido({
+        id_pedido: data.id,
+        tipo_firma: tipoFirma,
+        firma: fileFirma,
+        id_usuario: usuario.id,
+      });
+
+      await aprobarPedido({
+        id_pedido: data.id,
+        id_usuario: usuario.id,
+        tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra",
+      });
+
+      setShowFirmaAprobacionForm(false);
+      await Swal.fire("Aprobado", "El pedido ha sido aprobado con éxito", "success");
+    } catch (error) {
+      await Swal.fire("Error", error?.mensaje || "No se pudo aprobar el pedido", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRechazarPedido = async (tipo) => {
@@ -133,7 +158,6 @@ export default function PedidoDetalle() {
             text: "El pedido ha sido rechazado con éxito."
           });
         } catch (error) {
-          console.error("Error al rechazar pedido:", error);
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -464,75 +488,20 @@ export default function PedidoDetalle() {
 
       {/* firma */}
       {showFirmaAprobacionForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#00000050] bg-opacity-80 ">
-          <div className="w-full max-w-md bg-white rounded-xl shadow-xl  overflow-hidden">
-            {/* Encabezado */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <PenTool size={24} className="text-blue-200" />
-                  <h3 className="text-xl font-semibold">Firma de Aprobación</h3>
-                </div>
-                <button
-                  onClick={() => setShowFirmaAprobacionForm(false)}
-                  className="p-1 rounded-full hover:bg-blue-700 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              <p className="mt-2 text-blue-100 text-sm">
-                Por favor firma en el recuadro para aprobar el pedido
-              </p>
-            </div>
-
-            {/* Contenido */}
-            <div className="p-6">
-              <div className="mb-6">
-                <FirmaInput
-                  value={firmaAprobacion}
-                  onChange={setFirmaAprobacion}
-                  label=""
-                  canvasHeight={150}
-                />
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => {
-                    setShowFirmaAprobacionForm(false);
-                    setFirmaAprobacion("");
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-                >
-                  <X size={18} />
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleAprobarPedido}
-                  disabled={!firmaAprobacion || isSubmitting}
-                  className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition-all ${!firmaAprobacion ? 'opacity-70 cursor-not-allowed' : ''
-                    }`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Procesando...
-                    </>
-                  ) : (
-                    <>
-                      <Check size={18} />
-                      Confirmar Aprobación
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Portal>
+          <FirmaAprobacionModal
+            firmaAprobacion={firmaAprobacion}
+            setFirmaAprobacion={setFirmaAprobacion}
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+            isSubmitting={isSubmitting}
+            setShowFirmaAprobacionForm={setShowFirmaAprobacionForm}
+            handleAprobarPedido={handleAprobarPedido}
+            manejarConfirmacion={manejarConfirmacion}
+          />
+        </Portal>
       )}
+
       {/* Botones de acción */}
       <div className="flex justify-end gap-3">
         {renderActionButtons()}
@@ -540,3 +509,4 @@ export default function PedidoDetalle() {
     </div >
   );
 }
+

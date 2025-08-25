@@ -7,3 +7,4 @@ export const ACTUALIZAR_USUARIO = `${URL_PATH}controllers/usuario/editar_usuario
 export const OBTENER_USUARIO = `${URL_PATH}controllers/usuario/obtener_usuario.php`;
 export const ELIMINAR_USUARIO = `${URL_PATH}controllers/usuario/eliminar_usuario.php`;
 export const SUBIR_FIRMA_USUARIO = `${URL_PATH}controllers/usuario/subir_firma_usuario.php`;
+export const APLICAR_FIRMA_GUARDADA = `${URL_PATH}controllers/usuario/aplicar_firma.php`;

@@ -1,5 +1,19 @@
 import axios from "axios";
-import { EDITAR_PERFIL, MI_PERFIL, ACTUALIZAR_CONTRASENA } from "../const/endpoint/usuario/perfil/perfil_endpoint";
+import { EDITAR_PERFIL, MI_PERFIL, ACTUALIZAR_CONTRASENA, SUBIR_FIRMA } from "../const/endpoint/usuario/perfil/perfil_endpoint";
+
+
+
+
+export const subirFirmaPerfil = async (formData) => {
+	try {
+		const response = await axios.post(SUBIR_FIRMA, formData); // sin headers
+		return response.data;
+	} catch (error) {
+		console.error("Error al subir la firma", error);
+		return { status: false, message: "Fallo en la petición" };
+	}
+};
+
 
 export const obtenerMiPerfil = async (id) => {
 	try {

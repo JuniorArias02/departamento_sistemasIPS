@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Lock, ArrowRight } from "lucide-react";
+import { agregarFirmaPorClave } from "../../../../../services/usuario_service";
 
 export default function AgregarFirmaModal({ open, onClose, onConfirm }) {
   const [contrasena, setContrasena] = useState("");

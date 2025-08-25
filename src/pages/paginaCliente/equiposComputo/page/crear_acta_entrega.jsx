@@ -59,7 +59,7 @@ const VistaCrearActaEntrega = () => {
     if (valor.trim().length >= 2) {
       const resultados = await buscarPerifericoo(valor);
       setResultadosBusqueda(resultados);
-      console.log("Resultados búsqueda:", resultadosBusqueda);
+      // console.log("Resultados búsqueda:", resultadosBusqueda);
     } else {
       setResultadosBusqueda([]);
     }
