@@ -55,6 +55,7 @@ export default function CrearPedido() {
 		}
 		return new Blob([ab], { type: "image/png" });
 	}
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true);

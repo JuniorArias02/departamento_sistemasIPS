@@ -74,6 +74,7 @@ const SignatureCanvas = ({ brushSize = 8, onChange, color = '#000000' }) => {
 			overflow: 'hidden',
 			boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
 			margin: '20px 0',
+			marginLeft:'10px',
 			background: '#fff',
 		}}>
 			<canvas

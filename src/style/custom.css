@@ -293,36 +293,3 @@
   scrollbar-width: thin; /* delgado */
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-div:first-child {
-  animation: scaleIn 0.3s ease-out forwards;
-}
-
-.spinner {
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #4f46e5;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}

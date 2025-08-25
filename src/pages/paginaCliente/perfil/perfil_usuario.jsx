@@ -113,27 +113,67 @@ export default function PerfilUsuario(props) {
 		setIsEditing(false);
 	};
 
+	function base64ToFile(base64Data, filename) {
+		// Separa metadata y contenido
+		const arr = base64Data.split(',');
+		const mime = arr[0].match(/:(.*?);/)[1];
+		const bstr = atob(arr[1]);
+		let n = bstr.length;
+		const u8arr = new Uint8Array(n);
+
+		while (n--) {
+			u8arr[n] = bstr.charCodeAt(n);
+		}
+
+		return new File([u8arr], filename, { type: mime });
+	}
+
+
 	const handleSave = async () => {
 		try {
+			// 1️⃣ Subir firma si está en base64
+			if (userData.firma_digital && userData.firma_digital.startsWith("data:image")) {
+				const fileFirma = base64ToFile(userData.firma_digital, "firma.png");
+				const formData = new FormData();
+				formData.append("usuario_id", userData.id);
+				formData.append("firma_digital", fileFirma);
+
+				await subirFirmaPerfil(formData);
+
+				const resp = await subirFirmaPerfil(formData);
+
+				if (!resp.status) {
+					Swal.fire("Error", resp.message || "No se pudo subir la firma", "error");
+					return;
+				} 
+				// Actualiza la firma en el state con lo que devuelva el backend (ej: ruta o url)
+				setUserData((prev) => ({
+					...prev,
+					firma_digital: resp.path || prev.firma_digital,
+				}));
+			}
+
+			// 2️⃣ Guardar datos de perfil
 			await editarMiPerfil(userData);
 
 			Swal.fire({
-				icon: 'success',
-				title: '¡Perfil actualizado!',
-				text: 'Tus datos se guardaron correctamente.',
+				icon: "success",
+				title: "¡Perfil actualizado!",
+				text: "Tus datos se guardaron correctamente.",
 				timer: 2000,
-				showConfirmButton: false
+				showConfirmButton: false,
 			});
 
 			setIsEditing(false);
 		} catch (err) {
 			Swal.fire({
-				icon: 'error',
-				title: 'Oops...',
-				text: err.message || 'Error al guardar cambios'
+				icon: "error",
+				title: "Oops...",
+				text: err.message || "Error al guardar cambios",
 			});
 		}
 	};
+
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;

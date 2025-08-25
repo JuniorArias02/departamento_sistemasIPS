@@ -1,116 +1,91 @@
+// components/SignatureToolbar.jsx
 import { Eraser, Save, X, Pen } from 'lucide-react';
 
-const SignatureToolbar = ({ onBrushChange, onSave, onCancel }) => {
+const SignatureToolbar = ({ onBrushChange, onClear, onSave, onCancel, disabled, currentBrush }) => {
   const brushOptions = [
-    { value: 8, label: "Fino", icon: <Pen size={14} /> },
-    { value: 12, label: "Medio", icon: <Pen size={18} /> },
-    { value: 16, label: "Grueso", icon: <Pen size={22} /> },
+    { value: 4, label: "Muy fino", icon: <Pen size={12} /> },
+    { value: 8, label: "Fino", icon: <Pen size={16} /> },
+    { value: 12, label: "Medio", icon: <Pen size={20} /> },
+    { value: 16, label: "Grueso", icon: <Pen size={24} /> },
   ];
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px',
-      padding: '12px',
-      background: '#f8f9fa',
-      borderRadius: '12px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    }}>
-      {/* Primera línea: Selector de pinceles */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '8px', 
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap'
-      }}>
-        {brushOptions.map((brush) => (
-          <button
-            key={brush.value}
-            onClick={() => onBrushChange(brush.value)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 12px',
-              background: '#fff',
-              border: '1px solid #e0e0e0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              minWidth: '80px',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#f0f0f0'}
-            onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
-          >
-            {brush.icon}
-            <span style={{ fontSize: '14px' }}>{brush.label}</span>
-          </button>
-        ))}
+    <div className="bg-gray-50 rounded-xl p-4 shadow-sm flex flex-col gap-4 ">
+      {/* Título de herramientas */}
+      <h3 className="text-sm font-medium text-gray-700 mb-1">Herramientas de firma</h3>
+      
+      {/* Selector de pincel con iconos visuales */}
+      <div>
+        <p className="text-xs text-gray-500 mb-2">Grosor del trazo</p>
+        <div className="flex flex-wrap gap-2">
+          {brushOptions.map((brush) => (
+            <button
+              key={brush.value}
+              onClick={() => onBrushChange(brush.value)}
+              className={`flex flex-col items-center p-2 rounded-lg border transition-all min-w-[60px] ${
+                currentBrush === brush.value
+                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+              title={brush.label}
+            >
+              <div className={`${currentBrush === brush.value ? 'text-indigo-600' : 'text-gray-600'}`}>
+                {brush.icon}
+              </div>
+              <span className="text-xs mt-1">{brush.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Segunda línea: Acciones */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '8px',
-        justifyContent: 'center',
-        flexWrap: 'wrap'
-      }}>
-        {/* <button
+      {/* Botones de acción */}
+      <div className="mt-2 space-y-2 m-2 overflow-auto">
+        <button
           onClick={onClear}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 12px',
-            background: '#fff',
-            border: '1px solid #e0e0e0',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            minWidth: '100px',
-          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <Eraser size={18} />
-          <span>Borrar</span>
-        </button> */}
-
-        <button
-          onClick={onSave}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 12px',
-            background: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            minWidth: '100px',
-          }}
-        >
-          <Save size={18} />
-          <span>Guardar</span>
+          {/* <span>Limpiar</span> */}
         </button>
 
-        <button
-          onClick={onCancel}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 12px',
-            background: '#fff',
-            border: '1px solid #e0e0e0',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            minWidth: '100px',
-          }}
-        >
-          <X size={18} />
-          <span>Cancelar</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={onSave}
+            disabled={disabled}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              disabled
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+            }`}
+          >
+            <Save size={18} />
+            {/* <span>Guardar</span> */}
+          </button>
+
+          <button
+            onClick={onCancel}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <X size={18} />
+            {/* <span>Cancelar</span> */}
+          </button>
+        </div>
+      </div>
+
+      {/* Indicador visual del pincel actual */}
+      <div className="mt-4 pt-3 border-t border-gray-200">
+        <p className="text-xs text-gray-500 mb-2">Pincel seleccionado:</p>
+        <div className="flex items-center gap-2">
+          <div className="flex-shrink-0">
+            <Pen size={currentBrush + 8} className="text-indigo-600" />
+          </div>
+          <div className="flex-1">
+            <div 
+              className="bg-indigo-600 rounded-full"
+              style={{ height: `${currentBrush}px`, width: `${currentBrush * 4}px` }}
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
   );

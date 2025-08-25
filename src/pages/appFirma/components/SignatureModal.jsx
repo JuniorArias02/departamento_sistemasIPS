@@ -20,76 +20,47 @@ const SignatureModal = ({ onClose, onSaveSignature }) => {
   };
 
   return (
-    <div style={{
-      backgroundColor: 'white',
-      borderRadius: '16px',
-      padding: '24px',
-      width: '90%',
-      maxWidth: '600px',
-      maxHeight: '90vh',
-      boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '16px',
-      }}>
-        <h2 style={{ margin: 0, color: '#333', fontSize: '1.5rem' }}>Firma aquí</h2>
+    <div className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] shadow-xl flex flex-col overflow-y-auto">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-800 m-0">Firma aquí</h2>
         <button
           onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            color: '#666',
-            padding: '4px',
-          }}
+          className="bg-transparent border-none text-xl cursor-pointer text-gray-500 p-1 hover:text-gray-700 transition-colors"
         >
           ✕
         </button>
       </div>
 
-      <div style={{
-        flex: 1,
-        border: '1px dashed #d1d5db',
-        borderRadius: '12px',
-        marginBottom: '16px',
-        overflow: 'hidden',
-        minHeight: '300px'
-      }}>
-        <SignatureCanvas
-          brushSize={brush}
-          onChange={setDataURL}
-        />
-      </div>
-
-      <SignatureToolbar
-        onBrushChange={setBrush}
-        onClear={clearCanvas}
-        onSave={save}
-        onCancel={onClose}
-        disabled={!dataURL || isSubmitting}
-      />
-
-      {isSubmitting && (
-        <div style={{
-          marginTop: '12px',
-          color: '#4f46e5',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}>
-          <div className="spinner"></div>
-          <span>Guardando...</span>
+      {/* Contenido principal - Layout horizontal */}
+      <div className="flex flex-col md:flex-row gap-6 flex-1 overflow-hidden">
+        {/* Panel lateral izquierdo - Herramientas */}
+        <div className="w-full md:w-1/3 flex flex-col overflow-y-auto">
+          <SignatureToolbar
+            onBrushChange={setBrush}
+            onClear={clearCanvas}
+            onSave={save}
+            onCancel={onClose}
+            disabled={!dataURL || isSubmitting}
+            currentBrush={brush}
+          />
+          
+          {isSubmitting && (
+            <div className="mt-4 text-indigo-600 flex items-center gap-2">
+              <div className="spinner border-2 border-indigo-600 border-t-transparent rounded-full w-4 h-4 animate-spin"></div>
+              <span>Guardando...</span>
+            </div>
+          )}
         </div>
-      )}
 
-    
+        {/* Área de firma a la derecha */}
+        <div className="w-full md:w-2/3 flex-1 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden min-h-[350px] overflow-y-auto ">
+          <SignatureCanvas
+            brushSize={brush}
+            onChange={setDataURL}
+          />
+        </div>
+      </div>
     </div>
   );
 };
