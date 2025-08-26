@@ -8,3 +8,8 @@ export const OBTENER_USUARIO = `${URL_PATH}controllers/usuario/obtener_usuario.p
 export const ELIMINAR_USUARIO = `${URL_PATH}controllers/usuario/eliminar_usuario.php`;
 export const SUBIR_FIRMA_USUARIO = `${URL_PATH}controllers/usuario/subir_firma_usuario.php`;
 export const APLICAR_FIRMA_GUARDADA = `${URL_PATH}controllers/usuario/aplicar_firma.php`;
+
+export const GENERAR_CODIGO_RECUPERACION = `${URL_PATH}controllers/sec_codigo_verificacion/genera_codigo.php`;
+export const VALIDAR_CODIGO_RECUPERACION = `${URL_PATH}controllers/sec_codigo_verificacion/validar_codigo.php`;
+
+export const CAMBIAR_CONTRASENA = `${URL_PATH}controllers/usuario/cambiar_contrasena.php`;

@@ -1,6 +1,37 @@
 import axios from "axios";
-import { CREAR_USUARIO, LISTAR_USUARIOS, OBTENER_USUARIO, ACTUALIZAR_USUARIO, ELIMINAR_USUARIO, CONTAR_USUARIOS, SUBIR_FIRMA_USUARIO, APLICAR_FIRMA_GUARDADA } from "../const/endpoint/usuario/usuario_endpoint";
+import { CREAR_USUARIO, CAMBIAR_CONTRASENA, VALIDAR_CODIGO_RECUPERACION, LISTAR_USUARIOS, GENERAR_CODIGO_RECUPERACION, OBTENER_USUARIO, ACTUALIZAR_USUARIO, ELIMINAR_USUARIO, CONTAR_USUARIOS, SUBIR_FIRMA_USUARIO, APLICAR_FIRMA_GUARDADA } from "../const/endpoint/usuario/usuario_endpoint";
 
+
+export const cambiarContrasena = async (formData) => {
+  try {
+    const response = await axios.post(CAMBIAR_CONTRASENA, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al cambiar contrasena :", error);
+    return { status: false, message: "Fallo en la petición" };
+  }
+};
+
+
+export const validarCodigoRecuperacion = async (formData) => {
+  try {
+    const response = await axios.post(VALIDAR_CODIGO_RECUPERACION, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al validar codigo :", error);
+    return { status: false, message: "Fallo en la petición" };
+  }
+};
+
+export const generarCodigoRecuperacion = async (formData) => {
+  try {
+    const response = await axios.post(GENERAR_CODIGO_RECUPERACION, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al generar codigo :", error);
+    return { status: false, message: "Fallo en la petición" };
+  }
+};
 
 export const subirFirmaUsuario = async (formData) => {
   try {

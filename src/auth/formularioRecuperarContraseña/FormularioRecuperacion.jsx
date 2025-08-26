@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, ArrowLeft, Lock, User, CheckCircle, Loader2 } from "lucide-react";
+import { cambiarContrasena, generarCodigoRecuperacion, validarCodigoRecuperacion } from "../../services/usuario_service";
+
 import Swal from "sweetalert2";
 
 export default function FormularioRecuperacion({ onVolverAlLogin }) {
   const [paso, setPaso] = useState(1); // 1: Email, 2: Código, 3: Nueva contraseña, 4: Éxito
-  const [formData, setFormData] = useState({ 
-    email: "", 
-    codigo: "", 
-    nuevaContrasena: "", 
-    confirmarContrasena: "" 
+  const [formData, setFormData] = useState({
+    usuario: "",
+    codigo: "",
+    nuevaContrasena: "",
+    confirmarContrasena: ""
   });
   const [verContrasena, setVerContrasena] = useState(false);
   const [verConfirmarContrasena, setVerConfirmarContrasena] = useState(false);
@@ -21,35 +23,56 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
   const handleEnviarCodigo = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulación de envío de código
-    setTimeout(() => {
-      setLoading(false);
+    const res = await generarCodigoRecuperacion({ usuario: formData.usuario });
+    setLoading(false);
+
+    if (res.status) {
       setPaso(2);
       Swal.fire({
         icon: "success",
         title: "Código enviado",
-        text: "Hemos enviado un código de verificación a tu correo electrónico",
+        text: res.message || "Hemos enviado un código de verificación a tu correo",
         timer: 2000,
         showConfirmButton: false
       });
-    }, 1500);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: res.message || "No pudimos enviar el código"
+      });
+    }
   };
 
   const handleVerificarCodigo = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulación de verificación de código
-    setTimeout(() => {
-      setLoading(false);
+    const res = await validarCodigoRecuperacion({
+      usuario: formData.usuario,
+      codigo: formData.codigo
+    });
+    setLoading(false);
+
+    if (res.status) {
       setPaso(3);
-    }, 1500);
+      Swal.fire({
+        icon: "success",
+        title: "Código válido",
+        timer: 1500,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Código inválido",
+        text: res.message || "El código no es válido o expiró"
+      });
+    }
   };
 
   const handleCambiarContrasena = async (e) => {
     e.preventDefault();
-    
+
     if (formData.nuevaContrasena !== formData.confirmarContrasena) {
       Swal.fire({
         icon: "error",
@@ -58,14 +81,31 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
       });
       return;
     }
-    
+
     setLoading(true);
-    
-    // Simulación de cambio de contraseña
-    setTimeout(() => {
-      setLoading(false);
+    const res = await cambiarContrasena({
+      usuario: formData.usuario,
+      codigo: formData.codigo,
+      nueva_contrasena: formData.nuevaContrasena
+    });
+    setLoading(false);
+
+    if (res.status) {
       setPaso(4);
-    }, 1500);
+      Swal.fire({
+        icon: "success",
+        title: "Contraseña cambiada",
+        text: res.message || "Ya puedes iniciar sesión con tu nueva contraseña",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: res.message || "No se pudo cambiar la contraseña"
+      });
+    }
   };
 
   return (
@@ -97,7 +137,7 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
 
           {/* Sección izquierda - Formulario (animado) */}
           <div className="w-full lg:w-1/2 p-10 flex flex-col justify-center order-1 relative">
-            <button 
+            <button
               onClick={onVolverAlLogin}
               className="absolute top-6 left-6 flex items-center text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
             >
@@ -125,9 +165,8 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
               <div className="flex items-center">
                 {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      paso >= step ? 'bg-indigo-600 text-white' : 'bg-neutral-200 text-neutral-400'
-                    }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${paso >= step ? 'bg-indigo-600 text-white' : 'bg-neutral-200 text-neutral-400'
+                      }`}>
                       {paso > step ? <CheckCircle size={16} /> : step}
                     </div>
                     {step < 4 && (
@@ -142,15 +181,15 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
             {paso === 1 && (
               <form onSubmit={handleEnviarCodigo} className="space-y-6 animate-fade-in-form-recuperar">
                 <div className="space-y-1">
-                  <label htmlFor="email" className="text-sm font-medium text-neutral-700">
-                    Correo electrónico
+                  <label htmlFor="usuario" className="text-sm font-medium text-neutral-700">
+                    ingrese su usuario
                   </label>
                   <div className="relative">
                     <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
+                      type="usuario"
+                      id="usuario"
+                      name="usuario"
+                      value={formData.usuario}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-neutral-400"
                       placeholder="usuario@ejemplo.com"
