@@ -10,6 +10,7 @@ export default function AgregarFirmaModal({ open, onClose, onConfirm }) {
     setIsLoading(true);
     await onConfirm(contrasena);
     setIsLoading(false);
+    setContrasena("");
   };
 
   if (!open) return null;
@@ -17,11 +18,11 @@ export default function AgregarFirmaModal({ open, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
       {/* Fondo oscuro con animación */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/30 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Modal moderno */}
       <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
         {/* Encabezado */}
@@ -47,7 +48,7 @@ export default function AgregarFirmaModal({ open, onClose, onConfirm }) {
           <p className="text-sm text-gray-500">
             Por favor ingresa tu contraseña para confirmar la firma
           </p>
-          
+
           <div className="mt-5">
             <label htmlFor="password" className="sr-only">
               Contraseña

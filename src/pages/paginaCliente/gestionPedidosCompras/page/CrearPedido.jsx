@@ -155,6 +155,8 @@ export default function CrearPedido() {
 		}
 	};
 
+	
+
 	const agregarItem = () => {
 		setItems([...items, { nombre: "", cantidad: 1, referencia_items: "" }]);
 	};
