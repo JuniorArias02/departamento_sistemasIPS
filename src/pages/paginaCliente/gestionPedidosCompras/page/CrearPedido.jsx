@@ -18,12 +18,14 @@ import AgregarFirmaModal from "../components/crearPedido/AgregarFirmaModal";
 import { crearItems } from "../../../../services/cp_items_services";
 import { obtenerTiposSolicitud } from "../../../../services/cp_tipo_solicitud";
 import { useApp } from "../../../../store/AppContext";
+import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import Swal from "sweetalert2";
 
 export default function CrearPedido() {
 	const { usuario } = useApp();
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tipos, setTipos] = useState([]);
+	const [firmaAprobacion, setFirmaAprobacion] = useState(null);
 	const [form, setForm] = useState({
 		fecha_solicitud: "",
 		proceso_solicitante: "",
@@ -55,7 +57,7 @@ export default function CrearPedido() {
 		}
 		return new Blob([ab], { type: "image/png" });
 	}
-	
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true);
@@ -132,29 +134,26 @@ export default function CrearPedido() {
 		}
 	};
 
-	const manejarConfirmacion = async (contrasena) => {
-		setModalOpen(false);
 
-		const res = await fetch("/endpoint/verificar-firma", {
-			method: "POST",
-			body: JSON.stringify({ contrasena }),
-			headers: { "Content-Type": "application/json" }
+	const manejarConfirmacion = async (contrasena) => {
+		const res = await agregarFirmaPorClave({
+			usuario_id: usuario.id,
+			contrasena,
 		});
 
-		const data = await res.json();
+		if (res.status && res.firma) {
+			const firmaBase64 = res.firma.startsWith("data:image")
+				? res.firma
+				: `data:image/png;base64,${res.firma}`;
 
-		if (data?.firma) {
-			setForm({ ...form, elaborado_por_firma: data.firma });
+			// aquí la montas en el input del form
+			setForm((prev) => ({ ...prev, elaborado_por_firma: firmaBase64 }));
+
+			setModalOpen(false);
 		} else {
-			Swal.fire({
-				icon: "error",
-				title: "No se ha encontrado firma",
-				timer: 2000,
-				showConfirmButton: false
-			});
+			await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
 		}
 	};
-
 
 	const agregarItem = () => {
 		setItems([...items, { nombre: "", cantidad: 1, referencia_items: "" }]);
@@ -344,6 +343,7 @@ export default function CrearPedido() {
 								onChange={(value) => setForm({ ...form, elaborado_por_firma: value })}
 								label="Firma del elaborado por"
 							/>
+
 						</div>
 
 						{/* Firma por contraseña */}
