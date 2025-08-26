@@ -28,13 +28,13 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
 
     if (res.status) {
       setPaso(2);
-      Swal.fire({
-        icon: "success",
-        title: "Código enviado",
-        text: res.message || "Hemos enviado un código de verificación a tu correo",
-        timer: 2000,
-        showConfirmButton: false
-      });
+      // Swal.fire({
+      //   icon: "success",
+      //   title: "Código enviado",
+      //   text: res.message || "Hemos enviado un código de verificación a tu correo",
+      //   timer: 2000,
+      //   showConfirmButton: false
+      // });
     } else {
       Swal.fire({
         icon: "error",
@@ -55,12 +55,12 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
 
     if (res.status) {
       setPaso(3);
-      Swal.fire({
-        icon: "success",
-        title: "Código válido",
-        timer: 1500,
-        showConfirmButton: false
-      });
+      // Swal.fire({
+      //   icon: "success",
+      //   title: "Código válido",
+      //   timer: 1500,
+      //   showConfirmButton: false
+      // });
     } else {
       Swal.fire({
         icon: "error",
@@ -92,13 +92,13 @@ export default function FormularioRecuperacion({ onVolverAlLogin }) {
 
     if (res.status) {
       setPaso(4);
-      Swal.fire({
-        icon: "success",
-        title: "Contraseña cambiada",
-        text: res.message || "Ya puedes iniciar sesión con tu nueva contraseña",
-        timer: 2000,
-        showConfirmButton: false
-      });
+      // Swal.fire({
+      //   icon: "success",
+      //   title: "Contraseña cambiada",
+      //   text: res.message || "Ya puedes iniciar sesión con tu nueva contraseña",
+      //   timer: 2000,
+      //   showConfirmButton: false
+      // });
     } else {
       Swal.fire({
         icon: "error",
