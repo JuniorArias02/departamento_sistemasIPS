@@ -6,13 +6,18 @@ import { EDITAR_PERFIL, MI_PERFIL, ACTUALIZAR_CONTRASENA, SUBIR_FIRMA } from "..
 
 export const subirFirmaPerfil = async (formData) => {
 	try {
-		const response = await axios.post(SUBIR_FIRMA, formData); // sin headers
+		const response = await axios.post(SUBIR_FIRMA, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
 		return response.data;
 	} catch (error) {
 		console.error("Error al subir la firma", error);
 		return { status: false, message: "Fallo en la petición" };
 	}
 };
+
 
 
 export const obtenerMiPerfil = async (id) => {

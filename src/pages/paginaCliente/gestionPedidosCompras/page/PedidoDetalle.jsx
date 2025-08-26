@@ -46,13 +46,11 @@ export default function PedidoDetalle() {
   const [tipoRechazo, setTipoRechazo] = useState("compras");
   const [modalOpen, setModalOpen] = useState(false);
 
-
   const manejarConfirmacion = async (contrasena) => {
-    const formData = new FormData();
-    formData.append("usuario_id", usuario.id);
-    formData.append("contrasena", contrasena);
-
-    const res = await agregarFirmaPorClave(formData);
+    const res = await agregarFirmaPorClave({
+      usuario_id: usuario.id,
+      contrasena,
+    });
 
     if (res.status && res.firma) {
       const firmaBase64 = res.firma.startsWith("data:image")
@@ -65,7 +63,6 @@ export default function PedidoDetalle() {
       await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
     }
   };
-
 
   function base64ToFile(base64, filename) {
     const arr = base64.split(",");

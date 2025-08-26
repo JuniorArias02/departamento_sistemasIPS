@@ -12,9 +12,11 @@ export const subirFirmaUsuario = async (formData) => {
   }
 };
 
-export const agregarFirmaPorClave = async (formData) => {
+export const agregarFirmaPorClave = async (data) => {
   try {
-    const response = await axios.post(APLICAR_FIRMA_GUARDADA, formData);
+    const response = await axios.post(APLICAR_FIRMA_GUARDADA, data, {
+      headers: { "Content-Type": "application/json" },
+    });
     return response.data;
   } catch (error) {
     console.error("Error al traer la firma:", error);
@@ -24,8 +26,6 @@ export const agregarFirmaPorClave = async (formData) => {
     };
   }
 };
-
-
 
 
 export const CrearUsuario = async (datos) => {
