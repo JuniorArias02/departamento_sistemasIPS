@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginUsuario } from "../../services/auth_service";
 import { useApp } from "../../store/AppContext";
 import Swal from "sweetalert2";
@@ -16,32 +16,82 @@ export default function FormularioLogin() {
   const [verContrasena, setVerContrasena] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mostrarRecuperacion, setMostrarRecuperacion] = useState(false);
+  const [bloqueadoHasta, setBloqueadoHasta] = useState(null);
+  const [tiempoRestante, setTiempoRestante] = useState(0);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    if (!bloqueadoHasta) return;
+
+    const interval = setInterval(() => {
+      const segundos = Math.max(0, Math.floor((bloqueadoHasta - Date.now()) / 1000));
+      setTiempoRestante(segundos);
+
+      if (segundos <= 0) {
+        clearInterval(interval);
+        setBloqueadoHasta(null);
+        setTiempoRestante(0);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [bloqueadoHasta]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
+    if (loading || bloqueadoHasta) return;
 
     setLoading(true);
 
     try {
       const data = await loginUsuario(formData);
-      const permisosObtenidos = await obtenerPermisos(data.usuario.id);
-      login(data.usuario, permisosObtenidos);
-      validarRutas(navigate, permisosObtenidos);
+
+      if (data.usuario) {
+        const permisosObtenidos = await obtenerPermisos(data.usuario.id);
+        login(data.usuario, permisosObtenidos);
+        validarRutas(navigate, permisosObtenidos);
+      } else {
+        throw data;
+      }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: typeof error === "string" ? error : "Error en el inicio de sesión",
-      });
+      if (error?.status === "bloqueado") {
+        const segundos = error.tiempo_restante;
+        setBloqueadoHasta(Date.now() + segundos * 1000);
+        Swal.fire({
+          icon: "error",
+          title: "Acceso bloqueado",
+          html: `Demasiados intentos fallidos.`,
+          confirmButtonColor: "#6366f1"
+        });
+      } else if (error?.status === "error") {
+        Swal.fire({
+          icon: "warning",
+          title: "Credenciales incorrectas",
+          text: `Intentos restantes: ${error.intentos_restantes ?? "N/A"}`,
+          confirmButtonColor: "#f59e0b"
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: typeof error === "string" ? error : "Error en el inicio de sesión",
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const formatTiempo = (segundos) => {
+    const min = String(Math.floor(segundos / 60)).padStart(2, "0");
+    const sec = String(segundos % 60).padStart(2, "0");
+    return `${min}:${sec}`;
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4">
@@ -148,13 +198,17 @@ export default function FormularioLogin() {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !!bloqueadoHasta}
                   className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white py-3.5 rounded-lg hover:opacity-90 transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
                       <span>Verificando...</span>
+                    </>
+                  ) : bloqueadoHasta ? (
+                    <>
+                      <span> {formatTiempo(tiempoRestante)}</span>
                     </>
                   ) : (
                     <>
@@ -163,6 +217,7 @@ export default function FormularioLogin() {
                     </>
                   )}
                 </button>
+
               </form>
 
               <div className="mt-8 text-center text-sm text-neutral-500">
