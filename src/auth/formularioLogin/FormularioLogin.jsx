@@ -142,11 +142,11 @@ export default function FormularioLogin() {
                       className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-neutral-400"
                       placeholder="usuario@house"
                       required
-                      disabled={loading}
+                      disabled={loading}  
                     />
                     <User className="w-5 h-5 text-neutral-400 absolute right-3 top-3.5" />
                   </div>
-                </div>
+                </div>  
 
                 <div className="space-y-1">
                   <label htmlFor="contrasena" className="text-sm font-medium text-neutral-700">

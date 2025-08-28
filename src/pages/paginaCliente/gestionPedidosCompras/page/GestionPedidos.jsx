@@ -14,7 +14,7 @@ import {
 	Filter,
 	ExternalLink,
 	Download,
-	Loader2 
+	Loader2
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ export default function GestionPedidos() {
 	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
 	const [pedidos, setPedidos] = useState([]);
-	
+
 	const [loading, setLoading] = useState(true);
 	const [loadingExport, setLoadingExport] = useState(false);
 	const [error, setError] = useState(null);
@@ -403,12 +403,16 @@ export default function GestionPedidos() {
 												</>
 											)}
 										</button>
-
-										<button className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-											onClick={() => { navigate(RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO, { state: { pedido } }) }}
-										>
-											Gestionar
-										</button>
+										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.GESTIONAR_PEDIDO) && (
+											<button
+												className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+												onClick={() => {
+													navigate(RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO, { state: { pedido } })
+												}}
+											>
+												Gestionar
+											</button>
+										)}
 									</div>
 								</div>
 							)}

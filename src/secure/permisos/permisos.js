@@ -78,7 +78,8 @@ export const PERMISOS = {
 		CREAR_PEDIDO: 'crear_pedido',
 		VER_PEDIDOS: 'ver_pedidos',
 		VER_PEDIDOS_ENCARGADO: 'ver_pedidos_encargado',
-		LISTAR_PEDIDOS: 'listar_pedidos'
+		LISTAR_PEDIDOS: 'listar_pedidos',
+		GESTIONAR_PEDIDO: 'gestionar_pedido'
 	},
 	GESTION_PERSONAL: {
 		MENU_ITEM: 'menu_item_gestion_personal',
