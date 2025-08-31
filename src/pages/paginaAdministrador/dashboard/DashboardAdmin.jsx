@@ -35,7 +35,7 @@ export default function DashboardAdmin() {
 	});
 
 	useEffect(() => {
-		refrescarTodo(); // se ejecuta solo una vez al montar
+		refrescarTodo(); 
 	}, []);
 
 

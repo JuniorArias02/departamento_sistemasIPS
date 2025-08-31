@@ -14,13 +14,15 @@ import {
 	Filter,
 	ExternalLink,
 	Download,
-	Loader2
+	Loader2,
+	X
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
 import { useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../../const/routers/routers";
 import { useApp } from "../../../../store/AppContext";
 import { PERMISOS } from "../../../../secure/permisos/permisos";
+import { obtenerTiposSolicitud } from "../../../../services/cp_tipo_solicitud";
 import { getEstadoIcon } from "../components/getEstadoIcon";
 import { getEstadoColor } from "../components/getEstadoColor";
 import { exportarPedido } from "../../../../services/cp_pedidos_services";
@@ -30,7 +32,7 @@ export default function GestionPedidos() {
 	const { usuario, permisos } = useApp();
 	const navigate = useNavigate();
 	const [pedidos, setPedidos] = useState([]);
-
+	const [tipos, setTipos] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [loadingExport, setLoadingExport] = useState(false);
 	const [error, setError] = useState(null);
@@ -41,6 +43,14 @@ export default function GestionPedidos() {
 		tipo: "todos"
 	});
 
+
+	useEffect(() => {
+		const cargarTipos = async () => {
+			const data = await obtenerTiposSolicitud();
+			setTipos(data);
+		};
+		cargarTipos();
+	}, []);
 
 
 	useEffect(() => {
@@ -159,29 +169,61 @@ export default function GestionPedidos() {
 					</div>
 
 					{/* Filtros */}
-					<div className="flex gap-2">
-						<select
-							value={filters.estado}
-							onChange={(e) => setFilters({ ...filters, estado: e.target.value })}
-							className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						>
-							<option value="todos">Todos los estados</option>
-							<option value="pendiente">Pendiente</option>
-							<option value="aprobado">Aprobado</option>
-							<option value="rechazado">Rechazado</option>
-						</select>
+					{/* Filtros modernos */}
+					<div className="flex flex-col sm:flex-row gap-3">
+						{/* Filtro de Estado */}
+						<div className="relative flex-1 min-w-[180px]">
+							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+								<Filter size={16} className="text-gray-400" />
+							</div>
+							<select
+								value={filters.estado}
+								onChange={(e) => setFilters({ ...filters, estado: e.target.value })}
+								className="w-full pl-10 pr-8 py-2.5 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+							>
+								<option value="todos">Todos los estados</option>
+								<option value="pendiente">Pendiente</option>
+								<option value="aprobado">Aprobado</option>
+								<option value="rechazado">Rechazado</option>
+								<option value="en proceso">En proceso</option>
+							</select>
+							<div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+								<ChevronDown size={16} className="text-gray-400" />
+							</div>
+						</div>
 
+						{/* Filtro de Tipo */}
+						<div className="relative flex-1 min-w-[180px]">
+							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+								<Filter size={16} className="text-gray-400" />
+							</div>
+							<select
+								value={filters.tipo}
+								onChange={(e) => setFilters({ ...filters, tipo: e.target.value })}
+								className="w-full pl-10 pr-8 py-2.5 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+							>
+								<option value="todos">Todos los tipos</option>
+								{tipos.map((tipo) => (
+									<option key={tipo.id} value={tipo.id}>
+										{tipo.nombre}
+									</option>
+								))}
+							</select>
+							<div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+								<ChevronDown size={16} className="text-gray-400" />
+							</div>
+						</div>
 
-						<select
-							value={filters.tipo}
-							onChange={(e) => setFilters({ ...filters, tipo: e.target.value })}
-							className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						>
-							<option value="todos">Todos los tipos</option>
-							<option value="1">Recurrente</option>
-							<option value="2">Prioritaria</option>
-						</select>
-
+						{/* Botón para limpiar filtros (opcional) */}
+						{(filters.estado !== 'todos' || filters.tipo !== 'todos') && (
+							<button
+								onClick={() => setFilters({ estado: 'todos', tipo: 'todos' })}
+								className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all"
+							>
+								<X size={16} />
+								Limpiar
+							</button>
+						)}
 					</div>
 				</div>
 			</div>

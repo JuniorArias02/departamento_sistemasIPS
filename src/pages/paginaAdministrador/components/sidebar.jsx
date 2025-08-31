@@ -38,7 +38,8 @@ import {
 	Plus,
 	ClipboardSignature,
 	ListTodo,
-	Package
+	Package,
+	BarChart2
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -121,8 +122,33 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 		navigate(RUTAS.LOGIN);
 	};
 
+	const containerVariants = {
+		open: {
+			width: "18rem",
+			transition: {
+				type: "spring",
+				damping: 25,
+				stiffness: 200,
+				when: "beforeChildren",
+				staggerChildren: 0.05
+			}
+		},
+		closed: {
+			width: "4.5rem",
+			transition: {
+				type: "spring",
+				damping: 30,
+				stiffness: 200,
+				when: "afterChildren",
+				staggerChildren: 0.02,
+				staggerDirection: -1
+			}
+		}
+	};
+
 	return (
 		<>
+
 			{isMobile && sidebarOpen && (
 				<motion.div
 					className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30"
@@ -135,40 +161,19 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 			)}
 
 			<motion.aside
-				className={`scrollbar-hide 
-    bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-y-auto  
-    ${isMobile ? "fixed top-0 left-0 w-72" : "relative"}
-  `}
-				initial={isMobile ? { x: "-100%" } : { width: "4.5rem" }} // Valor inicial definido
-				animate={isMobile
-					? sidebarOpen ? { x: 0 } : { x: "-100%" }
-					: sidebarOpen ? "open" : "closed"
+				className="fixed md:relative bg-gradient-to-b from-indigo-900 to-violet-900 text-white h-screen shadow-xl z-40 overflow-y-auto scrollbar-hide"
+				initial={isMobile ? { x: "-100%" } : { width: "4.5rem" }}
+				animate={
+					isMobile
+						? sidebarOpen
+							? { x: 0 }
+							: { x: "-100%" }
+						: sidebarOpen
+							? "open"
+							: "closed"
 				}
-				variants={!isMobile ? {
-					open: {
-						width: "18rem",
-						transition: {
-							type: "spring",
-							damping: 25,
-							stiffness: 200,
-							mass: 0.5,
-							delayChildren: 0.1,
-							staggerChildren: 0.05,
-						},
-					},
-					closed: {
-						width: "4.5rem",
-						transition: {
-							type: "spring",
-							damping: 30,
-							stiffness: 200,
-							mass: 0.5,
-							staggerChildren: 0.02,
-							staggerDirection: -1,
-						},
-					},
-				} : undefined}
-				style={{ willChange: "transform, width" }}
+				variants={!isMobile ? containerVariants : undefined}
+				transition={{ duration: 0.3 }}
 			>
 				{/* Perfil usuario - Versión optimizada */}
 				<motion.div
@@ -225,12 +230,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									text="Inicio"
 									onClick={() => {
 										navigate(RUTAS.ADMIN.ROOT);
-										setTimeout(() => setSidebarOpen(false), 150);
+										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
 									sidebarOpen={sidebarOpen}
 									isActive={location.pathname === RUTAS.ADMIN.ROOT}
 								/>
 							)}
+
 							{/* Menú Sistema */}
 							{permisos.includes(PERMISOS.ADMINISTRADOR_WEB.MENU_ITEM) && (
 								<SidebarCollapsible
@@ -249,7 +255,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										onClick={() => {
 											if (permisos.includes(PERMISOS.ADMINISTRADOR_WEB.CREAR_AVISO_ACTUALIZACION)) {
 												navigate(RUTAS.ADMIN.SISTEMA.ACTUALIZACIONES_WEB);
-												setTimeout(() => setSidebarOpen(false), 150);
+												// setTimeout(() => setSidebarOpen(false), 150);
 											} else {
 												mostrarAlertaSinPermiso();
 											}
@@ -279,7 +285,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										onClick={() => {
 											if (permisos.includes(PERMISOS.USUARIOS.VER_DATOS)) {
 												navigate(RUTAS.ADMIN.USUARIOS.ROOT);
-												setTimeout(() => setSidebarOpen(false), 150);
 											} else {
 												mostrarAlertaSinPermiso();
 											}
@@ -295,6 +300,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											permisos.includes(PERMISOS.USUARIOS.CREAR)
 												? navigate(RUTAS.ADMIN.USUARIOS.CREAR_USUARIO)
 												: mostrarAlertaSinPermiso()}
+										isActive={location.pathname === RUTAS.ADMIN.USUARIOS.CREAR_USUARIO}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
@@ -330,6 +336,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											icon={<PlusCircle size={16} />}
 											text="Crear Nuevo Rol"
 											onClick={() => navigate(RUTAS.ADMIN.ROLES.CREAR_ROL)}
+											isActive={location.pathname === RUTAS.ADMIN.ROLES.CREAR_ROL}
 											sidebarOpen={sidebarOpen}
 											delay={0.2}
 										/>
@@ -361,6 +368,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.CREAR_PERMISO}
 										sidebarOpen={sidebarOpen}
 										delay={0.1}
 									/>
@@ -374,6 +382,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.ADMIN.PERMISOS.ASIGNAR}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
@@ -394,8 +403,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									text="Ver Formularios"
 									onClick={() => {
 										navigate(RUTAS.DASHBOARD);
-										setTimeout(() => setSidebarOpen(false), 150);
+										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
+									isActive={location.pathname === RUTAS.DASHBOARD}
 									sidebarOpen={sidebarOpen}
 									delay={0.1}
 								/>
@@ -425,7 +435,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									text="Mantenimientos IPS"
 									onClick={() => {
 										navigate(RUTAS.USER.MANTENIMIENTO.VISTA_DATOS);
-										setTimeout(() => setSidebarOpen(false), 150);
+										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
 									sidebarOpen={sidebarOpen}
 									isActive={location.pathname.includes(RUTAS.USER.MANTENIMIENTO.ROOT)}
@@ -452,8 +462,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											text="Ver Calendario"
 											onClick={() => {
 												navigate(RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS);
-												setTimeout(() => setSidebarOpen(false), 150);
+												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
+											isActive={location.pathname === RUTAS.USER.MANTENIMIENTO.AGENDA_MANTENIMIENTOS}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>
@@ -480,8 +491,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											text="Crear Pedido"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO);
-												setTimeout(() => setSidebarOpen(false), 150);
+												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>
@@ -493,8 +505,23 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											text="Gestionar Pedidos"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.ROOT);
-												setTimeout(() => setSidebarOpen(false), 150);
+												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ROOT}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+										<SidebarSubItem
+											icon={<BarChart2 size={16} />}
+											text="informes de Compras"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.INFORMES);
+												// setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORMES}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>
@@ -523,11 +550,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										onClick={() => {
 											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.AGREGAR)) {
 												navigate(RUTAS.USER.EQUIPOS.CREAR_EQUIPO);
-												setTimeout(() => setSidebarOpen(false), 150);
+												// setTimeout(() => setSidebarOpen(false), 150);
 											} else {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_EQUIPO}
 										sidebarOpen={sidebarOpen}
 										delay={0.1}
 									/>
@@ -543,6 +571,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
@@ -558,6 +587,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO}
 										sidebarOpen={sidebarOpen}
 										delay={0.3}
 									/>
@@ -573,6 +603,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												mostrarAlertaSinPermiso();
 											}
 										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.ROOT}
 										sidebarOpen={sidebarOpen}
 										delay={0.4}
 									/>
@@ -592,8 +623,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									text="Reportar Problema"
 									onClick={() => {
 										navigate(RUTAS.USER.REPORTES.REPORTAR_PROBLEMA);
-										setTimeout(() => setSidebarOpen(false), 150);
+										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
+									isActive={location.pathname === RUTAS.USER.REPORTES.REPORTAR_PROBLEMA}
 									sidebarOpen={sidebarOpen}
 									delay={0.1}
 								/>
@@ -603,13 +635,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									text="Ver Reportes"
 									onClick={() => {
 										navigate(RUTAS.USER.REPORTES.LISTADO);
-										setTimeout(() => setSidebarOpen(false), 150);
+										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
+									isActive={location.pathname === RUTAS.USER.REPORTES.LISTADO}
 									sidebarOpen={sidebarOpen}
 									delay={0.2}
 								/>
 							</SidebarCollapsible>
-							
+
 							{permisos.includes(PERMISOS.GESTION_PERSONAL.MENU_ITEM) && (
 								<SidebarCollapsible
 									icon={<Users size={18} />}
@@ -624,8 +657,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										text="Crear Personal"
 										onClick={() => {
 											navigate(RUTAS.USER.PERSONAL.CREAR_PERSONAL);
-											setTimeout(() => setSidebarOpen(false), 150);
+											// setTimeout(() => setSidebarOpen(false), 150);
 										}}
+										isActive={location.pathname === RUTAS.USER.PERSONAL.CREAR_PERSONAL}
 										sidebarOpen={sidebarOpen}
 										delay={0.1}
 									/>
@@ -635,8 +669,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										text="Gestionar Personal"
 										onClick={() => {
 											navigate(RUTAS.USER.PERSONAL.ROOT);
-											setTimeout(() => setSidebarOpen(false), 150);
+											// setTimeout(() => setSidebarOpen(false), 150);
 										}}
+										isActive={location.pathname === RUTAS.USER.PERSONAL.ROOT}
 										sidebarOpen={sidebarOpen}
 										delay={0.2}
 									/>
@@ -648,7 +683,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 					{/* Menú Complementos */}
 					<SidebarCollapsible
-						icon={<Package size={18} />} // Puedes cambiar el ícono si quieres
+						icon={<Package size={18} />}
 						text="Complementos"
 						isOpen={menuComplementosOpen}
 						onClick={() => setMenuComplementosOpen(!menuComplementosOpen)}

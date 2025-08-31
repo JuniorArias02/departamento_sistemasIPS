@@ -37,6 +37,7 @@ import GestionPersonalVista from "./pages/paginaCliente/personal/page/GestionPer
 import CrearPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearPedido";
 import GestionPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/GestionPedidos";
 import PedidoDetalle from "./pages/paginaCliente/gestionPedidosCompras/page/PedidoDetalle";
+import InformesPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/InformesPedidos";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
@@ -307,7 +308,7 @@ function App() {
 
 
           {/* vistaDatos */}
-          
+
           <Route
             path={RUTAS.USER.PERSONAL.ROOT}
             element={
@@ -319,7 +320,16 @@ function App() {
             }
           />
 
-
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.INFORMES}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.GESTIONAR_PEDIDO) ? (
+                <InformesPedidos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
 
           <Route
             path={RUTAS.USER.INVENTARIO.VER_INVENTARIO}

@@ -68,6 +68,7 @@ export const RUTAS = {
       ROOT: `${DASHBOARD}/pedidos`,
       CREAR_PEDIDO: `${DASHBOARD}/crear_pedidos`,
       DETALLE_PEDIDO: `${DASHBOARD}/detalle_pedido`,
+      INFORMES: `${DASHBOARD}/informes_compras`,
     },
 
     PERSONAL: {
@@ -76,6 +77,11 @@ export const RUTAS = {
       DETALLE_PERSONAL: `${DASHBOARD}/detalle_personal`,
     },
 
+    REPORTES: {
+      ROOT: `${DASHBOARD}/reportes`,
+      REPORTAR_PROBLEMA: `${DASHBOARD}/reportar_problema`,
+      LISTADO: `${DASHBOARD}/listado_reportes`,
+    }
 
   }
 };
