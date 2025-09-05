@@ -6,8 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: [
-      'placing-testimony-begun-bind.trycloudflare.com',
-      // agrega más si quieres
+      'carmen-commodity-discrimination-stevens.trycloudflare.com',
     ],
   }
 });

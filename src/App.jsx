@@ -38,6 +38,11 @@ import CrearPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearP
 import GestionPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/GestionPedidos";
 import PedidoDetalle from "./pages/paginaCliente/gestionPedidosCompras/page/PedidoDetalle";
 import InformesPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/InformesPedidos";
+import GestionProveedor from "./pages/paginaCliente/gestionPedidosCompras/page/GestionProveedor";
+
+// REPORTE
+import ReportesTablero from "./pages/paginaCliente/reportes/page/ReportesTablero";
+import CrearReporte from "./pages/paginaCliente/reportes/page/CrearReporte";
 // rutas de admin
 import RutaSoloAdmin from "./secure/RutaSoloAdmin";
 import { PERMISOS } from "./secure/permisos/permisos";
@@ -309,6 +314,7 @@ function App() {
 
           {/* vistaDatos */}
 
+
           <Route
             path={RUTAS.USER.PERSONAL.ROOT}
             element={
@@ -319,6 +325,35 @@ function App() {
               )
             }
           />
+
+
+          <Route
+            path={RUTAS.USER.REPORTES.ROOT}
+            element={
+              <ReportesTablero />
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.REPORTES.CREAR_REPORTE}
+            element={
+              <CrearReporte />
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.PROVEEDOR}
+            element={
+              permisos.includes(PERMISOS.GESTION_PERSONAL.VER) ? (
+                <GestionProveedor />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
 
           <Route
             path={RUTAS.USER.GESTION_COMPRAS.INFORMES}

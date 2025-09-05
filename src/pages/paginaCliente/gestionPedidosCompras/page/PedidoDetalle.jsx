@@ -33,6 +33,7 @@ import AgregarFirmaModal from "../components/crearPedido/AgregarFirmaModal";
 import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import Portal from "../../components/Portal";
 import { FirmaAprobacionModal } from "../components/pedidoDetalle/FirmaAprobacionModal";
+import {CotizarItemModal} from "../components/pedidoDetalle/CotizarItemModal";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();
@@ -45,6 +46,8 @@ export default function PedidoDetalle() {
   const data = location.state?.pedido || {};
   const [tipoRechazo, setTipoRechazo] = useState("compras");
   const [modalOpen, setModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const manejarConfirmacion = async (contrasena) => {
     const res = await agregarFirmaPorClave({
@@ -166,6 +169,16 @@ export default function PedidoDetalle() {
         }
       }
     });
+  };
+
+  const handleCotizar = (item) => {
+    setSelectedItem(item);
+    setOpen(true);
+  };
+
+  const handleSaveCotizacion = (cotizacion) => {
+    console.log("Cotización guardada:", cotizacion);
+    // aquí mandas el POST al backend
   };
 
 
@@ -411,18 +424,27 @@ export default function PedidoDetalle() {
         {data.items && data.items.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {data.items.map((item, index) => (
-              <li key={index} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+              <li
+                key={index}
+                className="px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium text-gray-800">{item.nombre}</h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      Referencia: {item.referencia_items || 'N/A'}
+                      Referencia: {item.referencia_items || "N/A"}
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">
                       {item.cantidad} unidades
                     </span>
+                    <button
+                      onClick={() => handleCotizar(item)}
+                      className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition"
+                    >
+                      Cotizar
+                    </button>
                     <ChevronRight className="text-gray-400" size={18} />
                   </div>
                 </div>
@@ -498,6 +520,14 @@ export default function PedidoDetalle() {
           />
         </Portal>
       )}
+
+      {/* modal para cotizar */}
+      <CotizarItemModal
+        open={open}
+        onClose={() => setOpen(false)}
+        item={selectedItem}
+        onSave={handleSaveCotizacion}
+      />
 
       {/* Botones de acción */}
       <div className="flex justify-end gap-3">

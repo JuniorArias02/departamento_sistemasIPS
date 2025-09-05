@@ -9,7 +9,7 @@ import {
 	Usb,
 	Disc3,
 	HardDriveDownload
-	
+
 
 } from "lucide-react";
 export default function TabHardware({ form, handleChange }) {
@@ -74,14 +74,18 @@ export default function TabHardware({ form, handleChange }) {
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
 						<Network className="mr-2 h-4 w-4" /> Tarjeta de Red
 					</label>
-					<input
-						type="text"
+					<select
 						name="tarjeta_red"
 						value={form.tarjeta_red}
 						onChange={handleChange}
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					/>
+					>
+						<option value="">Seleccione...</option>
+						<option value="si">Sí</option>
+						<option value="no">No</option>
+					</select>
 				</div>
+
 			</div>
 
 			{/* Columna 2 */}
@@ -90,27 +94,35 @@ export default function TabHardware({ form, handleChange }) {
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
 						<Monitor className="mr-2 h-4 w-4" /> Tarjeta de Video
 					</label>
-					<input
-						type="text"
+					<select
 						name="tarjeta_video"
 						value={form.tarjeta_video}
 						onChange={handleChange}
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					/>
+					>
+						<option value="">Seleccione...</option>
+						<option value="si">Sí</option>
+						<option value="no">No</option>
+					</select>
 				</div>
+
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
 						<Speaker className="mr-2 h-4 w-4" /> Tarjeta de Sonido
 					</label>
-					<input
-						type="text"
+					<select
 						name="tarjeta_sonido"
 						value={form.tarjeta_sonido}
 						onChange={handleChange}
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					/>
+					>
+						<option value="">Seleccione...</option>
+						<option value="si">Sí</option>
+						<option value="no">No</option>
+					</select>
 				</div>
+
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
@@ -127,29 +139,37 @@ export default function TabHardware({ form, handleChange }) {
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<Disc3 className="mr-2 h-4 w-4" />Unidad CD/DVD
+						<Disc3 className="mr-2 h-4 w-4" /> Unidad CD/DVD
 					</label>
-					<input
-						type="text"
+					<select
 						name="unidad_cd"
 						value={form.unidad_cd}
 						onChange={handleChange}
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					/>
+					>
+						<option value="">Seleccione...</option>
+						<option value="si">Sí</option>
+						<option value="no">No</option>
+					</select>
 				</div>
+
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<HardDriveDownload className="mr-2 h-4 w-4" />Drive
-						</label>
-					<input
-						type="text"
+						<HardDriveDownload className="mr-2 h-4 w-4" /> Drive
+					</label>
+					<select
 						name="drive"
 						value={form.drive}
 						onChange={handleChange}
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					/>
+					>
+						<option value="">Seleccione...</option>
+						<option value="si">Sí</option>
+						<option value="no">No</option>
+					</select>
 				</div>
+
 			</div>
 		</div>
 	)

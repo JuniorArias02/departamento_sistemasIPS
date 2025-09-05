@@ -39,7 +39,8 @@ import {
 	ClipboardSignature,
 	ListTodo,
 	Package,
-	BarChart2
+	BarChart2,
+	Truck
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -476,7 +477,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM) && (
 								<SidebarCollapsible
 									icon={<Store size={18} />}
-									text="Gestion Compras y pedidos"
+									text="Gestion de pedidos"
 									isOpen={menuGestionComprasOpen}
 									onClick={() =>
 										permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM)
@@ -491,7 +492,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											text="Crear Pedido"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO);
-												// setTimeout(() => setSidebarOpen(false), 150);
+												// se	tTimeout(() => setSidebarOpen(false), 150);
 											}}
 											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.CREAR_PEDIDO}
 											sidebarOpen={sidebarOpen}
@@ -526,6 +527,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											delay={0.1}
 										/>
 									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+										<SidebarSubItem
+											icon={<Truck size={16} />}
+											text="Proveedor"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.PROVEEDOR);
+												// setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.PROVEEDOR}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
 								</SidebarCollapsible>
 							)}
 
@@ -541,7 +556,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											: mostrarAlertaSinPermiso()
 									}
 									sidebarOpen={sidebarOpen}
-									isBeta={true}
 								>
 									{/* Subitem 1: Agregar Equipo */}
 									<SidebarSubItem
@@ -618,29 +632,31 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								sidebarOpen={sidebarOpen}
 								isBeta={false}
 							>
-								<SidebarSubItem
-									icon={<ClipboardEdit size={16} />}
-									text="Reportar Problema"
-									onClick={() => {
-										navigate(RUTAS.USER.REPORTES.REPORTAR_PROBLEMA);
-										// setTimeout(() => setSidebarOpen(false), 150);
-									}}
-									isActive={location.pathname === RUTAS.USER.REPORTES.REPORTAR_PROBLEMA}
-									sidebarOpen={sidebarOpen}
-									delay={0.1}
-								/>
 
 								<SidebarSubItem
 									icon={<FileSearch size={16} />}
 									text="Ver Reportes"
 									onClick={() => {
-										navigate(RUTAS.USER.REPORTES.LISTADO);
+										navigate(RUTAS.USER.REPORTES.ROOT);
 										// setTimeout(() => setSidebarOpen(false), 150);
 									}}
-									isActive={location.pathname === RUTAS.USER.REPORTES.LISTADO}
+									isActive={location.pathname === RUTAS.USER.REPORTES.ROOT}
 									sidebarOpen={sidebarOpen}
 									delay={0.2}
 								/>
+
+								<SidebarSubItem
+									icon={<ClipboardEdit size={16} />}
+									text="Reportar Problema"
+									onClick={() => {
+										navigate(RUTAS.USER.REPORTES.CREAR_REPORTE);
+										// setTimeout(() => setSidebarOpen(false), 150);
+									}}
+									isActive={location.pathname === RUTAS.USER.REPORTES.CREAR_REPORTE}
+									sidebarOpen={sidebarOpen}
+									delay={0.1}
+								/>
+
 							</SidebarCollapsible>
 
 							{permisos.includes(PERMISOS.GESTION_PERSONAL.MENU_ITEM) && (
@@ -706,7 +722,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							text="Descargar Imagen"
 							onClick={() => {
 								const link = document.createElement('a');
-								link.href = '/imgdesktop.jpg';
+								link.href = '/septiembre.png';
 								link.download = 'img';
 								link.click();
 							}}

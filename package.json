@@ -40,6 +40,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.6.0",
     "recharts": "^2.15.3",
+    "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.21.0",
     "tailwindcss": "^4.1.6",
     "xlsx": "^0.18.5"
