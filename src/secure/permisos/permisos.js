@@ -76,11 +76,14 @@ export const PERMISOS = {
 	GESTION_COMPRA_PEDIDOS: {
 		MENU_ITEM: 'menu_item_gestion_compra',
 		CREAR_PEDIDO: 'crear_pedido',
+		VER_INFORMES: 'ver_informes',
+		VER_PROVEEDORE: 'ver_proveedores',
 		VER_PEDIDOS: 'ver_pedidos',
 		VER_PEDIDOS_ENCARGADO: 'ver_pedidos_encargado',
 		LISTAR_PEDIDOS: 'listar_pedidos',
 		GESTIONAR_PEDIDO: 'gestionar_pedido'
 	},
+
 	GESTION_PERSONAL: {
 		MENU_ITEM: 'menu_item_gestion_personal',
 		CREAR: 'crear_personal',

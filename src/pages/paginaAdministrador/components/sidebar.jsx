@@ -514,7 +514,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_INFORMES) && (
 										<SidebarSubItem
 											icon={<BarChart2 size={16} />}
 											text="informes de Compras"
@@ -528,7 +528,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PROVEEDORE) && (
 										<SidebarSubItem
 											icon={<Truck size={16} />}
 											text="Proveedor"

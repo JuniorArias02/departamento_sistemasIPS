@@ -27,6 +27,7 @@ import {
 	PointElement,
 	LineElement
 } from 'chart.js';
+import { exportarInformeFecha } from '../../../../services/cp_pedidos_services';
 
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 
@@ -44,6 +45,10 @@ ChartJS.register(
 );
 
 export default function InformesPedidos() {
+	const [form, setForm] = useState({
+		fecha_inicio: '',
+		fecha_fin: '',
+	});
 	const [filtros, setFiltros] = useState({
 		fechaInicio: '',
 		fechaFin: '',
@@ -53,9 +58,29 @@ export default function InformesPedidos() {
 
 	const [reporteData, setReporteData] = useState(null);
 	const [cargando, setCargando] = useState(false);
+	const [cargandoConsolidado, setCargandoConsolidado] = useState(false);
 
+	const generarConsolidado = async () => {
+		if (!form.fecha_inicio || !form.fecha_fin) {
+		  Swal.fire({
+			icon: "warning",
+			title: "Fechas requeridas",
+			text: "Por favor selecciona ambas fechas",
+			confirmButtonColor: "#3B82F6",
+		  });
+		  return; 
+		}
+		setCargandoConsolidado(true);
+		try {
+		  await exportarInformeFecha(form);
+		} finally {
+			setCargandoConsolidado(false);
+		}
+	  };
+	  
 	const generarReporte = async () => {
-		if (!filtros.fechaInicio || !filtros.fechaFin) {
+		if (!form.fechaInicio || !form.fechaFin) {
+			const rest = await exportarInformeFecha(form);
 			Swal.fire({
 				icon: 'warning',
 				title: 'Fechas requeridas',
@@ -67,7 +92,7 @@ export default function InformesPedidos() {
 
 		setCargando(true);
 
-		// Simulación de datos (en producción sería tu API)
+
 		setTimeout(() => {
 			const datosSimulados = {
 				resumen: {
@@ -312,8 +337,8 @@ export default function InformesPedidos() {
 							</label>
 							<input
 								type="date"
-								value={filtros.fechaInicio}
-								onChange={(e) => setFiltros({ ...filtros, fechaInicio: e.target.value })}
+								value={form.fecha_inicio}
+								onChange={(e) => setForm({ ...form, fecha_inicio: e.target.value })}
 								className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
@@ -326,8 +351,8 @@ export default function InformesPedidos() {
 							</label>
 							<input
 								type="date"
-								value={filtros.fechaFin}
-								onChange={(e) => setFiltros({ ...filtros, fechaFin: e.target.value })}
+								value={form.fecha_fin}
+								onChange={(e) => setForm({ ...form, fecha_fin: e.target.value })}
 								className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
@@ -363,23 +388,43 @@ export default function InformesPedidos() {
 						</div>
 					</div>
 
-					<button
-						onClick={generarReporte}
-						disabled={cargando}
-						className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-70"
-					>
-						{cargando ? (
-							<>
-								<RefreshCw size={18} className="animate-spin" />
-								Generando...
-							</>
-						) : (
-							<>
-								<TrendingUp size={18} />
-								Generar Reporte
-							</>
-						)}
-					</button>
+					<div className="flex items-center gap-4">
+						<button
+							onClick={generarReporte}
+							disabled={cargando}
+							className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-70"
+						>
+							{cargando ? (
+								<>
+									<RefreshCw size={18} className="animate-spin" />
+									Generando...
+								</>
+							) : (
+								<>
+									<TrendingUp size={18} />
+									Generar Reporte
+								</>
+							)}
+						</button>
+
+						<button
+							onClick={generarConsolidado}
+							disabled={cargandoConsolidado}
+							className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-70"
+						>
+							{cargandoConsolidado ? (
+								<>
+									<RefreshCw size={18} className="animate-spin" />
+									Generando...
+								</>
+							) : (
+								<>
+									<TrendingUp size={18} />
+									Descargando consolidado
+								</>
+							)}
+						</button>
+					</div>
 				</div>
 
 				{reporteData && (

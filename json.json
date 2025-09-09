@@ -1,0 +1,179 @@
+{
+	"resumen": {
+	  "totalPedidos": 45,
+	  "aprobados": 28,
+	  "pendientes": 12,
+	  "rechazados": 5,
+	  "montoTotal": 1250000,
+	  "promedioTiempo": "3.5 días"
+	},
+	"graficas": {
+	  "porEstado": [
+		{ "estado": "Aprobado", "cantidad": 28, "color": "#10B981" },
+		{ "estado": "Pendiente", "cantidad": 12, "color": "#F59E0B" },
+		{ "estado": "Rechazado", "cantidad": 5, "color": "#EF4444" }
+	  ],
+	  "porTipo": [
+		{ "tipo": "Recurrente", "cantidad": 32, "color": "#3B82F6" },
+		{ "tipo": "Prioritaria", "cantidad": 13, "color": "#8B5CF6" }
+	  ],
+	  "tendenciaMensual": [
+		{ "mes": "Ene", "pedidos": 8, "monto": 20000 },
+		{ "mes": "Feb", "pedidos": 12, "monto": 350000 },
+		{ "mes": "Mar", "pedidos": 15, "monto": 450000 },
+		{ "mes": "Abr", "pedidos": 10, "monto": 250000 }
+	  ]
+	},
+	"detalle": [
+	  {
+		"id": 1,
+		"consecutivo": "PED-2023-1000",
+		"fecha": "2023-04-10",
+		"solicitante": "Departamento Sistemas",
+		"tipo": "Prioritaria",
+		"estado": "Pendiente",
+		"monto": "500.000",
+		"items": 2
+	  },
+	  {
+		"id": 2,
+		"consecutivo": "PED-2023-1001",
+		"fecha": "2023-04-11",
+		"solicitante": "Departamento Contabilidad",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "600.000",
+		"items": 3
+	  },
+	  {
+		"id": 3,
+		"consecutivo": "PED-2023-1002",
+		"fecha": "2023-04-12",
+		"solicitante": "Departamento Recursos Humanos",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "700.000",
+		"items": 2
+	  },
+	  {
+		"id": 4,
+		"consecutivo": "PED-2023-1003",
+		"fecha": "2023-04-13",
+		"solicitante": "Departamento Sistemas",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "800.000",
+		"items": 3
+	  },
+	  {
+		"id": 5,
+		"consecutivo": "PED-2023-1004",
+		"fecha": "2023-04-14",
+		"solicitante": "Departamento Contabilidad",
+		"tipo": "Prioritaria",
+		"estado": "Rechazado",
+		"monto": "900.000",
+		"items": 4
+	  },
+	  {
+		"id": 6,
+		"consecutivo": "PED-2023-1005",
+		"fecha": "2023-04-15",
+		"solicitante": "Departamento Recursos Humanos",
+		"tipo": "Recurrente",
+		"estado": "Pendiente",
+		"monto": "1.000.000",
+		"items": 2
+	  },
+	  {
+		"id": 7,
+		"consecutivo": "PED-2023-1006",
+		"fecha": "2023-04-16",
+		"solicitante": "Departamento Sistemas",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "1.100.000",
+		"items": 3
+	  },
+	  {
+		"id": 8,
+		"consecutivo": "PED-2023-1007",
+		"fecha": "2023-04-17",
+		"solicitante": "Departamento Contabilidad",
+		"tipo": "Prioritaria",
+		"estado": "Aprobado",
+		"monto": "1.200.000",
+		"items": 4
+	  },
+	  {
+		"id": 9,
+		"consecutivo": "PED-2023-1008",
+		"fecha": "2023-04-18",
+		"solicitante": "Departamento Recursos Humanos",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "1.300.000",
+		"items": 2
+	  },
+	  {
+		"id": 10,
+		"consecutivo": "PED-2023-1009",
+		"fecha": "2023-04-19",
+		"solicitante": "Departamento Sistemas",
+		"tipo": "Rechazado",
+		"estado": "Rechazado",
+		"monto": "1.400.000",
+		"items": 3
+	  },
+	  {
+		"id": 11,
+		"consecutivo": "PED-2023-1010",
+		"fecha": "2023-04-20",
+		"solicitante": "Departamento Contabilidad",
+		"tipo": "Recurrente",
+		"estado": "Pendiente",
+		"monto": "1.500.000",
+		"items": 4
+	  },
+	  {
+		"id": 12,
+		"consecutivo": "PED-2023-1011",
+		"fecha": "2023-04-21",
+		"solicitante": "Departamento Recursos Humanos",
+		"tipo": "Prioritaria",
+		"estado": "Aprobado",
+		"monto": "1.600.000",
+		"items": 2
+	  },
+	  {
+		"id": 13,
+		"consecutivo": "PED-2023-1012",
+		"fecha": "2023-04-22",
+		"solicitante": "Departamento Sistemas",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "1.700.000",
+		"items": 3
+	  },
+	  {
+		"id": 14,
+		"consecutivo": "PED-2023-1013",
+		"fecha": "2023-04-23",
+		"solicitante": "Departamento Contabilidad",
+		"tipo": "Recurrente",
+		"estado": "Aprobado",
+		"monto": "1.800.000",
+		"items": 4
+	  },
+	  {
+		"id": 15,
+		"consecutivo": "PED-2023-1014",
+		"fecha": "2023-04-24",
+		"solicitante": "Departamento Recursos Humanos",
+		"tipo": "Rechazado",
+		"estado": "Rechazado",
+		"monto": "1.900.000",
+		"items": 2
+	  }
+	]
+  }

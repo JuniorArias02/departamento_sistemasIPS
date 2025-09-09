@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF} from "../const/endpoint/cp_pedidos_endpoint";
+import { EXPORTAR_INFORME_PEDIDOS, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
 
 export const subirFirmaPedido = async (formData) => {
 	try {
@@ -25,6 +25,26 @@ export const crearPedido = async (datos) => {
 		return [];
 	}
 };
+
+export const exportarInformeFecha = async (datos) => {
+	try {
+	  const response = await axios.post(EXPORTAR_INFORME_PEDIDOS, datos, {
+		responseType: "blob", 
+	  });
+  
+	  
+	  const url = window.URL.createObjectURL(new Blob([response.data]));
+	  const link = document.createElement("a");
+	  link.href = url;
+	  link.setAttribute("download", "consolidado_pedidos.xlsx");
+	  document.body.appendChild(link);
+	  link.click();
+	  link.remove();
+	} catch (error) {
+	  console.error("Error al crear informe", error);
+	}
+  };
+
 export const rechazarPedido = async (datos) => {
 	try {
 		const response = await axios.post(RECHAZAR_PEDIDO, datos);
@@ -64,7 +84,7 @@ export const exportarPedido = async (pedidoId) => {
 		const response = await axios.post(
 			EXPORTAR_PEDIDO,
 			{ id: pedidoId },
-			{ responseType: "blob" } 
+			{ responseType: "blob" }
 		);
 
 		const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -89,7 +109,7 @@ export const exportarPedidoPdf = async (pedidoId) => {
 		const response = await axios.post(
 			EXPORTAR_PDF,
 			{ id: pedidoId },
-			{ responseType: "blob" } 
+			{ responseType: "blob" }
 		);
 
 		const url = window.URL.createObjectURL(new Blob([response.data]));
