@@ -20,9 +20,9 @@ import {
 	Handshake
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { obtenerProveedores, crearProveedor, editarProveedor } from "../../../../services/cp_proveedor_services";
+import { obtenerProveedores, crearProveedor, editarProveedor, eliminarProveedor } from "../../../../services/cp_proveedor_services";
 import { ProveedorModal } from "../components/GestionProveedor/ProveedorModal";
-
+import Swal from "sweetalert2";
 export default function GestionProveedor() {
 	const [proveedores, setProveedores] = useState([]);
 	const [filteredProveedores, setFilteredProveedores] = useState([]);
@@ -70,9 +70,30 @@ export default function GestionProveedor() {
 	const currentItems = filteredProveedores.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(filteredProveedores.length / itemsPerPage);
 
-	const handleDelete = (id) => {
-		setProveedores(proveedores.filter(p => p.id !== id));
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "¿Estás seguro?",
+			text: "Esta acción no se puede deshacer",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Sí, eliminar",
+			cancelButtonText: "Cancelar"
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				const res = await eliminarProveedor(id);
+
+				if (res.status === "success") {
+					setProveedores(proveedores.filter((p) => p.id !== id));
+					Swal.fire("Eliminado!", "El proveedor fue eliminado.", "success");
+				} else {
+					Swal.fire("Error", res.message || "No se pudo eliminar.", "error");
+				}
+			}
+		});
 	};
+
 
 	const handleEdit = (proveedor) => {
 		setEditingProveedor(proveedor);
@@ -94,16 +115,53 @@ export default function GestionProveedor() {
 							p.id === editingProveedor.id ? { ...p, ...proveedorData } : p
 						)
 					);
+					Swal.fire({
+						title: "¡Proveedor actualizado!",
+						text: "Los datos del proveedor se han actualizado correctamente",
+						icon: "success",
+						confirmButtonColor: "#3085d6",
+						confirmButtonText: "Aceptar"
+					});
+				} else {
+					Swal.fire({
+						title: "Error al actualizar",
+						text: response.message || "No se pudo actualizar el proveedor",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "Aceptar"
+					});
 				}
 			} else {
 				const response = await crearProveedor(proveedorData);
 
 				if (response.success) {
 					setProveedores((prev) => [...prev, response.data]);
+					Swal.fire({
+						title: "¡Proveedor creado!",
+						text: "El nuevo proveedor se ha registrado correctamente",
+						icon: "success",
+						confirmButtonColor: "#3085d6",
+						confirmButtonText: "Aceptar"
+					});
+				} else {
+					Swal.fire({
+						title: "Error al crear",
+						text: response.message || "No se pudo crear el proveedor",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "Aceptar"
+					});
 				}
 			}
 		} catch (error) {
 			console.error("Error al guardar proveedor:", error);
+			Swal.fire({
+				title: "Error de conexión",
+				text: "Ocurrió un error inesperado. Por favor, intenta nuevamente",
+				icon: "error",
+				confirmButtonColor: "#d33",
+				confirmButtonText: "Aceptar"
+			});
 		} finally {
 			setShowModal(false);
 			setEditingProveedor(null);

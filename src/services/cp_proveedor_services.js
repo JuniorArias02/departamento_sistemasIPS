@@ -3,8 +3,22 @@ import {
   CREAR_PROVEEDOR,
   EDITAR_PROVEEDOR,
   LISTAR_PROVEEDORES,
-  BUSCAR_PROVEEDOR
+  BUSCAR_PROVEEDOR,
+  ELIMINAR_PROVEEDOR
 } from "../const/endpoint/cp_proveedor_endpoint";
+
+
+export const eliminarProveedor = async (id) => {
+  try {
+    const response = await axios.delete(ELIMINAR_PROVEEDOR, {
+      data: { id } 
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar proveedor", error);
+    return { success: false };
+  }
+};
 
 
 export const obtenerProveedores = async () => {
@@ -30,9 +44,7 @@ export const crearProveedor = async (form) => {
 
 export const editarProveedor = async (form) => {
   try {
-    const response = await axios.post(EDITAR_PROVEEDOR, form);
-    // Si decides usar PUT:
-    // const response = await axios.put(EDITAR_PROVEEDOR, form);
+    const response = await axios.put(EDITAR_PROVEEDOR, form);
     return response.data;
   } catch (error) {
     console.error("Error al editar proveedor", error);
@@ -40,10 +52,11 @@ export const editarProveedor = async (form) => {
   }
 };
 
+
 export const buscarProveedor = async (search) => {
   try {
     const res = await axios.post(BUSCAR_PROVEEDOR, {
-      search // puede ser nombre o nit parcial
+      search 
     });
 
     if (res.data.success) {

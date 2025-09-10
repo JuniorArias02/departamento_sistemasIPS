@@ -10,7 +10,8 @@ import {
 	List,
 	FileText,
 	CheckCircle,
-	XCircle
+	XCircle,
+	Warehouse
 } from 'lucide-react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { crearPedido, subirFirmaPedido } from "../../../../services/cp_pedidos_services";
@@ -19,6 +20,7 @@ import { crearItems } from "../../../../services/cp_items_services";
 import { obtenerTiposSolicitud } from "../../../../services/cp_tipo_solicitud";
 import { useApp } from "../../../../store/AppContext";
 import { agregarFirmaPorClave } from "../../../../services/usuario_service";
+import { listarSedes } from "../../../../services/sedes_service";
 import Swal from "sweetalert2";
 
 export default function CrearPedido() {
@@ -26,10 +28,12 @@ export default function CrearPedido() {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tipos, setTipos] = useState([]);
 	const [firmaAprobacion, setFirmaAprobacion] = useState(null);
+	const [sedes, setSedes] = useState([]);
 	const [form, setForm] = useState({
 		fecha_solicitud: "",
 		proceso_solicitante: "",
 		tipo_solicitud: "",
+		sede_id: "",
 		observacion: "",
 		elaborado_por: usuario.id,
 		elaborado_por_firma: "",
@@ -41,7 +45,13 @@ export default function CrearPedido() {
 			const data = await obtenerTiposSolicitud();
 			setTipos(data);
 		};
+		const cargarSedes = async () => {
+			const data = await listarSedes();
+			setSedes(data);
+		}
+
 		cargarTipos();
+		cargarSedes();
 	}, []);
 
 	const [items, setItems] = useState([]);
@@ -77,6 +87,7 @@ export default function CrearPedido() {
 				fecha_solicitud: form.fecha_solicitud,
 				proceso_solicitante: form.proceso_solicitante,
 				tipo_solicitud: form.tipo_solicitud,
+				sede_id: form.sede_id,
 				observacion: form.observacion,
 				elaborado_por: usuario.id,
 				creador_por: usuario.id,
@@ -155,7 +166,7 @@ export default function CrearPedido() {
 		}
 	};
 
-	
+
 
 	const agregarItem = () => {
 		setItems([...items, { nombre: "", cantidad: 1, referencia_items: "" }]);
@@ -241,6 +252,26 @@ export default function CrearPedido() {
 							{tipos.map((tipo) => (
 								<option key={tipo.id} value={tipo.id}>
 									{tipo.nombre}
+								</option>
+							))}
+						</select>
+					</div>
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+
+							<Warehouse size={16} />
+							Sede
+						</label>
+						<select
+							value={form.sede_id}
+							onChange={(e) => setForm({ ...form, sede_id: e.target.value })}
+							className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							required
+						>
+							<option value="">Seleccione la sede</option>
+							{sedes.map((sedes) => (
+								<option key={sedes.id} value={sedes.id}>
+									{sedes.nombre}
 								</option>
 							))}
 						</select>

@@ -318,6 +318,10 @@ export default function GestionPedidos() {
 													<span className="text-gray-500">Elaborado por:</span>
 													<span className="font-medium">{pedido.elaborado_por_nombre}</span>
 												</div>
+												<div className="flex justify-between">
+													<span className="text-gray-500">Sede</span>
+													<span className="font-medium">{pedido.sede_nombre}</span>
+												</div>
 												{pedido.observacion && (
 													<div className="mt-3">
 														<p className="text-gray-500 mb-1">Observaciones:</p>
