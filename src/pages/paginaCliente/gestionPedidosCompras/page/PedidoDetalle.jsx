@@ -283,12 +283,13 @@ export default function PedidoDetalle() {
             <div className="flex items-center gap-2 mt-1">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(data.estado_compras)} flex items-center gap-2`}>
                 {getEstadoIcon(data.estado_compras)}
+                Responsable Compras:
                 {data.estado_compras || 'Sin estado'}
               </span>
               {data.estado_gerencia && (
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(data.estado_gerencia)} flex items-center gap-2`}>
                   {getEstadoIcon(data.estado_gerencia)}
-                  Gerencia: {data.estado_gerencia}
+                  Responsable Aprobacion:{data.estado_gerencia}
                 </span>
               )}
             </div>

@@ -380,7 +380,7 @@ export default function CrearPedido() {
 									<div className="md:col-span-5">
 										<label className="text-sm text-gray-500 block mb-1 md:hidden">Nombre</label>
 										<input
-											placeholder="Ej: Medicamento X, Material Y..."
+											placeholder="Ej: Insumo, Medicamento, Material, etc."
 											value={item.nombre}
 											onChange={(e) => cambiarItem(i, "nombre", e.target.value)}
 											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -407,8 +407,8 @@ export default function CrearPedido() {
 											onChange={(e) => cambiarItem(i, "unidad_medida", e.target.value)}
 											required
 										>
-											<option value="Unidades">Unidades</option>
-											<option value="Paquetes">Paquetes</option>
+											<option value="Unidades">Unidad</option>
+											<option value="Paquetes">Paquete</option>
 										</select>
 									</div>
 									<div className="md:col-span-2">
@@ -497,7 +497,7 @@ export default function CrearPedido() {
 					<div className="space-y-4 text-gray-700">
 						<div>
 							<h4 className="font-medium text-gray-800 mb-1">Unidad de medida:</h4>
-							<p>Puede representarse en <strong>unidades</strong> o <strong>paquetes</strong> según aplique.</p>
+							<p>Puede representarse en <strong>unidad</strong> o <strong>paquete</strong> según aplique.</p>
 						</div>
 
 						<div>
@@ -505,7 +505,7 @@ export default function CrearPedido() {
 
 							<div className="ml-2 mt-2">
 								<div className="mb-3">
-									<span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+									<span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
 										Prioritaria
 									</span>
 									<ul className="mt-2 pl-5 list-disc space-y-1">
@@ -516,7 +516,7 @@ export default function CrearPedido() {
 								</div>
 
 								<div className="mb-3">
-									<span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+									<span className="inline-block bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-0.5 rounded">
 										Recurrente
 									</span>
 									<ul className="mt-2 pl-5 list-disc space-y-1">
