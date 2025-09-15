@@ -266,8 +266,8 @@ export default function GestionPedidos() {
 												: pedido.estado_compras
 										)}
 										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO)
-											? pedido.estado_gerencia
-											: pedido.estado_compras || 'Sin estado'}
+											? `Proceso Responsable : ${pedido.estado_gerencia}`
+											: `Proceso Compras : ${pedido.estado_compras}` || 'error'}
 									</div>
 									<div>
 										<h3 className="font-medium text-gray-800">
