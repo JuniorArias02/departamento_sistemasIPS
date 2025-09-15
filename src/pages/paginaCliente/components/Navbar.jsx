@@ -63,7 +63,7 @@ export default function Navbar({ toggleSidebar, sidebarOpen }) {
   };
   return (
     <>
-      <nav className="bg-gradient-to-r from-indigo-700 to-violet-800 text-white px-4 py-2 sm:px-6 sm:py-3 shadow-lg flex justify-between items-center border-b border-white/10">
+      <nav className="h-16 bg-gradient-to-r from-indigo-700 to-violet-800 text-white px-4 py-2 sm:px-6 sm:py-3 shadow-lg flex justify-between items-center border-b border-white/10">
         {/* Parte izquierda - más compacta */}
         <div className="flex items-center gap-3">
           {permisos.includes(PERMISOS.SISTEMA.INGRESAR_SIDEBAR_ADMIN) && toggleSidebar && (
