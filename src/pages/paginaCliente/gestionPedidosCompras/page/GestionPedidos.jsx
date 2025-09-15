@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { obtenerPedidos } from "../../../../services/cp_pedidos_services";
 import {
 	ClipboardList,
@@ -38,6 +38,7 @@ export default function GestionPedidos() {
 	const [error, setError] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [expandedPedido, setExpandedPedido] = useState(null);
+	const expandedPedidoRef = useRef(null);
 	const [filters, setFilters] = useState({
 		estado: "todos",
 		tipo: "todos"
@@ -51,7 +52,15 @@ export default function GestionPedidos() {
 		};
 		cargarTipos();
 	}, []);
-
+	useEffect(() => {
+		if (expandedPedidoRef.current) {
+			expandedPedidoRef.current.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'nearest'
+			});
+		}
+	}, [expandedPedido]);
 
 	useEffect(() => {
 		const fetchPedidos = async () => {
@@ -154,7 +163,6 @@ export default function GestionPedidos() {
 				</h1>
 
 				<div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-					{/* Barra de búsqueda */}
 					<div className="relative flex-grow">
 						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 							<Search className="text-gray-400" size={18} />
@@ -169,9 +177,7 @@ export default function GestionPedidos() {
 					</div>
 
 					{/* Filtros */}
-					{/* Filtros modernos */}
 					<div className="flex flex-col sm:flex-row gap-3">
-						{/* Filtro de Estado */}
 						<div className="relative flex-1 min-w-[180px]">
 							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 								<Filter size={16} className="text-gray-400" />
@@ -237,7 +243,8 @@ export default function GestionPedidos() {
 					{filteredPedidos.map((pedido) => (
 						<div
 							key={pedido.id}
-							className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-shadow"
+							ref={expandedPedido === pedido.id ? expandedPedidoRef : null}
+							className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
 						>
 							{/* Encabezado de la carta */}
 							<div
@@ -390,6 +397,7 @@ export default function GestionPedidos() {
 													<tr>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidad de medida</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
 													</tr>
 												</thead>
@@ -398,6 +406,7 @@ export default function GestionPedidos() {
 														<tr key={index}>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.nombre}</td>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.cantidad}</td>
+															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.unidad_medida}</td>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 flex items-center gap-2">
 																{item.referencia_items ? `Referencia ${index + 1}` : "-"}
 																{item.referencia_items && (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { User, Mail, Edit, Save, Lock, Phone, Eye, EyeOff } from 'lucide-react';
 import { obtenerMiPerfil, editarMiPerfil, cambiarContrasena, subirFirmaPerfil } from '../../../services/perfil_services';
@@ -6,6 +6,8 @@ import { useApp } from '../../../store/AppContext';
 import Swal from 'sweetalert2';
 import BackPage from '../components/BackPage';
 import { FirmaInput } from '../../appFirma/appFirmas';
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
 
 export default function PerfilUsuario(props) {
 	const { usuario } = useApp();
@@ -18,26 +20,11 @@ export default function PerfilUsuario(props) {
 		firma_digital: ''
 	});
 
-	const handleFirmaUpload = async (file) => {
-		const formData = new FormData();
-		formData.append("usuario_id", userData.id);
-		formData.append("firma_digital", file);
 
-		const resp = await subirFirmaPerfil(formData);
 
-		if (resp.status) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setUserData({
-					...userData,
-					firma_digital: reader.result,
-				});
-			};
-			reader.readAsDataURL(file);
-		} else {
-			alert("Error al subir firma: " + resp.message);
-		}
-	};
+	const [firmaPreview, setFirmaPreview] = useState(null);
+	const [openCrop, setOpenCrop] = useState(false);
+	const cropperRef = useRef(null);
 
 	const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 	const [showNewPassword, setShowNewPassword] = useState(false);
@@ -54,6 +41,8 @@ export default function PerfilUsuario(props) {
 		new: '',
 		confirm: ''
 	});
+
+
 
 	const calculatePasswordStrength = (password) => {
 		let strength = 0;
@@ -145,7 +134,7 @@ export default function PerfilUsuario(props) {
 				if (!resp.status) {
 					Swal.fire("Error", resp.message || "No se pudo subir la firma", "error");
 					return;
-				} 
+				}
 				// Actualiza la firma en el state con lo que devuelva el backend (ej: ruta o url)
 				setUserData((prev) => ({
 					...prev,
@@ -297,31 +286,65 @@ export default function PerfilUsuario(props) {
 		}
 	};
 	const dragControls = useDragControls();
+
+
+	const handleSeleccionFirma = (file) => {
+		const reader = new FileReader();
+		reader.onload = () => {
+			setFirmaPreview(reader.result);
+			setOpenCrop(true);
+		};
+		reader.readAsDataURL(file);
+	};
+
+	// 2. Al aceptar recorte, generar firma recortada y subir
+	const handleRecortarFirma = async () => {
+		const cropper = cropperRef.current.cropper;
+		const canvas = cropper.getCroppedCanvas({
+			width: 450,
+			height: 200,
+		});
+		canvas.toBlob(async (blob) => {
+			if (!blob) return;
+
+			const file = new File([blob], "firma.png", { type: "image/png" });
+
+			// --- SUBIR AL BACKEND ---
+			const formData = new FormData();
+			formData.append("usuario_id", userData.id);
+			formData.append("firma_digital", file);
+
+			const resp = await subirFirmaPerfil(formData);
+
+			if (resp.status) {
+				// guardar preview en el state del usuario
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					setUserData({
+						...userData,
+						firma_digital: reader.result,
+					});
+				};
+				reader.readAsDataURL(file);
+
+				setOpenCrop(false); // cerrar modal
+			} else {
+				alert("Error al subir firma: " + resp.message);
+			}
+		}, "image/png");
+	};
 	return (
 		<motion.div
 			className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
-			initial="hidden"
-			animate="visible"
-			variants={containerVariants}
+		// initial="hidden"
+		// animate="visible"
+		// variants={containerVariants}
 		>
 			<BackPage />
 			<motion.div
 				className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl relative"
 				variants={itemVariants}
-				drag={window.innerWidth > 768} // Solo habilita drag en PC
-				dragControls={dragControls}
-				dragConstraints={{
-					top: -50,
-					left: -50,
-					right: 50,
-					bottom: 50,
-				}}
-				dragElastic={0.1}
-				whileDrag={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-				// Estilos condicionales para móvil
-				style={{
-					transform: window.innerWidth <= 768 ? "translateX(0)" : undefined
-				}}
+
 			>
 				{window.innerWidth > 768 && (
 					<div
@@ -591,7 +614,8 @@ export default function PerfilUsuario(props) {
 											/>
 
 										</div>
-										<div>
+										{/* seccion de subir firma */}
+										<div className="space-y-4">
 											<label className="block text-sm font-medium text-gray-500">
 												Subir firma (PNG)
 											</label>
@@ -601,13 +625,48 @@ export default function PerfilUsuario(props) {
 												onChange={(e) => {
 													const file = e.target.files[0];
 													if (file) {
-														handleFirmaUpload(file);
+														handleSeleccionFirma(file);
 													}
 												}}
 												className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
 											/>
-										</div>
 
+											{/* Modal simple con Tailwind */}
+											{openCrop && (
+												<div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-50 z-50">
+													<div className="bg-white border-2 border-gray-200 rounded-lg p-4 w-full max-w-lg space-y-4 shadow-lg">
+														<h2 className="text-lg font-semibold">Recortar firma</h2>
+
+														{firmaPreview && (
+															<Cropper
+																src={firmaPreview}
+																style={{ height: 300, width: "100%" }}
+																aspectRatio={450 / 200} // firma rectangular
+																guides={false}
+																ref={cropperRef}
+																viewMode={1}
+																background={false}
+															/>
+														)}
+
+														<div className="flex justify-end space-x-2">
+															<button
+																className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
+																onClick={() => setOpenCrop(false)}
+															>
+																Cancelar
+															</button>
+															<button
+																className="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+																onClick={handleRecortarFirma}
+															>
+																Aceptar
+															</button>
+														</div>
+													</div>
+												</div>
+											)}
+										</div>
 									</div>
 								</motion.div>
 							</motion.div>

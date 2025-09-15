@@ -11,7 +11,9 @@ import {
 	FileText,
 	CheckCircle,
 	XCircle,
-	Warehouse
+	Warehouse,
+	MapPin,
+	ChevronDown
 } from 'lucide-react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { crearPedido, subirFirmaPedido } from "../../../../services/cp_pedidos_services";
@@ -169,7 +171,7 @@ export default function CrearPedido() {
 
 
 	const agregarItem = () => {
-		setItems([...items, { nombre: "", cantidad: 1, referencia_items: "" }]);
+		setItems([...items, { nombre: "", cantidad: 1, unidad_medida: "", referencia_items: "" }]);
 	};
 
 	const cambiarItem = (index, campo, valor) => {
@@ -183,7 +185,7 @@ export default function CrearPedido() {
 	};
 
 	return (
-		<div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-5 mb-5">
+		<div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-5 mb-5">
 			<h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
 				<FilePlus className="text-blue-600" size={24} />
 				Crear Nuevo Pedido
@@ -207,150 +209,221 @@ export default function CrearPedido() {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{/* Fecha Solicitud */}
 					<div className="relative">
-						<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-							<Calendar size={16} />
+						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+							<div className="p-1.5 bg-green-100 rounded-md">
+								<Calendar size={16} className="text-green-600" />
+							</div>
 							Fecha de Solicitud
+							<span className="text-red-500">*</span>
 						</label>
-						<input
-							type="date"
-							value={form.fecha_solicitud}
-							onChange={(e) => setForm({ ...form, fecha_solicitud: e.target.value })}
-							className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							required
-						/>
+						<div className="relative">
+							<input
+								type="date"
+								value={form.fecha_solicitud}
+								onChange={(e) => setForm({ ...form, fecha_solicitud: e.target.value })}
+								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+								required
+							/>
+							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none mt-1">
+								<Calendar size={16} className="text-gray-400" />
+							</div>
+						</div>
+						{form.fecha_solicitud && (
+							<p className="mt-2 text-xs text-green-600 flex items-center gap-1">
+								<CheckCircle size={12} />
+								Fecha seleccionada: {new Date(form.fecha_solicitud).toLocaleDateString('es-ES')}
+							</p>
+						)}
 					</div>
 
-					{/* Proceso Solicitante */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-							<User size={16} />
+					{/* Campo de Proceso Solicitante */}
+					<div className="relative">
+						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+							<div className="p-1.5 bg-indigo-100 rounded-md">
+								<User size={16} className="text-indigo-600" />
+							</div>
 							Proceso Solicitante
+							<span className="text-red-500">*</span>
 						</label>
-						<input
-							type="text"
-							value={form.proceso_solicitante}
-							onChange={(e) => setForm({ ...form, proceso_solicitante: e.target.value })}
-							className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							required
-							placeholder="Ej: Departamento de Sistemas"
-						/>
+						<div className="relative">
+							<input
+								type="text"
+								value={form.proceso_solicitante}
+								onChange={(e) => setForm({ ...form, proceso_solicitante: e.target.value })}
+								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+								required
+								placeholder="Ej: Departamento de Sistemas"
+							/>
+							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+								<User size={16} className="text-gray-400" />
+							</div>
+						</div>
+						{form.proceso_solicitante && (
+							<p className="mt-2 text-xs text-gray-500">
+								Ejemplos: Farmacia, Administración, Logística, etc.
+							</p>
+						)}
 					</div>
+
 
 					{/* Tipo Solicitud */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-							<List size={16} />
+					<div className="relative">
+						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+							<div className="p-1.5 bg-blue-100 rounded-md">
+								<List size={16} className="text-blue-600" />
+							</div>
 							Tipo de Solicitud
+							<span className="text-red-500">*</span>
 						</label>
-						<select
-							value={form.tipo_solicitud}
-							onChange={(e) => setForm({ ...form, tipo_solicitud: e.target.value })}
-							className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							required
-						>
-							<option value="">Seleccione un tipo</option>
-							{tipos.map((tipo) => (
-								<option key={tipo.id} value={tipo.id}>
-									{tipo.nombre}
-								</option>
-							))}
-						</select>
+						<div className="relative">
+							<select
+								value={form.tipo_solicitud}
+								onChange={(e) => setForm({ ...form, tipo_solicitud: e.target.value })}
+								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white cursor-pointer"
+								required
+							>
+								<option value="">Seleccione un tipo</option>
+								{tipos.map((tipo) => (
+									<option key={tipo.id} value={tipo.id}>
+										{tipo.nombre}
+									</option>
+								))}
+							</select>
+							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none mt-5">
+								<ChevronDown size={16} className="text-gray-400" />
+							</div>
+						</div>
+						{form.tipo_solicitud && (
+							<p className="mt-2 text-xs text-gray-500">
+								{form.tipo_solicitud === "prioritaria"
+									? "Prioritaria: Respuesta en 5 horas o 3-4 días si requiere compra externa"
+									: "Recurrente: Respuesta entre 1-5 días hábiles"}
+							</p>
+						)}
 					</div>
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-
-							<Warehouse size={16} />
+					<div className="relative">
+						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+							<div className="p-1.5 bg-purple-100 rounded-md">
+								<Warehouse size={16} className="text-purple-600" />
+							</div>
 							Sede
+							<span className="text-red-500">*</span>
 						</label>
-						<select
-							value={form.sede_id}
-							onChange={(e) => setForm({ ...form, sede_id: e.target.value })}
-							className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							required
-						>
-							<option value="">Seleccione la sede</option>
-							{sedes.map((sedes) => (
-								<option key={sedes.id} value={sedes.id}>
-									{sedes.nombre}
-								</option>
-							))}
-						</select>
+						<div className="relative">
+							<select
+								value={form.sede_id}
+								onChange={(e) => setForm({ ...form, sede_id: e.target.value })}
+								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white cursor-pointer"
+								required
+							>
+								<option value="">Seleccione la sede</option>
+								{sedes.map((sede) => (
+									<option key={sede.id} value={sede.id}>
+										{sede.nombre}
+									</option>
+								))}
+							</select>
+							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none mt-5">
+								<MapPin size={16} className="text-gray-400" />
+							</div>
+						</div>
+						{form.sede_id && (
+							<p className="mt-2 text-xs text-gray-500">
+								Seleccionaste: {sedes.find(s => s.id == form.sede_id)?.nombre}
+							</p>
+						)}
 					</div>
 				</div>
 
-				{/* Observación */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-						<FileText size={16} />
-						Observaciones
-					</label>
-					<textarea
-						value={form.observacion}
-						onChange={(e) => setForm({ ...form, observacion: e.target.value })}
-						className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-						placeholder="Detalles adicionales del pedido"
-					/>
-				</div>
-
-				{/* Sección de Ítems */}
-				<div className="border border-gray-200 rounded-lg p-4">
-					<div className="flex justify-between items-center mb-4">
-						<h3 className="text-lg font-medium text-gray-800 flex items-center gap-2">
-							<ClipboardList size={18} />
+				{/* seccion items  */}
+				<div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+					<div className="flex justify-between items-center mb-6">
+						<h3 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
+							<div className="p-2 bg-blue-100 rounded-lg">
+								<ClipboardList size={20} className="text-blue-600" />
+							</div>
 							Ítems del Pedido
 						</h3>
-						<button
-							type="button"
-							onClick={agregarItem}
-							className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer"
-						>
-							<Plus size={16} />
-							Agregar Ítem
-						</button>
+						<span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">
+							{items.length} {items.length === 1 ? 'ítem' : 'ítems'}
+						</span>
 					</div>
 
 					{items.length === 0 ? (
-						<div className="text-center py-4 text-gray-500">
-							No hay ítems agregados
+						<div className="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+							<ClipboardList size={40} className="mx-auto text-gray-300 mb-3" />
+							<p className="text-gray-500 mb-4">No hay ítems agregados al pedido</p>
+							<button
+								type="button"
+								onClick={agregarItem}
+								className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+							>
+								<Plus size={16} />
+								Agregar primer ítem
+							</button>
 						</div>
 					) : (
 						<div className="space-y-4">
+							{/* Encabezados de la tabla (solo visible en desktop) */}
+							<div className="hidden md:grid md:grid-cols-12 gap-4 text-sm text-gray-500 font-medium pb-2 border-b">
+								<div className="md:col-span-5">Nombre del Producto</div>
+								<div className="md:col-span-2">Cantidad</div>
+								<div className="md:col-span-2">Unidad de medida</div>
+								<div className="md:col-span-2">Referencia</div>
+								<div className="md:col-span-1 text-center">Acción</div>
+							</div>
+
 							{items.map((item, i) => (
-								<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border-b pb-4">
+								<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-lg even:bg-gray-50/50 hover:bg-blue-50/30 transition-colors">
 									<div className="md:col-span-5">
+										<label className="text-sm text-gray-500 block mb-1 md:hidden">Nombre</label>
 										<input
-											placeholder="Nombre del ítem"
+											placeholder="Ej: Medicamento X, Material Y..."
 											value={item.nombre}
 											onChange={(e) => cambiarItem(i, "nombre", e.target.value)}
-											className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500"
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
 											required
 										/>
 									</div>
 									<div className="md:col-span-2">
+										<label className="text-sm text-gray-500 block mb-1 md:hidden">Cantidad</label>
 										<input
 											type="number"
-											placeholder="Cantidad"
+											placeholder="0"
 											value={item.cantidad}
 											onChange={(e) => cambiarItem(i, "cantidad", e.target.value)}
 											min={1}
-											className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500"
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
 											required
 										/>
 									</div>
-									<div className="md:col-span-4">
+									<div className="md:col-span-2">
+										<label className="text-sm text-gray-500 block mb-1 md:hidden">Unidad</label>
+										<select
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+											value={item.unidad_medida}
+											onChange={(e) => cambiarItem(i, "unidad_medida", e.target.value)}
+											required
+										>
+											<option value="Unidades">Unidades</option>
+											<option value="Paquetes">Paquetes</option>
+										</select>
+									</div>
+									<div className="md:col-span-2">
+										<label className="text-sm text-gray-500 block mb-1 md:hidden">Referencia (opcional)</label>
 										<input
-											placeholder="Referencia (opcional)"
+											placeholder="enlace del producto"
 											value={item.referencia_items}
 											onChange={(e) => cambiarItem(i, "referencia_items", e.target.value)}
-											className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500"
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
 										/>
 									</div>
-									<div className="md:col-span-1 flex justify-center">
+									<div className="md:col-span-1 flex justify-center pt-1 md:pt-0">
 										<button
 											type="button"
 											onClick={() => borrarItem(i)}
-											className="text-red-500 hover:text-red-700 p-1"
-											title="Eliminar"
+											className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+											title="Eliminar ítem"
 										>
 											<Trash2 size={18} />
 										</button>
@@ -359,6 +432,105 @@ export default function CrearPedido() {
 							))}
 						</div>
 					)}
+
+					<div className="mt-6 flex justify-between items-center">
+						<div className="text-sm text-gray-500">
+							{items.length > 0 ? '¿Necesitas agregar más ítems?' : ''}
+						</div>
+						<button
+							type="button"
+							onClick={agregarItem}
+							className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm"
+						>
+							<Plus size={16} />
+							Agregar Ítem
+						</button>
+					</div>
+				</div>
+
+				{/* Observación */}
+				<div className="relative">
+					<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+						<div className="p-1.5 bg-amber-100 rounded-md">
+							<FileText size={16} className="text-amber-600" />
+						</div>
+						Observaciones
+					</label>
+
+					<div className="relative">
+						<textarea
+							value={form.observacion}
+							onChange={(e) => setForm({ ...form, observacion: e.target.value })}
+							className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+							placeholder="Justifique para que se requiere esta compra "
+							rows={4}
+						/>
+						<div className="absolute top-3 left-3 pointer-events-none">
+							<FileText size={16} className="text-gray-400" />
+						</div>
+					</div>
+
+					<div className="flex justify-between items-center mt-2">
+						<p className="text-xs text-gray-500">
+							Ej: Se requiere con urgencia..., Se realiza esta solicitud ya que no contamos con... etc.
+						</p>
+						<span className={`text-xs ${form.observacion.length > 200 ? 'text-amber-600' : 'text-gray-500'}`}>
+							{form.observacion.length}/250
+						</span>
+					</div>
+
+					{form.observacion.length > 200 && (
+						<div className="flex items-center gap-1 mt-1 text-amber-600 text-xs">
+							<AlertCircle size={12} />
+							{form.observacion.length > 250 ?
+								'Límite de caracteres excedido' :
+								'Estás cerca del límite de caracteres'}
+						</div>
+					)}
+				</div>
+
+
+				<div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+					<h3 className="text-lg font-semibold text-gray-800 mb-3">Información sobre solicitudes</h3>
+					<div className="space-y-4 text-gray-700">
+						<div>
+							<h4 className="font-medium text-gray-800 mb-1">Unidad de medida:</h4>
+							<p>Puede representarse en <strong>unidades</strong> o <strong>paquetes</strong> según aplique.</p>
+						</div>
+
+						<div>
+							<h4 className="font-medium text-gray-800 mb-1">Tipo de solicitud:</h4>
+
+							<div className="ml-2 mt-2">
+								<div className="mb-3">
+									<span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+										Prioritaria
+									</span>
+									<ul className="mt-2 pl-5 list-disc space-y-1">
+										<li>Para el proceso de farmacia se recibe la solicitud del pedido y se dará respuesta en un tiempo no mayor a 5 horas.</li>
+										<li>En los casos que requiera compra en otra ciudad se dará respuesta en un tiempo de 3 a 4 días hábiles.</li>
+										<li>Para los demás procesos se dará respuesta en 2 días hábiles.</li>
+									</ul>
+								</div>
+
+								<div className="mb-3">
+									<span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+										Recurrente
+									</span>
+									<ul className="mt-2 pl-5 list-disc space-y-1">
+										<li>Para el proceso de farmacia el pedido mensual se recibe la solicitud del pedido y se dará respuesta de 1 a 5 días.</li>
+										<li>Para los demás procesos se reciben los 5 primeros días del mes para dar respuesta en un tiempo de 1 a 4 días hábiles.</li>
+									</ul>
+								</div>
+
+								<div className="bg-yellow-50 p-3 rounded-md border border-yellow-100 mt-4">
+									<p className="text-sm text-yellow-800">
+										<span className="font-medium">Nota:</span> En caso que el pedido requiera elaboración se dará respuesta en el tiempo que se determine con el proveedor para entrega de la compra previamente informado al proceso solicitante.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				{/* Firma */}
