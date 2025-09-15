@@ -271,7 +271,7 @@ export default function GestionPedidos() {
 									</div>
 									<div>
 										<h3 className="font-medium text-gray-800">
-											Pedido #{pedido.consecutivo || pedido.id}
+											Consecutivo #{pedido.consecutivo || pedido.id}
 										</h3>
 										<p className="text-sm text-gray-500">
 											{pedido.proceso_solicitante}
