@@ -233,7 +233,12 @@ export default function CrearPedido() {
 						{form.fecha_solicitud && (
 							<p className="mt-2 text-xs text-green-600 flex items-center gap-1">
 								<CheckCircle size={12} />
-								Fecha seleccionada: {new Date(form.fecha_solicitud).toLocaleDateString('es-ES')}
+								Fecha: {new Date(form.fecha_solicitud + 'T00:00:00').toLocaleDateString('es-ES', {
+									weekday: 'long',
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric'
+								})}
 							</p>
 						)}
 					</div>
