@@ -192,14 +192,14 @@ export default function PedidoDetalle() {
                 setTipoRechazo("compras");
                 setShowObservacionesForm(true);
               }}
-              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2 bg-[#F53232] text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
             >
               <X size={18} />
               Rechazar
             </button>
             <button
               onClick={() => setShowFirmaAprobacionForm(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2 bg-[#4CAF50] text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
             >
               <Check size={18} />
               Aprobar
@@ -212,13 +212,13 @@ export default function PedidoDetalle() {
           <>
             <button
               onClick={() => setShowObservacionesForm(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2 bg-[#F53232] text-white rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer"
             >
               <X size={18} />
               Rechazar
             </button>
             <button
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer">
+              className="flex items-center gap-2 px-6 py-2 bg-[#4CAF50] text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer">
               <Check size={18} />
               Aprobar
             </button>
@@ -234,14 +234,14 @@ export default function PedidoDetalle() {
                     setTipoRechazo("gerencia");
                     setShowObservacionesForm(true);
                   }}
-                  className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  className="flex items-center gap-2 px-6 py-2 bg-[#F53232] text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
                 >
                   <X size={18} />
                   Rechazar
                 </button>
                 <button
                   onClick={() => setShowFirmaAprobacionForm(true)}
-                  className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                  className="flex items-center gap-2 px-6 py-2 bg-[#4CAF50] text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
                 >
                   <Check size={18} />
                   Aprobar
@@ -442,6 +442,7 @@ export default function PedidoDetalle() {
                     <button
                       onClick={() => handleCotizar(item)}
                       className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition"
+                      hidden
                     >
                       Cotizar
                     </button>
