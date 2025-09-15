@@ -219,10 +219,12 @@ export default function CrearPedido() {
 						<div className="relative">
 							<input
 								type="date"
-								value={form.fecha_solicitud}
+								value={form.fecha_solicitud || new Date().toISOString().split('T')[0]}
 								onChange={(e) => setForm({ ...form, fecha_solicitud: e.target.value })}
+								min={new Date().toISOString().split('T')[0]}
+								max={new Date().toISOString().split('T')[0]}
 								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
-								required
+								disabled
 							/>
 							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none mt-1">
 								<Calendar size={16} className="text-gray-400" />
@@ -260,7 +262,7 @@ export default function CrearPedido() {
 						</div>
 						{form.proceso_solicitante && (
 							<p className="mt-2 text-xs text-gray-500">
-								Ejemplos: Farmacia, Administración, Logística, etc.
+								Ejemplos: Farmacia, Administración, sistemas, etc.
 							</p>
 						)}
 					</div>
