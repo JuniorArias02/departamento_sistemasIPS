@@ -285,7 +285,7 @@ export default function GestionPedidos() {
 									</div>
 									<div className="text-sm text-gray-500 flex items-center gap-1">
 										<Calendar size={14} />
-										{new Date(pedido.fecha_solicitud).toLocaleDateString()}
+										{new Date(pedido.fecha_solicitud + 'T00:00:00').toLocaleDateString()}
 									</div>
 									<button className="text-blue-500 hover:text-blue-700">
 										{expandedPedido === pedido.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -314,7 +314,7 @@ export default function GestionPedidos() {
 												<div className="flex justify-between">
 													<span className="text-gray-500">Fecha solicitud:</span>
 													<span className="font-medium">
-														{new Date(pedido.fecha_solicitud).toLocaleDateString()}
+														{new Date(pedido.fecha_solicitud + 'T00:00:00').toLocaleDateString()}
 													</span>
 												</div>
 												<div className="flex justify-between">

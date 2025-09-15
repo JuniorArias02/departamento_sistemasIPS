@@ -311,7 +311,7 @@ export default function PedidoDetalle() {
                 <Calendar size={16} />
                 <span>Fecha:</span>
               </div>
-              <div className="font-medium">{data.fecha_solicitud}</div>
+              <div className="font-medium">{new Date(data.fecha_solicitud + 'T00:00:00').toLocaleDateString()}</div>
             </div>
 
             <div className="flex items-start">
@@ -537,4 +537,3 @@ export default function PedidoDetalle() {
     </div >
   );
 }
-
