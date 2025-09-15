@@ -32,7 +32,7 @@ export default function CrearPedido() {
 	const [firmaAprobacion, setFirmaAprobacion] = useState(null);
 	const [sedes, setSedes] = useState([]);
 	const [form, setForm] = useState({
-		fecha_solicitud: "",
+		fecha_solicitud: new Date().toISOString().split('T')[0],
 		proceso_solicitante: "",
 		tipo_solicitud: "",
 		sede_id: "",
@@ -130,7 +130,7 @@ export default function CrearPedido() {
 			});
 			// 6️⃣ Reset form
 			setForm({
-				fecha_solicitud: "",
+				fecha_solicitud: new Date().toISOString().split('T')[0],
 				proceso_solicitante: "",
 				tipo_solicitud: "",
 				observacion: "",
@@ -219,7 +219,7 @@ export default function CrearPedido() {
 						<div className="relative">
 							<input
 								type="date"
-								value={form.fecha_solicitud || new Date().toISOString().split('T')[0]}
+								value={form.fecha_solicitud}
 								onChange={(e) => setForm({ ...form, fecha_solicitud: e.target.value })}
 								min={new Date().toISOString().split('T')[0]}
 								max={new Date().toISOString().split('T')[0]}
