@@ -477,7 +477,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM) && (
 								<SidebarCollapsible
 									icon={<Store size={18} />}
-									text="Gestion de pedidos"
+									text="Area de Compra"
 									isOpen={menuGestionComprasOpen}
 									onClick={() =>
 										permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.MENU_ITEM)
