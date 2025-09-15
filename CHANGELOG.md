@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.5.10...v2.6.0) (2025-09-15)
+
+
+### Features
+
+* se agreo nuevo modulo de pedido y equipos de computo ([f749c78](https://github.com/JuniorArias02/departamento_sistemasIPS/commit/f749c782aa3097e4554b323635192c87588b84ab))
+
 ### [2.5.10](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.5.9...v2.5.10) (2025-08-21)
 
 ### [2.5.9](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.5.8...v2.5.9) (2025-08-14)
