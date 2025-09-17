@@ -80,7 +80,6 @@ export function VerActaMantenimiento() {
 
 		try {
 			const res = await subirFirmaMantenimientoPC(formData);
-			console.log("Respuesta:", res);
 
 			if (res.status) {
 				const data = await listarMantenimiento();

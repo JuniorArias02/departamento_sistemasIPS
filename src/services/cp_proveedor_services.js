@@ -60,7 +60,6 @@ export const buscarProveedor = async (search) => {
     });
 
     if (res.data.success) {
-      console.log("Proveedores encontrados:", res.data.data);
       return res.data.data;
     } else {
       console.warn(res.data.message);
