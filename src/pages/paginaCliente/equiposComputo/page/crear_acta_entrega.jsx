@@ -6,8 +6,11 @@ import { buscarPerifericoo } from "../../../../services/pc_perifericos_services"
 import { buscarEquipo } from "../../../../services/pc_equipos_services";
 import { buscarPersonal } from "../../../../services/personal_services";
 import Swal from 'sweetalert2';
-import { Search, Calendar, User, Plus, Trash2, Save, MousePointerClick, ClipboardList } from 'lucide-react';
-
+import {
+  ClipboardList, Search, User, Calendar, Plus, Trash2, Save,
+  FileText, Edit3, Cable, List, Loader2, Info
+} from 'lucide-react';
+import BuscarResponsable from "../../componentsUnive/BuscarResponsable";
 const VistaCrearActaEntrega = () => {
   const { usuario } = useApp();
   const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
@@ -170,220 +173,257 @@ const VistaCrearActaEntrega = () => {
         text: 'Ocurrió un error inesperado.'
       });
     } finally {
-      setGuardando(false); // desactivamos loading
+      setGuardando(false);
     }
   };
   return (
-
-
-    <div className="max-w-4xl mx-auto p-6 mt-5 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <ClipboardList className="text-blue-600" size={24} />
-        Crear Acta de Entrega
-      </h1>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Campo ID Equipo */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="text-gray-400" size={18} />
-            </div>
-            <input
-              type="text"
-              value={busquedaEquipo}
-              onChange={async (e) => {
-                setBusquedaEquipo(e.target.value);
-                if (e.target.value.length >= 2) {
-                  const res = await buscarEquipo(e.target.value);
-                  setResultadosEquipos(res);
-                } else {
-                  setResultadosEquipos([]);
-                }
-              }}
-              placeholder="Buscar equipo por serial o inventario"
-              className="border pl-10 p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+    <div className="max-w-4xl mx-auto p-6 mt-5 bg-white rounded-2xl shadow-xl border border-gray-100">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl mb-8 border border-blue-100">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <div className="bg-blue-100 p-2 rounded-lg">
+            <ClipboardList className="text-blue-600" size={28} />
           </div>
+          Crear Acta de Entrega
+        </h1>
+        <p className="text-gray-600 flex items-center gap-2">
+          <Info className="h-4 w-4 text-blue-400" />
+          Complete todos los campos para generar el acta de entrega
+        </p>
+      </div>
 
-          <select
-            value={equipoSeleccionado?.id || ""}
-            onChange={(e) => {
-              const eq = resultadosEquipos.find(eqp => eqp.id == e.target.value);
-              if (eq) {
-                setEquipoSeleccionado(eq);
-                setForm({ ...form, equipo_id: eq.id });
-              }
-            }}
-            className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">-- Selecciona un equipo --</option>
-            {resultadosEquipos.map((eq) => (
-              <option key={eq.id} value={eq.id}>
-                {eq.nombre_equipo} - {eq.marca} {eq.modelo} - {eq.serial}
-              </option>
-            ))}
-          </select>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Sección de Información Principal */}
+        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <FileText className="text-blue-500" size={20} />
+            Información del Equipo y Entrega
+          </h2>
 
-          {/* Campo Funcionario */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="text-gray-400" size={18} />
-            </div>
-            <input
-              type="text"
-              value={personalBusqueda}
-              onChange={(e) => buscarFuncionario(e.target.value)}
-              placeholder="Buscar por cédula o nombre"
-              className="border pl-10 p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-
-            {personalResultados.length > 0 && (
-              <div className="mt-2 border rounded p-2 max-h-40 overflow-y-auto bg-white shadow-lg z-10 absolute w-full">
-                {personalResultados.map((persona) => (
-                  <div
-                    key={persona.id}
-                    onClick={() => {
-                      setForm((prev) => ({
-                        ...prev,
-                        funcionario_id: persona.id,
-                      }));
-                      setPersonalBusqueda(`${persona.nombre} - ${persona.cedula}`);
-                      setPersonalResultados([]);
-                    }}
-                    className="cursor-pointer hover:bg-blue-50 px-3 py-2 rounded flex items-center gap-2"
-                  >
-                    <MousePointerClick className="text-blue-500" size={14} />
-                    {persona.nombre} - {persona.cedula}
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Campo ID Equipo */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Search className="text-gray-500" size={16} />
+                Buscar Equipo
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="text-gray-400" size={18} />
+                </div>
+                <input
+                  type="text"
+                  value={busquedaEquipo}
+                  onChange={async (e) => {
+                    setBusquedaEquipo(e.target.value);
+                    if (e.target.value.length >= 2) {
+                      const res = await buscarEquipo(e.target.value);
+                      setResultadosEquipos(res);
+                    } else {
+                      setResultadosEquipos([]);
+                    }
+                  }}
+                  placeholder="Ingrese serial o número de inventario..."
+                  className="border pl-10 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
+                />
               </div>
-            )}
-          </div>
-
-          {/* Campo Fecha */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="text-gray-400" size={18} />
             </div>
-            <input
-              type="date"
-              name="fecha_entrega"
-              value={form.fecha_entrega}
-              onChange={handleChange}
-              className="border pl-10 p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Seleccionar Equipo
+              </label>
+              <select
+                value={equipoSeleccionado?.id || ""}
+                onChange={(e) => {
+                  const eq = resultadosEquipos.find(eqp => eqp.id == e.target.value);
+                  if (eq) {
+                    setEquipoSeleccionado(eq);
+                    setForm({ ...form, equipo_id: eq.id });
+                  }
+                }}
+                className="border p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
+              >
+                <option value="">-- Selecciona un equipo --</option>
+                {resultadosEquipos.map((eq) => (
+                  <option key={eq.id} value={eq.id}>
+                    {eq.nombre_equipo} - {eq.marca} {eq.modelo} - {eq.serial}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Campo Funcionario */}
+            <div>
+              <div className="relative">
+                <BuscarResponsable
+                  name="funcionario_id"
+                  value={form.funcionario_id}
+                  onChange={handleChange}
+                  label="Funcionario"
+                />
+              </div>
+            </div>
+
+            {/* Campo Fecha */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Calendar className="text-gray-500" size={16} />
+                Fecha de Entrega
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="text-gray-400" size={18} />
+                </div>
+                <input
+                  type="date"
+                  name="fecha_entrega"
+                  value={form.fecha_entrega}
+                  onChange={handleChange}
+                  className="border pl-10 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Sección de Firmas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FirmaInput
-            value={form.firma_entrega}
-            onChange={(value) => setForm({ ...form, firma_entrega: value })}
-            label="Firma Entrega"
-          />
+        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <Edit3 className="text-blue-500" size={20} />
+            Firmas
+          </h2>
 
-          <FirmaInput
-            value={form.firma_recibe}
-            onChange={(value) => setForm({ ...form, firma_recibe: value })}
-            label="Firma Recibe"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FirmaInput
+              value={form.firma_entrega}
+              onChange={(value) => setForm({ ...form, firma_entrega: value })}
+              label="Firma Entrega"
+            />
+
+            <FirmaInput
+              value={form.firma_recibe}
+              onChange={(value) => setForm({ ...form, firma_recibe: value })}
+              label="Firma Recibe"
+            />
+          </div>
         </div>
 
         {/* Búsqueda de Periféricos */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="text-gray-400" size={18} />
-          </div>
-          <input
-            type="text"
-            value={perifericoBusqueda}
-            onChange={async (e) => {
-              setPerifericoBusqueda(e.target.value);
-              if (e.target.value.trim().length >= 2) {
-                const resultados = await buscarPerifericoo(e.target.value);
-                setResultadosBusqueda(resultados);
-              } else {
-                setResultadosBusqueda([]);
-              }
-            }}
-            className="border pl-10 p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Buscar periférico (por código, nombre o serial)"
-          />
-        </div>
+        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <Cable className="text-blue-500" size={20} />
+            Gestión de Periféricos
+          </h2>
 
-        {resultadosBusqueda.length > 0 && (
-          <select
-            value={perifericoSeleccionadoId || ""}
-            onChange={(e) => {
-              const selected = resultadosBusqueda.find(p => p.id === parseInt(e.target.value));
-              if (selected) {
-                setPerifericoSeleccionado(selected);
-                setPerifericoSeleccionadoId(selected.id);
-              }
-            }}
-            className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">-- Selecciona un periférico --</option>
-            {resultadosBusqueda.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre} - {p.codigo} - {p.serial}
-              </option>
-            ))}
-          </select>
-        )}
-
-        <button
-          type="button"
-          disabled={!perifericoSeleccionado}
-          onClick={() => {
-            if (!form.perifericos.some(p => p.inventario_id === perifericoSeleccionado.id)) {
-              setForm({
-                ...form,
-                perifericos: [
-                  ...form.perifericos,
-                  {
-                    inventario_id: perifericoSeleccionado.id,
-                    nombre: perifericoSeleccionado.nombre,
-                    codigo: perifericoSeleccionado.codigo,
-                    serial: perifericoSeleccionado.serial,
-                    marca: perifericoSeleccionado.marca,
-                    modelo: perifericoSeleccionado.modelo,
-                    cantidad: 1
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+              <Search className="text-gray-500" size={16} />
+              Buscar Periférico
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="text-gray-400" size={18} />
+              </div>
+              <input
+                type="text"
+                value={perifericoBusqueda}
+                onChange={async (e) => {
+                  setPerifericoBusqueda(e.target.value);
+                  if (e.target.value.trim().length >= 2) {
+                    const resultados = await buscarPerifericoo(e.target.value);
+                    setResultadosBusqueda(resultados);
+                  } else {
+                    setResultadosBusqueda([]);
                   }
-                ]
-              });
-            }
-            setPerifericoSeleccionado(null);
-            setPerifericoSeleccionadoId("");
-            setPerifericoBusqueda("");
-            setResultadosBusqueda([]);
-          }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${perifericoSeleccionado
-            ? 'bg-blue-600 text-white hover:bg-blue-700'
-            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-        >
-          <Plus size={18} />
-          Agregar periférico
-        </button>
+                }}
+                className="border pl-10 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
+                placeholder="Buscar por código, nombre o serial..."
+              />
+            </div>
+          </div>
+
+          {resultadosBusqueda.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Seleccionar Periférico
+              </label>
+              <select
+                value={perifericoSeleccionadoId || ""}
+                onChange={(e) => {
+                  const selected = resultadosBusqueda.find(p => p.id === parseInt(e.target.value));
+                  if (selected) {
+                    setPerifericoSeleccionado(selected);
+                    setPerifericoSeleccionadoId(selected.id);
+                  }
+                }}
+                className="border p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
+              >
+                <option value="">-- Selecciona un periférico --</option>
+                {resultadosBusqueda.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nombre} - {p.codigo} - {p.serial}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <button
+            type="button"
+            disabled={!perifericoSeleccionado}
+            onClick={() => {
+              if (!form.perifericos.some(p => p.inventario_id === perifericoSeleccionado.id)) {
+                setForm({
+                  ...form,
+                  perifericos: [
+                    ...form.perifericos,
+                    {
+                      inventario_id: perifericoSeleccionado.id,
+                      nombre: perifericoSeleccionado.nombre,
+                      codigo: perifericoSeleccionado.codigo,
+                      serial: perifericoSeleccionado.serial,
+                      marca: perifericoSeleccionado.marca,
+                      modelo: perifericoSeleccionado.modelo,
+                      cantidad: 1
+                    }
+                  ]
+                });
+              }
+              setPerifericoSeleccionado(null);
+              setPerifericoSeleccionadoId("");
+              setPerifericoBusqueda("");
+              setResultadosBusqueda([]);
+            }}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${perifericoSeleccionado
+              ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+          >
+            <Plus size={18} />
+            Agregar periférico
+          </button>
+        </div>
 
         {/* Lista de periféricos */}
         {form.perifericos.length > 0 && (
-          <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
-            <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <ClipboardList className="text-blue-500" size={18} />
+          <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl">
+            <h4 className="font-medium text-gray-800 mb-4 flex items-center gap-2">
+              <List className="text-blue-600" size={20} />
               Periféricos Agregados
             </h4>
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-blue-100">
               {form.perifericos.map((p, index) => (
-                <li key={index} className="py-3 flex justify-between items-center">
+                <li key={index} className="py-4 flex justify-between items-center">
                   <div className="flex-1">
-                    <span className="font-medium text-gray-800">{p.nombre}</span>
-                    <div className="text-sm text-gray-500">
-                      {p.cantidad}x • {p.marca} {p.modelo} • {p.codigo} • {p.serial}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-gray-800">{p.nombre}</span>
+                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+                        {p.cantidad}x
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {p.marca} {p.modelo} • {p.codigo} • {p.serial}
                     </div>
                   </div>
                   <button
@@ -393,7 +433,7 @@ const VistaCrearActaEntrega = () => {
                       nuevos.splice(index, 1);
                       setForm({ ...form, perifericos: nuevos });
                     }}
-                    className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50"
+                    className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
                     title="Eliminar"
                   >
                     <Trash2 size={18} />
@@ -408,11 +448,20 @@ const VistaCrearActaEntrega = () => {
         <div className="flex justify-end pt-4">
           <button
             type="submit"
-            className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium py-3 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
             disabled={guardando}
           >
-            <Save size={18} />
-            {guardando ? "Procesando..." : "Guardar Acta de Entrega"}
+            {guardando ? (
+              <>
+                <Loader2 className="animate-spin" size={18} />
+                Procesando...
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                Guardar Acta de Entrega
+              </>
+            )}
           </button>
         </div>
       </form>

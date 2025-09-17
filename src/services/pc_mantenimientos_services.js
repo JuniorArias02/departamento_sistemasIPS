@@ -1,6 +1,32 @@
 import axios from "axios";
-import { OBTENER_TOTAL_MANTENIMIENTO, SUBIR_FIRMA_MANTENIMIENTO,CREAR_MANTENIMIENTO_PC } from "../const/endpoint/pc_equipo_endpoint";
+import { ELIMINAR_ACTA_MANTENIMIENTO, OBTENER_TOTAL_MANTENIMIENTO, SUBIR_FIRMA_MANTENIMIENTO, CREAR_MANTENIMIENTO_PC, LISTAR_MANTENIMIENTO } from "../const/endpoint/pc_equipo_endpoint";
 
+
+export const eliminarMantenimientoId = async (id, usuario_id) => {
+	try {
+		const response = await axios.delete(ELIMINAR_ACTA_MANTENIMIENTO, {
+			data: { id, usuario_id },
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error("Error al eliminar mantenimiento:", error);
+		return { status: false, message: "Fallo en la petición" };
+	}
+};
+
+
+export const listarMantenimiento = async () => {
+	try {
+		const response = await axios.get(LISTAR_MANTENIMIENTO);
+		return response.data;
+	} catch (error) {
+		console.error(error)
+		return { status: "error" };
+	}
+}
 
 export const obtenerTotalMantenimiento = async () => {
 	try {

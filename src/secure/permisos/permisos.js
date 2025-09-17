@@ -70,7 +70,8 @@ export const PERMISOS = {
 		VER: "ver_equipos_computo",  // Ver listado de equipos
 		EDITAR: "editar_equipo",  // Editar equipos existentes
 		ELIMINAR: "eliminar_equipo",  // Eliminar equipos
-		EXPORTAR: "exportar_inventario_equipos"  // Exportar datos
+		EXPORTAR: "exportar_inventario_equipos",  // Exportar datos
+		VER_ACTA_MANTENIMIENTO:"ver_acta_mantenimiento"
 	},
 
 	GESTION_COMPRA_PEDIDOS: {
@@ -81,7 +82,10 @@ export const PERMISOS = {
 		VER_PEDIDOS: 'ver_pedidos',
 		VER_PEDIDOS_ENCARGADO: 'ver_pedidos_encargado',
 		LISTAR_PEDIDOS: 'listar_pedidos',
-		GESTIONAR_PEDIDO: 'gestionar_pedido'
+		GESTIONAR_PEDIDO: 'gestionar_pedido',
+		ENTREGA_SOLICITUD: 'ver_entrega_solicitud',
+		CREAR_ENTREGA_SOLICITUD: 'crear_entrega_solicitud',
+		ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
 	},
 
 	GESTION_PERSONAL: {

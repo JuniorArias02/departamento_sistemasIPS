@@ -33,7 +33,7 @@ import AgregarFirmaModal from "../components/crearPedido/AgregarFirmaModal";
 import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import Portal from "../../components/Portal";
 import { FirmaAprobacionModal } from "../components/pedidoDetalle/FirmaAprobacionModal";
-import {CotizarItemModal} from "../components/pedidoDetalle/CotizarItemModal";
+import { CotizarItemModal } from "../components/pedidoDetalle/CotizarItemModal";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();

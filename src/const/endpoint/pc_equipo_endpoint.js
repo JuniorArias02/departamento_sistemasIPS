@@ -15,3 +15,7 @@ export const BUSCAR_PERIFERICO = `${URL_PATH}controllers/pc_perifericos_entregad
 export const OBTENER_TOTAL_ENTREGA = `${URL_PATH}controllers/pc_entrega/obtener_total_entregas.php`;
 
 export const OBTENER_TOTAL_MANTENIMIENTO = `${URL_PATH}controllers/pc_mantenimiento/obtener_total_mantenimientos.php`;
+
+export const LISTAR_MANTENIMIENTO = `${URL_PATH}controllers/pc_mantenimiento/listar_mantenimientos.php`;
+export const ELIMINAR_ACTA_MANTENIMIENTO = `${URL_PATH}controllers/pc_mantenimiento/eliminar_acta_mantenimiento.php`;
+

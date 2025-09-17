@@ -15,7 +15,8 @@ import {
 	ExternalLink,
 	Download,
 	Loader2,
-	X
+	X,
+
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
 import { useNavigate } from "react-router-dom";
@@ -244,7 +245,7 @@ export default function GestionPedidos() {
 						<div
 							key={pedido.id}
 							ref={expandedPedido === pedido.id ? expandedPedidoRef : null}
-							className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+							className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 relative" // Agregamos relative aquí
 						>
 							{/* Encabezado de la carta */}
 							<div
@@ -268,7 +269,19 @@ export default function GestionPedidos() {
 										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO)
 											? `Proceso Responsable : ${pedido.estado_gerencia}`
 											: `Proceso Compras : ${pedido.estado_compras}` || 'error'}
+
+
 									</div>
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) &&
+										pedido.estado_compras === "aprobado" &&
+										pedido.estado_entrega !== 1 && (
+											<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+												<svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+												</svg>
+												Falta entrega
+											</span>
+										)}
 									<div>
 										<h3 className="font-medium text-gray-800">
 											Consecutivo #{pedido.consecutivo || pedido.id}
@@ -351,7 +364,7 @@ export default function GestionPedidos() {
 														<img
 															src={`${URL_IMAGE2}${pedido.elaborado_por_firma}`}
 															alt="Firma elaborado por"
-															className="h-16 border rounded"
+															className="h-16  rounded"
 														/>
 													) : (
 														<p className="text-sm text-gray-400">Sin firma</p>
@@ -364,7 +377,7 @@ export default function GestionPedidos() {
 														<img
 															src={`${URL_IMAGE2}${pedido.proceso_compra_firma}`}
 															alt="Firma proceso compra"
-															className="h-16 border rounded"
+															className="h-16  rounded"
 														/>
 														<p className="text-sm text-gray-500 mt-1">{pedido.proceso_compra_nombre}</p>
 													</div>
@@ -468,6 +481,28 @@ export default function GestionPedidos() {
 												Gestionar
 											</button>
 										)}
+
+										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) &&
+											pedido.estado_compras === "aprobado" &&
+											(pedido.estado_entrega === 1 ? (
+												<span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+													<CheckCircle className="w-4 h-4 mr-1" />
+													Entrega realizada
+												</span>
+											) : (
+												<button
+													className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+													onClick={() => {
+														navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_ENTREGA_SOLICITUD, {
+															state: { pedido }
+														})
+													}}
+												>
+													<FileText className="w-4 h-4 mr-2" />
+													Realizar Acta de entrega
+												</button>
+											))
+										}
 									</div>
 								</div>
 							)}

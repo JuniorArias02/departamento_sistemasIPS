@@ -30,6 +30,7 @@ import VistaVerEquipos from "./pages/paginaCliente/equiposComputo/page/ver_equip
 import DetalleEquipo from "./pages/paginaCliente/equiposComputo/page/detalle_equipo";
 import VistaCrearActaEntrega from "./pages/paginaCliente/equiposComputo/page/crear_acta_entrega";
 import VistaCrearMantenimientoEquipo from "./pages/paginaCliente/equiposComputo/page/crear_mantenimiento";
+import { VerActaMantenimiento } from "./pages/paginaCliente/equiposComputo/page/VerActaMantenimiento";
 
 import CrearPersonalVista from "./pages/paginaCliente/personal/page/CrearPersonal";
 import GestionPersonalVista from "./pages/paginaCliente/personal/page/GestionPersonal";
@@ -39,7 +40,9 @@ import GestionPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/Ges
 import PedidoDetalle from "./pages/paginaCliente/gestionPedidosCompras/page/PedidoDetalle";
 import InformesPedidos from "./pages/paginaCliente/gestionPedidosCompras/page/InformesPedidos";
 import GestionProveedor from "./pages/paginaCliente/gestionPedidosCompras/page/GestionProveedor";
-
+import CrearEntregaPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearEntregaPedido";
+import { InformeEntrega } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeEntrega";
+import EntregaActivosFijos from "./pages/paginaCliente/gestionPedidosCompras/page/EntregaActivosFijos";
 // REPORTE
 import ReportesTablero from "./pages/paginaCliente/reportes/page/ReportesTablero";
 import CrearReporte from "./pages/paginaCliente/reportes/page/CrearReporte";
@@ -228,9 +231,6 @@ function App() {
 
           {/* formularios */}
 
-
-
-
           <Route
             path={RUTAS.USER.PERSONAL.CREAR_PERSONAL}
             element={
@@ -310,9 +310,56 @@ function App() {
             }
           />
 
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.CREAR_ENTREGA_SOLICITUD}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) ? (
+                <CrearEntregaPedido />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
 
 
           {/* vistaDatos */}
+
+
+
+          <Route
+            path={RUTAS.USER.EQUIPOS.VER_ACTA_MANTENIMIENTO}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.VER_ACTA_MANTENIMIENTO) ? (
+                <VerActaMantenimiento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_SOLICITUD) ? (
+                <InformeEntrega />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_ACTIVOS_FIJOS) ? (
+                <EntregaActivosFijos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
 
 
           <Route

@@ -15,8 +15,8 @@ import {
 	Map,
 	ShoppingBag
 } from "lucide-react";
-
-export default function TabGeneral({ form, handleChange, sedes, areas, personal}) {
+import BuscarResponsable from "../../../../componentsUnive/BuscarResponsable";
+export default function TabGeneral({ form, handleChange, sedes, areas, personal }) {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div className="space-y-4">
@@ -177,26 +177,15 @@ export default function TabGeneral({ form, handleChange, sedes, areas, personal}
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<User className="mr-2 h-4 w-4" />Responsable
-					</label>
-					<div className="relative">
-						<select
+					<div>
+						<BuscarResponsable
 							name="responsable_id"
 							value={form.responsable_id}
 							onChange={handleChange}
-							className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
-							required
-						>
-							<option value="">Seleccione un responsable...</option>
-							{personal.map(persona => (
-								<option key={persona.id} value={persona.id}>{persona.nombre} {persona.cedula}</option>
-							))}
-						</select>
-						<ChevronDown className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
+							label="Responsable"
+						/>
 					</div>
 				</div>
-
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
 						<SquareActivity className="mr-2 h-4 w-4" />Estado

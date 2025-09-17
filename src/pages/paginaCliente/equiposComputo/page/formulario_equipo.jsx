@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { crearEquipo, editarEquipo, subirImagen } from "../../../../services/pc_equipos_services";
 import { listarSedes } from "../../../../services/sedes_service";
 import { obtenerAreaPorSede } from "../../../../services/area_services";
-import { obtenerPersonal } from "../../../../services/personal_services";
+import { obtenerPersonal, buscarPersonal } from "../../../../services/personal_services";
 import { useApp } from "../../../../store/AppContext";
 import Swal from 'sweetalert2';
 import {

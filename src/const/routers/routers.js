@@ -62,6 +62,7 @@ export const RUTAS = {
       DETALLE_EQUIPO: `${DASHBOARD}/detalle_equipo`,
       CREAR_ACTA_ENTREGA: `${DASHBOARD}/crear_acta_entrega`,
       CREAR_ACTA_MANTENIMIENTO: `${DASHBOARD}/crear_acta_mantenimiento`,
+      VER_ACTA_MANTENIMIENTO: `${DASHBOARD}/ver_mantenimientos`,
     },
 
     GESTION_COMPRAS: {
@@ -70,6 +71,9 @@ export const RUTAS = {
       DETALLE_PEDIDO: `${DASHBOARD}/detalle_pedido`,
       INFORMES: `${DASHBOARD}/informes_compras`,
       PROVEEDOR: `${DASHBOARD}/proveedor`,
+      ENTREGA_SOLICITUD: `${DASHBOARD}/entrega_solicitud`,
+      CREAR_ENTREGA_SOLICITUD: `${DASHBOARD}/crear_entrega_solicitud`,
+      ENTREGA_ACTIVOS_FIJOS: `${DASHBOARD}/entrega_activos_fijo`,
     },
 
     PERSONAL: {

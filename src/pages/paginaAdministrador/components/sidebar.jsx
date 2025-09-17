@@ -40,7 +40,11 @@ import {
 	ListTodo,
 	Package,
 	BarChart2,
-	Truck
+	Truck,
+	PackageOpen,
+	NotebookPen,
+	CircleEllipsis,
+	NotebookTabs
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -73,6 +77,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 	const isMobile = useIsMobile();
 	const [menuReportesOpen, setMenuReportesOpen] = useState(false);
 	const [menuEquiposOpen, setMenuEquiposOpen] = useState(false);
+	const [menuSubEquiposOpen, setMenuSubEquiposOpen] = useState(false);
 	const [menuComplementosOpen, setMenuComplementosOpen] = useState(false);
 	const [menuPersonalOpen, setMenuPersonalOpen] = useState(false);
 
@@ -500,6 +505,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_ACTIVOS_FIJOS) && (
+										<SidebarSubItem
+											icon={<NotebookPen size={16} />}
+											text="Entrega Activos Fijos"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS);
+												// se	tTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
 									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
 										<SidebarSubItem
 											icon={<ScrollText size={16} />}
@@ -509,6 +528,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
 											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ROOT}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_SOLICITUD) && (
+										<SidebarSubItem
+											icon={<PackageOpen size={16} />}
+											text="entrega solicitud"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD);
+												// setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>
@@ -541,6 +574,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											delay={0.1}
 										/>
 									)}
+
+
 								</SidebarCollapsible>
 							)}
 
@@ -557,56 +592,70 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									}
 									sidebarOpen={sidebarOpen}
 								>
-									{/* Subitem 1: Agregar Equipo */}
-									<SidebarSubItem
-										icon={<Plus size={16} />}  // Icono simple de "+"
-										text="Agregar Equipo"
-										onClick={() => {
-											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.AGREGAR)) {
-												navigate(RUTAS.USER.EQUIPOS.CREAR_EQUIPO);
-												// setTimeout(() => setSidebarOpen(false), 150);
-											} else {
-												mostrarAlertaSinPermiso();
-											}
-										}}
-										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_EQUIPO}
+									{/* sub menu */}
+									<SidebarCollapsible
+										icon={<CircleEllipsis size={18} />}
+										text="opciones"
+										isOpen={menuSubEquiposOpen}
+										onClick={() =>
+											permisos.includes(PERMISOS.GESTION_EQUIPOS.MENU_ITEM)
+												? setMenuSubEquiposOpen(!menuSubEquiposOpen)
+												: mostrarAlertaSinPermiso()
+										}
 										sidebarOpen={sidebarOpen}
-										delay={0.1}
-									/>
+									>
+										{/* Subitem 1: Agregar Equipo */}
+										<SidebarSubItem
+											icon={<Plus size={16} />}  // Icono simple de "+"
+											text="Agregar Equipo"
+											onClick={() => {
+												if (permisos.includes(PERMISOS.GESTION_EQUIPOS.AGREGAR)) {
+													navigate(RUTAS.USER.EQUIPOS.CREAR_EQUIPO);
+													// setTimeout(() => setSidebarOpen(false), 150);
+												} else {
+													mostrarAlertaSinPermiso();
+												}
+											}}
+											isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_EQUIPO}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
 
-									{/* Subitem 2: Crear Acta de Entrega */}
-									<SidebarSubItem
-										icon={<ClipboardSignature size={16} />}
-										text="Crear Acta de Entrega"
-										onClick={() => {
-											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA)) {
-												navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA);
-											} else {
-												mostrarAlertaSinPermiso();
-											}
-										}}
-										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA}
-										sidebarOpen={sidebarOpen}
-										delay={0.2}
-									/>
+										{/* Subitem 2: Crear Acta de Entrega */}
+										<SidebarSubItem
+											icon={<ClipboardSignature size={16} />}
+											text="Crear Acta de Entrega"
+											onClick={() => {
+												if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_ACTA)) {
+													navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA);
+												} else {
+													mostrarAlertaSinPermiso();
+												}
+											}}
+											isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA}
+											sidebarOpen={sidebarOpen}
+											delay={0.2}
+										/>
 
-									{/* Subitem 3: Crear Mantenimiento */}
-									<SidebarSubItem
-										icon={<Wrench size={16} />}
-										text="Crear Mantenimiento"
-										onClick={() => {
-											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_MANTENIMIENTO)) {
-												navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO);
-											} else {
-												mostrarAlertaSinPermiso();
-											}
-										}}
-										isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO}
-										sidebarOpen={sidebarOpen}
-										delay={0.3}
-									/>
+										{/* Subitem 3: Crear Mantenimiento */}
+										<SidebarSubItem
+											icon={<Wrench size={16} />}
+											text="Crear Mantenimiento"
+											onClick={() => {
+												if (permisos.includes(PERMISOS.GESTION_EQUIPOS.CREAR_MANTENIMIENTO)) {
+													navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO);
+												} else {
+													mostrarAlertaSinPermiso();
+												}
+											}}
+											isActive={location.pathname === RUTAS.USER.EQUIPOS.CREAR_ACTA_MANTENIMIENTO}
+											sidebarOpen={sidebarOpen}
+											delay={0.3}
+										/>
 
-									{/* Subitem 4: Ver Equipos */}
+									</SidebarCollapsible>
+
+									{/* Subitem*/}
 									<SidebarSubItem
 										icon={<ListTodo size={16} />}
 										text="Ver Equipos de Cómputo"
@@ -618,6 +667,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											}
 										}}
 										isActive={location.pathname === RUTAS.USER.EQUIPOS.ROOT}
+										sidebarOpen={sidebarOpen}
+										delay={0.4}
+									/>
+									<SidebarSubItem
+										icon={<NotebookTabs size={16} />}
+										text="Listado de Mantenimiento"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.VER_ACTA_MANTENIMIENTO)) {
+												navigate(RUTAS.USER.EQUIPOS.VER_ACTA_MANTENIMIENTO);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.VER_ACTA_MANTENIMIENTO}
 										sidebarOpen={sidebarOpen}
 										delay={0.4}
 									/>
