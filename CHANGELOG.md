@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.6.0...v2.7.0) (2025-09-23)
+
+
+### Features
+
+* se agregaron nuevas funcionalidad para areas de compras, ahora permite gestionar los permisos, crear, exportar actas de entrega junto con activos fijos, y se crea apartado de descuento ([2881591](https://github.com/JuniorArias02/departamento_sistemasIPS/commit/288159129bec5527a6eb5c44e6802f8011da208f))
+
 ## [2.6.0](https://github.com/JuniorArias02/departamento_sistemasIPS/compare/v2.5.10...v2.6.0) (2025-09-15)
 
 
