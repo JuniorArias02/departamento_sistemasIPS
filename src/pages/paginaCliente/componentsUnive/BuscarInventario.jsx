@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
-import { buscarPersonal, buscarPersonalId } from "../../../services/personal_services";
+import { buscarItemInventario } from "../../../services/inventario_services";
 import {
 	Search,
-	User,
-	IdCard,
+	Package,
+	Barcode,
 	Loader2,
 	ChevronDown,
 	Check,
 	AlertCircle
 } from "lucide-react";
 
-const BuscarResponsable = ({
-	name = "responsable_id",
+const BuscarInventario = ({
+	name = "item_id",
 	value,
 	onChange,
-	label = "Responsable",
+	label = "Inventario",
 	required = false,
 	reset = false,
 }) => {
@@ -23,36 +23,32 @@ const BuscarResponsable = ({
 	const [loading, setLoading] = useState(false);
 	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
-	const [selectedPerson, setSelectedPerson] = useState(null);
+	const [selectedItem, setSelectedItem] = useState(null);
 	const [manualSelection, setManualSelection] = useState(false);
 
-	// 🔹 Debounce input
+	// Debounce
 	useEffect(() => {
 		const handler = setTimeout(() => {
 			setDebouncedQuery(query);
 		}, 500);
+
 		return () => clearTimeout(handler);
 	}, [query]);
 
-	// 🔹 Reset desde afuera
 	useEffect(() => {
 		if (reset) {
 			setQuery("");
-			setSelectedPerson(null);
+			setSelectedItem(null);
 			setResultados([]);
 			onChange({ target: { name, value: "" } });
 		}
 	}, [reset]);
 
-	// 🔹 Buscar por texto
+
+	// Buscar inventario
 	useEffect(() => {
 		if (manualSelection) {
 			setManualSelection(false);
-			return;
-		}
-
-		// 👇 si ya tengo un seleccionado y el query coincide con él, no busques
-		if (selectedPerson && query.includes(selectedPerson.cedula)) {
 			return;
 		}
 
@@ -62,50 +58,34 @@ const BuscarResponsable = ({
 				setIsOpen(false);
 				return;
 			}
+
 			setLoading(true);
 			setIsOpen(true);
 			try {
-				const data = await buscarPersonal(debouncedQuery);
-				setResultados(data.slice(0, 10));
+				const data = await buscarItemInventario(debouncedQuery);
+				const resultadosLimitados = data.slice(0, 10);
+				setResultados(resultadosLimitados);
 			} catch (error) {
-				console.error("Error buscando personal:", error);
+				console.error("Error buscando inventario:", error);
 				setResultados([]);
 			} finally {
 				setLoading(false);
 			}
 		};
+
 		buscar();
 	}, [debouncedQuery]);
 
-
-	// 🔹 Precargar cuando `value` tenga un ID
-	useEffect(() => {
-		const precargar = async () => {
-			if (value && !selectedPerson) {
-				try {
-					const persona = await buscarPersonalId(value);
-					if (persona) {
-						setSelectedPerson(persona);
-						setQuery(`${persona.nombre} (${persona.cedula})`);
-					}
-				} catch (err) {
-					console.error("Error precargando persona:", err);
-				}
-			}
-		};
-		precargar();
-	}, [value]);
-
-	const handleSelect = (persona) => {
-		onChange({
-			target: { name, value: persona.id },
-		});
-		setQuery(`${persona.nombre} (${persona.cedula})`);
-		setSelectedPerson(persona);
+	// Seleccionar
+	const handleSelect = (item) => {
+		onChange(item);
+		setQuery(`${item.nombre} (${item.codigo})`);
+		setSelectedItem(item);
 		setResultados([]);
 		setIsOpen(false);
 		setManualSelection(true);
 	};
+
 
 	const handleInputFocus = () => {
 		if (resultados.length > 0) {
@@ -119,7 +99,7 @@ const BuscarResponsable = ({
 
 	const clearSelection = () => {
 		setQuery("");
-		setSelectedPerson(null);
+		setSelectedItem(null);
 		onChange({
 			target: { name, value: "" },
 		});
@@ -129,7 +109,7 @@ const BuscarResponsable = ({
 	return (
 		<div className="relative">
 			<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-				<User className="h-4 w-4 text-gray-500" />
+				<Package className="h-4 w-4 text-gray-500" />
 				{label}
 				{required && <span className="text-red-500 ml-1">*</span>}
 			</label>
@@ -145,11 +125,11 @@ const BuscarResponsable = ({
 					onChange={(e) => setQuery(e.target.value)}
 					onFocus={handleInputFocus}
 					onBlur={handleInputBlur}
-					placeholder="Buscar por nombre o cédula..."
+					placeholder="Buscar por nombre, código o serial..."
 					className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
 				/>
 
-				{selectedPerson ? (
+				{selectedItem ? (
 					<button
 						type="button"
 						onClick={clearSelection}
@@ -185,20 +165,20 @@ const BuscarResponsable = ({
 							</div>
 						)}
 
-						{resultados.map((persona) => (
+						{resultados.map((item) => (
 							<div
-								key={persona.id}
-								onClick={() => handleSelect(persona)}
+								key={item.id}
+								onClick={() => handleSelect(item)}
 								className="px-4 py-3 hover:bg-indigo-50 cursor-pointer transition-colors flex items-center justify-between"
 							>
 								<div>
-									<div className="font-medium text-gray-900">{persona.nombre}</div>
+									<div className="font-medium text-gray-900">{item.nombre}</div>
 									<div className="text-sm text-gray-500 flex items-center mt-1">
-										<IdCard className="h-3 w-3 mr-1" />
-										{persona.cedula}
+										<Barcode className="h-3 w-3 mr-1" />
+										{item.codigo} | Serial: {item.serial}
 									</div>
 								</div>
-								{selectedPerson?.id === persona.id && (
+								{selectedItem?.id === item.id && (
 									<Check className="h-4 w-4 text-indigo-600" />
 								)}
 							</div>
@@ -210,19 +190,19 @@ const BuscarResponsable = ({
 			{isOpen && debouncedQuery.length >= 2 && resultados.length === 0 && !loading && (
 				<div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-4">
 					<div className="text-center text-gray-500 py-2">
-						<User className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+						<Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
 						<p className="text-sm">No se encontraron resultados</p>
-						<p className="text-xs">Intenta con otro nombre o cédula</p>
+						<p className="text-xs">Intenta con otro código, nombre o serial</p>
 					</div>
 				</div>
 			)}
 
-			{selectedPerson && (
+			{selectedItem && (
 				<div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
 					<div className="flex items-center">
 						<Check className="h-4 w-4 text-green-600 mr-2" />
 						<span className="text-sm text-green-700">
-							Seleccionado: <strong>{selectedPerson.nombre}</strong> (C.C. {selectedPerson.cedula})
+							Seleccionado: <strong>{selectedItem.nombre}</strong> (Código: {selectedItem.codigo})
 						</span>
 					</div>
 				</div>
@@ -231,4 +211,4 @@ const BuscarResponsable = ({
 	);
 };
 
-export default BuscarResponsable;
+export default BuscarInventario;

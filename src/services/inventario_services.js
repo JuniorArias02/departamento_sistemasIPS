@@ -7,11 +7,28 @@ import {
   BUSCAR_INVENTARIO,
   EXPORTAR_INVENTARIO_JSON,
   GRAFICA_INVENTARIO,
-  CONTAR_INVENTARIO
+  CONTAR_INVENTARIO,
+  BUSCAR_INVENTARIO_ITEM
 
 } from "../const/endpoint/inventario_endpoint";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+
+
+
+export const buscarItemInventario = async (termino) => {
+  try {
+    const response = await axios.get(BUSCAR_INVENTARIO_ITEM, {
+      params: { q: termino }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al buscar inventario:", error);
+    throw new Error(
+      error?.response?.data?.mensaje || "Error al buscar el inventario"
+    );
+  }
+};
 
 
 export const crearInventario = async (datos) => {

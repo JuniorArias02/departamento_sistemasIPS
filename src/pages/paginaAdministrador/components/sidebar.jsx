@@ -44,7 +44,9 @@ import {
 	PackageOpen,
 	NotebookPen,
 	CircleEllipsis,
-	NotebookTabs
+	NotebookTabs,
+	HandCoins,
+	Percent
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -505,24 +507,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_ACTIVOS_FIJOS) && (
-										<SidebarSubItem
-											icon={<NotebookPen size={16} />}
-											text="Entrega Activos Fijos"
-											onClick={() => {
-												navigate(RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS);
-												// se	tTimeout(() => setSidebarOpen(false), 150);
-											}}
-											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS}
-											sidebarOpen={sidebarOpen}
-											delay={0.1}
-										/>
-									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) && (
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_PEDIDOS) && (
 										<SidebarSubItem
 											icon={<ScrollText size={16} />}
-											text="Gestionar Pedidos"
+											text="Solicitudes de pedido"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.ROOT);
 												// setTimeout(() => setSidebarOpen(false), 150);
@@ -533,15 +523,59 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_SOLICITUD) && (
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_ENTREGA_SOLICITUD) && (
 										<SidebarSubItem
 											icon={<PackageOpen size={16} />}
-											text="entrega solicitud"
+											text="Entrega de Solicitudes"
 											onClick={() => {
-												navigate(RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD);
+												navigate(RUTAS.USER.GESTION_COMPRAS.VER_ENTREGA_SOLICITUD);
 												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
-											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.VER_ENTREGA_SOLICITUD}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_ACTIVOS_FIJOS) && (
+										<SidebarSubItem
+											icon={<NotebookPen size={16} />}
+											text="Crear Entrega Activos"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_ENTREGA_ACTIVOS_FIJOS);
+												// se	tTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_ENTREGA_ACTIVOS_FIJOS) && (
+										<SidebarSubItem
+											icon={<HandCoins size={16} />}
+											text="Entrega activos fijos"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.INFORME_ACTIVOS_FIJOS);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORME_ACTIVOS_FIJOS}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+
+
+
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_DESCUENTO) && (
+										<SidebarSubItem
+											icon={<Percent size={16} />}
+											text="Solicitud de descuento"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.INFORME_DESCUENTO);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORME_DESCUENTO}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>
@@ -550,7 +584,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_INFORMES) && (
 										<SidebarSubItem
 											icon={<BarChart2 size={16} />}
-											text="informes de Compras"
+											text="Informes de Compras"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.INFORMES);
 												// setTimeout(() => setSidebarOpen(false), 150);

@@ -52,7 +52,6 @@ export default function AsignarPermisos() {
 				setLoading(true);
 				setError(null);
 				const data = await obtenerPermisosRol(selectedRolId);
-				console.error('Permisos obtenidos:', data);
 				setPermisos(data);
 
 				const inicialSeleccionados = new Set(

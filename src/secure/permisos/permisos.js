@@ -79,13 +79,17 @@ export const PERMISOS = {
 		CREAR_PEDIDO: 'crear_pedido',
 		VER_INFORMES: 'ver_informes',
 		VER_PROVEEDORE: 'ver_proveedores',
-		VER_PEDIDOS: 'ver_pedidos',
+		VER_SOLICITUDES_PEDIDOS: 'ver_solicitudes_pedidos',
 		VER_PEDIDOS_ENCARGADO: 'ver_pedidos_encargado',
+		VER_SOLICITUDES_DESCUENTO:'ver_solicitudes_descuento',
+		VER_ENTREGA_ACTIVOS_FIJOS:'ver_entrega_activos_fijos',
 		LISTAR_PEDIDOS: 'listar_pedidos',
 		GESTIONAR_PEDIDO: 'gestionar_pedido',
-		ENTREGA_SOLICITUD: 'ver_entrega_solicitud',
+		VER_ENTREGA_SOLICITUD: 'ver_entrega_solicitud',
 		CREAR_ENTREGA_SOLICITUD: 'crear_entrega_solicitud',
-		ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
+		CREAR_ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
+		CREAR_DESCUENTO_FIJOS:'crear_descuento_fijos'
+
 	},
 
 	GESTION_PERSONAL: {
@@ -93,4 +97,6 @@ export const PERMISOS = {
 		CREAR: 'crear_personal',
 		VER: 'ver_personal',
 	},
+
+
 };

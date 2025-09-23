@@ -4,6 +4,7 @@ const DASHBOARD_ADMIN = `${DASHBOARD}/admin`;
 export const RUTAS = {
   ERROR_404: "/404",
   PAGINA_CONSTRUCCION: "/construccion",
+  PAGINA_MANTENIMIENTO: "/mantenimiento",
   LOGIN: "/",
 
   DASHBOARD,
@@ -71,9 +72,13 @@ export const RUTAS = {
       DETALLE_PEDIDO: `${DASHBOARD}/detalle_pedido`,
       INFORMES: `${DASHBOARD}/informes_compras`,
       PROVEEDOR: `${DASHBOARD}/proveedor`,
-      ENTREGA_SOLICITUD: `${DASHBOARD}/entrega_solicitud`,
+      VER_ENTREGA_SOLICITUD: `${DASHBOARD}/entrega_solicitud`,
       CREAR_ENTREGA_SOLICITUD: `${DASHBOARD}/crear_entrega_solicitud`,
-      ENTREGA_ACTIVOS_FIJOS: `${DASHBOARD}/entrega_activos_fijo`,
+      CREAR_ENTREGA_ACTIVOS_FIJOS: `${DASHBOARD}/entrega_activos_fijo`,
+      INFORME_ACTIVOS_FIJOS: `${DASHBOARD}/informe_activos_fijo`,
+      CREAR_DESCUENTO_FIJOS: `${DASHBOARD}/crear_descuento_fijo`,
+      INFORME_DESCUENTO: `${DASHBOARD}/informe_descuento`,
+      INFORME_DESCUENTO_DETALLES: `${DASHBOARD}/informe_descuento_detalles`
     },
 
     PERSONAL: {

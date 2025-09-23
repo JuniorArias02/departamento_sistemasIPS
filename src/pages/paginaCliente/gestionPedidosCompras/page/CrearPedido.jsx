@@ -23,6 +23,8 @@ import { obtenerTiposSolicitud } from "../../../../services/cp_tipo_solicitud";
 import { useApp } from "../../../../store/AppContext";
 import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import { listarSedes } from "../../../../services/sedes_service";
+import BuscarDependencia from "../../componentsUnive/BuscarDependencia";
+
 import Swal from "sweetalert2";
 
 export default function CrearPedido() {
@@ -41,6 +43,16 @@ export default function CrearPedido() {
 		elaborado_por_firma: "",
 		creador_por: usuario.id,
 	});
+
+
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setForm((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	};
+
 
 	useEffect(() => {
 		const cargarTipos = async () => {
@@ -245,31 +257,19 @@ export default function CrearPedido() {
 
 					{/* Campo de Proceso Solicitante */}
 					<div className="relative">
-						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<div className="p-1.5 bg-indigo-100 rounded-md">
-								<User size={16} className="text-indigo-600" />
-							</div>
-							Proceso Solicitante
-							<span className="text-red-500">*</span>
-						</label>
-						<div className="relative">
-							<input
-								type="text"
-								value={form.proceso_solicitante}
-								onChange={(e) => setForm({ ...form, proceso_solicitante: e.target.value })}
-								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-								required
-								placeholder="Ej: Departamento de Sistemas"
-							/>
-							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-								<User size={16} className="text-gray-400" />
-							</div>
-						</div>
-						{form.proceso_solicitante && (
-							<p className="mt-2 text-xs text-gray-500">
-								Ejemplos: Farmacia, Administración, sistemas, etc.
-							</p>
-						)}
+						<BuscarDependencia
+							name="proceso_solicitante"
+							value={form.proceso_solicitante}
+							onChange={handleChange}
+							labelSede="Seleccione una sede"
+							labelDependencia="Seleccione el proceso solicitante"
+							required
+							icon={
+								<div className="p-1.5 bg-indigo-100 rounded-md">
+									<User size={16} className="text-indigo-600" />
+								</div>
+							}
+						/>
 					</div>
 
 
@@ -305,38 +305,6 @@ export default function CrearPedido() {
 								{form.tipo_solicitud === "prioritaria"
 									? "Prioritaria: Respuesta en 5 horas o 3-4 días si requiere compra externa"
 									: "Recurrente: Respuesta entre 1-5 días hábiles"}
-							</p>
-						)}
-					</div>
-					<div className="relative">
-						<label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<div className="p-1.5 bg-purple-100 rounded-md">
-								<Warehouse size={16} className="text-purple-600" />
-							</div>
-							Sede
-							<span className="text-red-500">*</span>
-						</label>
-						<div className="relative">
-							<select
-								value={form.sede_id}
-								onChange={(e) => setForm({ ...form, sede_id: e.target.value })}
-								className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white cursor-pointer"
-								required
-							>
-								<option value="">Seleccione la sede</option>
-								{sedes.map((sede) => (
-									<option key={sede.id} value={sede.id}>
-										{sede.nombre}
-									</option>
-								))}
-							</select>
-							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none mt-5">
-								<MapPin size={16} className="text-gray-400" />
-							</div>
-						</div>
-						{form.sede_id && (
-							<p className="mt-2 text-xs text-gray-500">
-								Seleccionaste: {sedes.find(s => s.id == form.sede_id)?.nombre}
 							</p>
 						)}
 					</div>

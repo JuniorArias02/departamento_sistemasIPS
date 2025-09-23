@@ -9,6 +9,7 @@ import { FirmaInput } from '../../appFirma/appFirmas';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
+
 export default function PerfilUsuario(props) {
 	const { usuario } = useApp();
 	const [userData, setUserData] = useState({

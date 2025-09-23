@@ -19,6 +19,8 @@ import FormularioUsuarios from "./pages/paginaAdministrador/formularios/crearUsu
 import DashboardAdmin from "./pages/paginaAdministrador/dashboard/DashboardAdmin";
 import NotFound from "./pages/404";
 import NotAvailable from "./pages/NotAvailable";
+import NotAvailableTemp from "./pages/NotAvailableTemp";
+
 import VistaDatosRoles from "./pages/paginaAdministrador/vistaDatos/vista_datos_roles";
 
 import CalendarioMantenimientos from "./pages/paginaCliente/calendarioMantenimiento/CalendarioMantenimientos";
@@ -43,6 +45,11 @@ import GestionProveedor from "./pages/paginaCliente/gestionPedidosCompras/page/G
 import CrearEntregaPedido from "./pages/paginaCliente/gestionPedidosCompras/page/CrearEntregaPedido";
 import { InformeEntrega } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeEntrega";
 import EntregaActivosFijos from "./pages/paginaCliente/gestionPedidosCompras/page/EntregaActivosFijos";
+import { InformActivosFijos } from "./pages/paginaCliente/gestionPedidosCompras/page/InformActivosFijos";
+import CrearDescuentoActivo from "./pages/paginaCliente/gestionPedidosCompras/page/CrearDescuentoActivo";
+import { InformeDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeDescuento";
+import { DetalleDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/DetalleDescuento";
+
 // REPORTE
 import ReportesTablero from "./pages/paginaCliente/reportes/page/ReportesTablero";
 import CrearReporte from "./pages/paginaCliente/reportes/page/CrearReporte";
@@ -62,6 +69,8 @@ import ScrollToTop from "./hook/ScrollToTop";
 
 import { RUTAS } from "./const/routers/routers";
 import HorasDiaWrapper from "./view/HorasDiaWrapper";
+
+
 function App() {
   const { usuario, permisos } = useApp();
 
@@ -230,7 +239,6 @@ function App() {
           />
 
           {/* formularios */}
-
           <Route
             path={RUTAS.USER.PERSONAL.CREAR_PERSONAL}
             element={
@@ -325,7 +333,51 @@ function App() {
 
           {/* vistaDatos */}
 
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.INFORME_DESCUENTO_DETALLES}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_DESCUENTO) ? (
+                <DetalleDescuento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
 
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.INFORME_DESCUENTO}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_DESCUENTO) ? (
+                <InformeDescuento />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.CREAR_DESCUENTO_FIJOS}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_DESCUENTO_FIJOS) ? (
+                <CrearDescuentoActivo />
+              ) : (
+                <Navigate to={RUTAS.PAGINA_CONSTRUCCION} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.INFORME_ACTIVOS_FIJOS}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_ENTREGA_ACTIVOS_FIJOS) ? (
+                <InformActivosFijos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
 
           <Route
             path={RUTAS.USER.EQUIPOS.VER_ACTA_MANTENIMIENTO}
@@ -340,9 +392,9 @@ function App() {
 
 
           <Route
-            path={RUTAS.USER.GESTION_COMPRAS.ENTREGA_SOLICITUD}
+            path={RUTAS.USER.GESTION_COMPRAS.VER_ENTREGA_SOLICITUD}
             element={
-              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_SOLICITUD) ? (
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_ENTREGA_SOLICITUD) ? (
                 <InformeEntrega />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -351,9 +403,9 @@ function App() {
           />
 
           <Route
-            path={RUTAS.USER.GESTION_COMPRAS.ENTREGA_ACTIVOS_FIJOS}
+            path={RUTAS.USER.GESTION_COMPRAS.CREAR_ENTREGA_ACTIVOS_FIJOS}
             element={
-              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ENTREGA_ACTIVOS_FIJOS) ? (
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_ACTIVOS_FIJOS) ? (
                 <EntregaActivosFijos />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -471,7 +523,7 @@ function App() {
           <Route
             path={RUTAS.USER.GESTION_COMPRAS.ROOT}
             element={
-              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) ? (
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_PEDIDOS) ? (
                 <GestionPedidos />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -483,7 +535,7 @@ function App() {
           <Route
             path={RUTAS.USER.GESTION_COMPRAS.DETALLE_PEDIDO}
             element={
-              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS) ? (
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.GESTIONAR_PEDIDO) ? (
                 <PedidoDetalle />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
@@ -503,10 +555,16 @@ function App() {
             }
           />
 
+
+          <Route path={RUTAS.ERROR_404} element={<NotFound />} />
+
+          <Route path={RUTAS.PAGINA_CONSTRUCCION} element={<NotAvailable />} />
+
+          
+          <Route path={RUTAS.PAGINA_MANTENIMIENTO} element={<NotAvailableTemp />} />
         </Route>
 
         {/* RUTAS DE ERROES DE PAGINA */}
-        <Route path={RUTAS.ERROR_404} element={<NotFound />} />
 
 
 

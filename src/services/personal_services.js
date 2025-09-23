@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_PERSONAL, OBTENER_PERSONAL, BUSCAR_PERSONAL } from "../const/endpoint/personal_endpoint";
+import { CREAR_PERSONAL, OBTENER_PERSONAL, BUSCAR_PERSONAL, BUSCAR_PERSONAL_ID } from "../const/endpoint/personal_endpoint";
 
 export const crearPersonal = async (datos) => {
 	try {
@@ -29,5 +29,15 @@ export const buscarPersonal = async (q) => {
 	} catch (error) {
 		console.error("Error al obtener personal:", error);
 		return [];
+	}
+};
+
+export const buscarPersonalId = async (id) => {
+	try {
+		const res = await axios.get(`${BUSCAR_PERSONAL_ID}?id=${encodeURIComponent(id)}`);
+		return res.data;
+	} catch (error) {
+		console.error("Error al obtener personal:", error);
+		return null; // mejor null que []
 	}
 };
