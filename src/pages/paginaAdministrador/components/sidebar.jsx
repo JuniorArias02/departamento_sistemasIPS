@@ -819,7 +819,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							text="Descargar Imagen"
 							onClick={() => {
 								const link = document.createElement('a');
-								link.href = '/septiembre.png';
+								link.href = '/octubre.png';
 								link.download = 'img';
 								link.click();
 							}}
