@@ -9,7 +9,8 @@ import {
 	ChevronDown,
 	Check,
 	FileSearch,
-	CheckCircle
+	CheckCircle,
+	Search
 } from 'lucide-react';
 import { listarRoles, asignarPermisos, obtenerPermisosRol } from '../../../services/rol_services';
 import Swal from 'sweetalert2';
@@ -22,10 +23,13 @@ export default function AsignarPermisos() {
 	const [roles, setRoles] = useState([]);
 	const [selectedRolId, setSelectedRolId] = useState('');
 	const [permisos, setPermisos] = useState([]);
+	const [filteredPermisos, setFilteredPermisos] = useState([]);
 	const [selectedPermisos, setSelectedPermisos] = useState(new Set());
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
+
 	// Cargar roles al montar el componente
 	useEffect(() => {
 		const fetchRoles = async () => {
@@ -53,6 +57,7 @@ export default function AsignarPermisos() {
 				setError(null);
 				const data = await obtenerPermisosRol(selectedRolId);
 				setPermisos(data);
+				setFilteredPermisos(data);
 
 				const inicialSeleccionados = new Set(
 					data.filter(p => p.asignado).map(p => p.id)
@@ -68,6 +73,25 @@ export default function AsignarPermisos() {
 		fetchPermisos();
 	}, [selectedRolId]);
 
+	// Filtrar permisos cuando cambia el término de búsqueda
+	useEffect(() => {
+		if (!searchTerm.trim()) {
+			setFilteredPermisos(permisos);
+		} else {
+			const searchLower = searchTerm.toLowerCase();
+			const filtered = permisos.filter(permiso => {
+				const nombre = permiso.nombre || '';
+				const descripcion = permiso.descripcion || '';
+				const categoria = permiso.categoria || '';
+
+				return nombre.toLowerCase().includes(searchLower) ||
+					descripcion.toLowerCase().includes(searchLower) ||
+					categoria.toLowerCase().includes(searchLower);
+			});
+			setFilteredPermisos(filtered);
+		}
+	}, [searchTerm, permisos]);
+
 	// Manejar selección/deselección de permisos
 	const handlePermisoChange = (permisoId, isChecked) => {
 		const nuevosPermisos = new Set(selectedPermisos);
@@ -79,12 +103,29 @@ export default function AsignarPermisos() {
 		setSelectedPermisos(nuevosPermisos);
 	};
 
-	// Guardar cambios - Versión CENTRAL 2025
+	// Seleccionar todos los permisos filtrados
+	const handleSelectAll = () => {
+		const nuevosPermisos = new Set(selectedPermisos);
+		filteredPermisos.forEach(permiso => {
+			nuevosPermisos.add(permiso.id);
+		});
+		setSelectedPermisos(nuevosPermisos);
+	};
+
+	// Deseleccionar todos los permisos filtrados
+	const handleDeselectAll = () => {
+		const nuevosPermisos = new Set(selectedPermisos);
+		filteredPermisos.forEach(permiso => {
+			nuevosPermisos.delete(permiso.id);
+		});
+		setSelectedPermisos(nuevosPermisos);
+	};
+
+	// Guardar cambios
 	const handleSubmit = async () => {
 		try {
 			setLoading(true);
 
-			// Loader básico
 			Swal.fire({
 				title: 'Procesando...',
 				allowOutsideClick: false,
@@ -95,7 +136,6 @@ export default function AsignarPermisos() {
 
 			await asignarPermisos(usuarioContext.id, selectedRolId, Array.from(selectedPermisos));
 
-			// Éxito simple
 			Swal.fire({
 				icon: 'success',
 				title: '¡Listo!',
@@ -104,7 +144,6 @@ export default function AsignarPermisos() {
 			});
 
 		} catch (err) {
-			// Error simple
 			Swal.fire({
 				icon: 'error',
 				title: 'Error',
@@ -115,20 +154,16 @@ export default function AsignarPermisos() {
 			setLoading(false);
 		}
 	};
+
 	return (
 		<div className="max-w-7xl mx-auto p-6 space-y-6">
 			{/* Header con gradiente y efecto glassmorphism */}
 			<div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 backdrop-blur-lg bg-opacity-90 shadow-xl">
 				<div className="flex items-center gap-3">
-					{/* Botón de retroceso */}
 					<BackPage />
-
-					{/* Ícono de permisos */}
 					<div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
 						<Key className="w-8 h-8 text-white" />
 					</div>
-
-					{/* Título y subtítulo */}
 					<div>
 						<h1 className="text-3xl font-bold text-white drop-shadow-md">
 							Gestión de Permisos
@@ -206,7 +241,7 @@ export default function AsignarPermisos() {
 					)}
 				</div>
 
-				{/* Panel de Permisos - Lista interactiva MEJORADA */}
+				{/* Panel de Permisos - Con buscador */}
 				<div className="xl:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.05)] border border-white/20">
 					<div className="flex justify-between items-center mb-6">
 						<div className="flex items-center gap-3">
@@ -225,14 +260,48 @@ export default function AsignarPermisos() {
 						</div>
 					</div>
 
+					{/* Buscador de permisos */}
+					{permisos.length > 0 && (
+						<div className="mb-6 space-y-3">
+							<div className="relative">
+								<Search className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+								<input
+									type="text"
+									placeholder="Buscar permisos por nombre, descripción o categoría..."
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
+									className="w-full pl-10 pr-4 py-3 bg-white/70 border border-gray-200/80 rounded-xl focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 shadow-sm"
+								/>
+							</div>
+
+							{/* Controles de selección masiva */}
+							{filteredPermisos.length > 0 && (
+								<div className="flex gap-2">
+									<button
+										onClick={handleSelectAll}
+										className="px-3 py-1.5 text-sm bg-green-50 text-green-600 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+									>
+										Seleccionar todos ({filteredPermisos.length})
+									</button>
+									<button
+										onClick={handleDeselectAll}
+										className="px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+									>
+										Deseleccionar todos
+									</button>
+								</div>
+							)}
+						</div>
+					)}
+
 					{loading ? (
 						<div className="flex flex-col items-center justify-center py-12">
 							<Loader2 className="animate-spin h-12 w-12 text-blue-600 mb-3" />
 							<p className="text-gray-500">Cargando permisos...</p>
 						</div>
-					) : permisos.length > 0 ? (
+					) : filteredPermisos.length > 0 ? (
 						<div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-							{permisos.map((permiso) => (
+							{filteredPermisos.map((permiso) => (
 								<label
 									key={permiso.id}
 									className={`flex items-start p-4 rounded-xl cursor-pointer transition-all duration-200 border ${selectedPermisos.has(permiso.id)
@@ -280,13 +349,24 @@ export default function AsignarPermisos() {
 						<div className="text-center py-12">
 							<FileSearch className="w-16 h-16 mx-auto text-gray-300 mb-4" />
 							<h3 className="text-lg font-medium text-gray-500 mb-2">
-								{selectedRolId ? "No se encontraron permisos" : "Seleccione un rol para comenzar"}
+								{searchTerm ? "No se encontraron permisos con ese criterio" :
+									selectedRolId ? "No se encontraron permisos" : "Seleccione un rol para comenzar"}
 							</h3>
 							<p className="text-gray-400 text-sm">
-								{selectedRolId
-									? "Intenta con otro rol o verifica la conexión"
-									: "Elija un rol de la lista para visualizar sus permisos disponibles"}
+								{searchTerm
+									? "Intenta con otros términos de búsqueda"
+									: selectedRolId
+										? "Intenta con otro rol o verifica la conexión"
+										: "Elija un rol de la lista para visualizar sus permisos disponibles"}
 							</p>
+							{searchTerm && (
+								<button
+									onClick={() => setSearchTerm('')}
+									className="mt-3 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+								>
+									Limpiar búsqueda
+								</button>
+							)}
 						</div>
 					)}
 				</div>
@@ -320,4 +400,3 @@ export default function AsignarPermisos() {
 		</div>
 	);
 };
-

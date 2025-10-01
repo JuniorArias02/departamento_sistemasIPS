@@ -193,7 +193,7 @@ export default function EntregaActivosFijos() {
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
           <h1 className="text-3xl font-bold flex items-center">
             <FileSignature className="mr-3" size={32} />
-            Entrega de Activos Fijos
+            Crear Acta de Entrega de Activos Fijos
           </h1>
           <p className="mt-2 opacity-90">Complete el formulario para registrar la entrega de activos</p>
         </div>

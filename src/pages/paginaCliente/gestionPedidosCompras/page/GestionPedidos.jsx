@@ -41,7 +41,7 @@ export default function GestionPedidos() {
 	const [expandedPedido, setExpandedPedido] = useState(null);
 	const expandedPedidoRef = useRef(null);
 	const [filters, setFilters] = useState({
-		estado: "todos",
+		estado: "pendiente",
 		tipo: "todos"
 	});
 

@@ -98,7 +98,7 @@ export function InformActivosFijos() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Informe de Activos Fijos
+              Acta de Entrega de Activos Fijos
             </h1>
             <p className="text-slate-500 mt-1">Gestión de entregas y asignaciones</p>
           </div>
