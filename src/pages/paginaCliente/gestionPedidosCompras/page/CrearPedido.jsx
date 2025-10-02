@@ -13,7 +13,8 @@ import {
 	XCircle,
 	Warehouse,
 	MapPin,
-	ChevronDown
+	ChevronDown,
+	AlertCircle
 } from 'lucide-react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { crearPedido, subirFirmaPedido } from "../../../../services/cp_pedidos_services";
