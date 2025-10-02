@@ -25,6 +25,7 @@ import { useApp } from "../../../../store/AppContext";
 import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import { listarSedes } from "../../../../services/sedes_service";
 import BuscarDependencia from "../../componentsUnive/BuscarDependencia";
+import { buscarProductoPorCodigo } from "../../../../services/cp_productos_services";
 
 import Swal from "sweetalert2";
 
@@ -32,6 +33,7 @@ export default function CrearPedido() {
 	const { usuario } = useApp();
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tipos, setTipos] = useState([]);
+	const [productos, setProductos] = useState([]);
 	const [firmaAprobacion, setFirmaAprobacion] = useState(null);
 	const [sedes, setSedes] = useState([]);
 	const [form, setForm] = useState({
@@ -44,6 +46,45 @@ export default function CrearPedido() {
 		elaborado_por_firma: "",
 		creador_por: usuario.id,
 	});
+
+	const buscarYAsignarProducto = async (index) => {
+		const codigo = items[index].codigo;
+		if (!codigo) return;
+
+		try {
+			const res = await buscarProductoPorCodigo(codigo);
+			if (res.success && res.producto) {
+				cambiarItem(index, "producto_id", res.producto.id);
+				cambiarItem(index, "nombre", res.producto.nombre);
+
+				Swal.fire({
+					icon: "success",
+					title: "Producto encontrado",
+					text: `Se cargó: ${res.producto.nombre}`,
+					timer: 2000,
+					showConfirmButton: false
+				});
+			} else {
+				cambiarItem(index, "producto_id", "");
+				Swal.fire({
+					icon: "warning",
+					title: "Producto no encontrado",
+					text: "Puedes escribir el nombre manualmente.",
+					confirmButtonText: "Entendido",
+					confirmButtonColor: "#3b82f6"
+				});
+			}
+		} catch (error) {
+			console.error("Error al buscar producto:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error en la búsqueda",
+				text: "Hubo un problema al buscar el producto. Intenta nuevamente.",
+				confirmButtonText: "Cerrar",
+				confirmButtonColor: "#ef4444"
+			});
+		}
+	};
 
 
 	const handleChange = (e) => {
@@ -116,10 +157,15 @@ export default function CrearPedido() {
 			// 3️⃣ Enviar items
 			const responseItems = await crearItems(
 				items.map(item => ({
-					...item,
+					nombre: item.nombre,
+					cantidad: item.cantidad,
+					unidad_medida: item.unidad_medida,
+					referencia_items: item.referencia_items,
 					cp_pedido: pedidoId,
+					productos_id: item.producto_id || null
 				}))
 			);
+
 			if (!responseItems.status) throw new Error(responseItems.message || "Error creando items");
 
 			// 4️⃣ Subir firma
@@ -181,16 +227,26 @@ export default function CrearPedido() {
 		}
 	};
 
-
-
 	const agregarItem = () => {
-		setItems([...items, { nombre: "", cantidad: 1, unidad_medida: "", referencia_items: "" }]);
+		setItems([
+			...items,
+			{
+				codigo: "",
+				producto_id: "",
+				nombre: "",
+				cantidad: 1,
+				unidad_medida: "",
+				referencia_items: ""
+			}
+		]);
 	};
 
-	const cambiarItem = (index, campo, valor) => {
-		const nuevosItems = [...items];
-		nuevosItems[index][campo] = valor;
-		setItems(nuevosItems);
+	const cambiarItem = (index, field, value) => {
+		setItems(prev =>
+			prev.map((item, i) =>
+				i === index ? { ...item, [field]: value } : item
+			)
+		);
 	};
 
 	const borrarItem = (index) => {
@@ -352,13 +408,25 @@ export default function CrearPedido() {
 							{items.map((item, i) => (
 								<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-lg even:bg-gray-50/50 hover:bg-blue-50/30 transition-colors">
 									<div className="md:col-span-5">
+										<label className="text-sm text-gray-500 block mb-1 md:hidden">codigo</label>
+										<input
+											placeholder="Código (opcional)"
+											value={item.codigo}
+											onChange={(e) => cambiarItem(i, "codigo", e.target.value)}
+											onBlur={() => {
+												if (items[i].codigo) buscarYAsignarProducto(i);
+											}}
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
+										/>
+									</div>
+
+									<div className="md:col-span-5">
 										<label className="text-sm text-gray-500 block mb-1 md:hidden">Nombre</label>
 										<input
-											placeholder="Ej: Insumo, Medicamento, Material, etc."
+											placeholder="Nombre del producto"
 											value={item.nombre}
 											onChange={(e) => cambiarItem(i, "nombre", e.target.value)}
-											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-											required
+											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
 										/>
 									</div>
 									<div className="md:col-span-2">
