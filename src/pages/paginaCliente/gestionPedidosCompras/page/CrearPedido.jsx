@@ -254,7 +254,7 @@ export default function CrearPedido() {
 	};
 
 	return (
-		<div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-5 mb-5">
+		<div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md mt-5 mb-5">
 			<h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
 				<FilePlus className="text-blue-600" size={24} />
 				Crear Nuevo Pedido
@@ -398,6 +398,7 @@ export default function CrearPedido() {
 						<div className="space-y-4">
 							{/* Encabezados de la tabla (solo visible en desktop) */}
 							<div className="hidden md:grid md:grid-cols-12 gap-4 text-sm text-gray-500 font-medium pb-2 border-b">
+								<div className="md:col-span-5">Codigo del Producto</div>
 								<div className="md:col-span-5">Nombre del Producto</div>
 								<div className="md:col-span-2">Cantidad</div>
 								<div className="md:col-span-2">Unidad de medida</div>

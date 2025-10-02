@@ -15,7 +15,9 @@ import {
 	Search,
 	Clock,
 	AlertCircle,
-	Plus
+	Plus,
+	Building,
+	Tag
 } from "lucide-react";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import Swal from "sweetalert2";
@@ -340,11 +342,17 @@ export function VerActaMantenimiento() {
 										return `${dia}/${mes}/${anio}`;
 									})()}
 								</div>
-
-
 								<div className="flex items-center text-sm text-gray-500 mb-4">
 									<User className="h-4 w-4 mr-2" />
 									{m.responsable_nombre || "Sin responsable asignado"}
+								</div>
+								<div className="flex items-center text-sm text-gray-500 mb-4">
+									<Building className="h-4 w-4 mr-2" />
+									{m.nombre_area || "Sin area asignada"}
+								</div>
+								<div className="flex items-center text-sm text-gray-500 mb-4">
+									<Tag className="h-4 w-4 mr-2" />
+									{m.numero_inventario || "Sin inventario asignado"}
 								</div>
 
 								<div className="flex justify-between items-center mt-4">
