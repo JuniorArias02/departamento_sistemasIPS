@@ -17,7 +17,8 @@ import {
 	AlertCircle,
 	Plus,
 	Building,
-	Tag
+	Tag,
+	MapPinHouse
 } from "lucide-react";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import Swal from "sweetalert2";
@@ -351,10 +352,13 @@ export function VerActaMantenimiento() {
 									{m.nombre_area || "Sin area asignada"}
 								</div>
 								<div className="flex items-center text-sm text-gray-500 mb-4">
+									<MapPinHouse className="h-4 w-4 mr-2" />
+									{m.nombre_sede || "Sin sede asignada"}
+								</div>
+								<div className="flex items-center text-sm text-gray-500 mb-4">
 									<Tag className="h-4 w-4 mr-2" />
 									{m.numero_inventario || "Sin inventario asignado"}
 								</div>
-
 								<div className="flex justify-between items-center mt-4">
 									<div className="flex space-x-2">
 										{m.firma_personal_cargo && m.firma_personal_cargo !== "" && (
