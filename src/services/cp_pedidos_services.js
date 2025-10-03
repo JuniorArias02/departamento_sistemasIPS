@@ -28,22 +28,22 @@ export const crearPedido = async (datos) => {
 
 export const exportarInformeFecha = async (datos) => {
 	try {
-	  const response = await axios.post(EXPORTAR_INFORME_PEDIDOS, datos, {
-		responseType: "blob", 
-	  });
-  
-	  
-	  const url = window.URL.createObjectURL(new Blob([response.data]));
-	  const link = document.createElement("a");
-	  link.href = url;
-	  link.setAttribute("download", "consolidado_pedidos.xlsx");
-	  document.body.appendChild(link);
-	  link.click();
-	  link.remove();
+		const response = await axios.post(EXPORTAR_INFORME_PEDIDOS, datos, {
+			responseType: "blob",
+		});
+
+
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "consolidado_pedidos.xlsx");
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
 	} catch (error) {
-	  console.error("Error al crear informe", error);
+		console.error("Error al crear informe", error);
 	}
-  };
+};
 
 export const rechazarPedido = async (datos) => {
 	try {
@@ -86,16 +86,28 @@ export const exportarPedido = async (pedidoId) => {
 			{ id: pedidoId },
 			{ responseType: "blob" }
 		);
+		const header = response.headers["content-disposition"];
+		let fileName = "pedido.xlsx";
 
-		const url = window.URL.createObjectURL(new Blob([response.data]));
+		if (header) {
+			const match = header.match(/filename="?([^"]+)"?/);
+			if (match && match[1]) {
+				fileName = match[1];
+			}
+		}
+		const blob = new Blob([response.data], {
+			type:
+				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
 		const link = document.createElement("a");
 		link.href = url;
-		link.setAttribute("download", "pedido.xlsx");
+		link.setAttribute("download", fileName);
 		document.body.appendChild(link);
 		link.click();
 		link.remove();
 
-		return true;
+		window.URL.revokeObjectURL(url);
 	} catch (error) {
 		console.error("Error al exportar el pedido:", error);
 		throw new Error(
@@ -103,6 +115,7 @@ export const exportarPedido = async (pedidoId) => {
 		);
 	}
 };
+
 
 export const exportarPedidoPdf = async (pedidoId) => {
 	try {

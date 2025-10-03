@@ -408,7 +408,7 @@ export default function CrearPedido() {
 
 							{items.map((item, i) => (
 								<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-lg even:bg-gray-50/50 hover:bg-blue-50/30 transition-colors">
-									<div className="md:col-span-5">
+									<div className="md:col-span-2">
 										<label className="text-sm text-gray-500 block mb-1 md:hidden">codigo</label>
 										<input
 											placeholder="Código (opcional)"
@@ -421,7 +421,7 @@ export default function CrearPedido() {
 										/>
 									</div>
 
-									<div className="md:col-span-5">
+									<div className="md:col-span-4">
 										<label className="text-sm text-gray-500 block mb-1 md:hidden">Nombre</label>
 										<input
 											placeholder="Nombre del producto"
@@ -430,7 +430,7 @@ export default function CrearPedido() {
 											className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
 										/>
 									</div>
-									<div className="md:col-span-2">
+									<div className="md:col-span-1">
 										<label className="text-sm text-gray-500 block mb-1 md:hidden">Cantidad</label>
 										<input
 											type="number"
