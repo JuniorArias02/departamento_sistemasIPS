@@ -235,7 +235,7 @@ export default function CrearPedido() {
 				producto_id: "",
 				nombre: "",
 				cantidad: 1,
-				unidad_medida: "",
+				unidad_medida: "Unidad",
 				referencia_items: ""
 			}
 		]);
@@ -450,8 +450,8 @@ export default function CrearPedido() {
 											onChange={(e) => cambiarItem(i, "unidad_medida", e.target.value)}
 											required
 										>
-											<option value="Unidades">Unidad</option>
-											<option value="Paquetes">Paquete</option>
+											<option value="Unidad">Unidad</option>
+											<option value="Paquete">Paquete</option>
 										</select>
 									</div>
 									<div className="md:col-span-2">
