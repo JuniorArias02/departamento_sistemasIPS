@@ -1,9 +1,9 @@
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   PenTool,
   Check,
-  X
+  X,
+  MessageCircle
 } from "lucide-react";
 import { FirmaInput } from "../../../../appFirma/appFirmas";
 import AgregarFirmaModal from "../crearPedido/AgregarFirmaModal";
@@ -16,15 +16,21 @@ export const FirmaAprobacionModal = ({
   isSubmitting,
   setShowFirmaAprobacionForm,
   handleAprobarPedido,
-  manejarConfirmacion
+  manejarConfirmacion,
+  onObservacionChange 
 }) => {
+  const [motivoAprobacion, setMotivoAprobacion] = useState("");
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, []);
+
+  const handleConfirmarAprobacion = () => {
+    handleAprobarPedido(motivoAprobacion);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#00000050] bg-opacity-70">
@@ -63,6 +69,28 @@ export const FirmaAprobacionModal = ({
             />
           </div>
 
+          {/* Campo de observación opcional */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="flex items-center gap-2">
+                <MessageCircle size={16} className="text-gray-500" />
+                Observación de Aceptación (Opcional)
+              </div>
+            </label>
+            <textarea
+              value={motivoAprobacion}
+              onChange={(e) => setMotivoAprobacion(e.target.value)}
+              placeholder="Escribe el motivo de la aceptación o comentarios adicionales..."
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              maxLength={500}
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>Este campo es opcional</span>
+              <span>{motivoAprobacion.length}/500</span>
+            </div>
+          </div>
+
           {/* Botón para usar firma guardada */}
           <div className="mb-6 flex justify-center">
             <button
@@ -85,6 +113,7 @@ export const FirmaAprobacionModal = ({
               onClick={() => {
                 setShowFirmaAprobacionForm(false);
                 setFirmaAprobacion("");
+                setObservacion("");
               }}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
             >
@@ -92,10 +121,11 @@ export const FirmaAprobacionModal = ({
               Cancelar
             </button>
             <button
-              onClick={handleAprobarPedido}
+              onClick={handleConfirmarAprobacion}
               disabled={!firmaAprobacion || isSubmitting}
-              className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition-all ${!firmaAprobacion ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+              className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition-all ${
+                !firmaAprobacion ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
               {isSubmitting ? (
                 <>

@@ -16,7 +16,8 @@ import {
 	Download,
 	Loader2,
 	X,
-	Edit
+	Edit,
+	Check
 
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
@@ -349,6 +350,14 @@ export default function GestionPedidos() {
 														<p className="text-gray-700 bg-gray-50 p-3 rounded">{pedido.observacion}</p>
 													</div>
 												)}
+
+												{pedido.motivo_aprobacion && (
+													<div className="mt-3">
+														<p className="text-gray-500 mb-1">Motivo Aprobación:</p>
+														<p className="text-gray-700 bg-gray-50 p-3 rounded">{pedido.motivo_aprobacion}</p>
+													</div>
+												)}
+
 											</div>
 										</div>
 
@@ -412,6 +421,7 @@ export default function GestionPedidos() {
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidad de medida</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comprado</th>
 													</tr>
 												</thead>
 												<tbody className="bg-white divide-y divide-gray-200">
@@ -432,8 +442,27 @@ export default function GestionPedidos() {
 																	</button>
 																)}
 															</td>
-
-
+															<td className="px-4 py-2 whitespace-nowrap text-sm">
+																{/* Estado de comprado */}
+																<div className="flex items-center gap-2">
+																	<div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.comprado === 1
+																		? 'bg-green-100 text-green-800'
+																		: 'bg-gray-100 text-gray-800'
+																		}`}>
+																		{item.comprado === 1 ? (
+																			<>
+																				<Check size={12} className="mr-1" />
+																				Comprado
+																			</>
+																		) : (
+																			<>
+																				<X size={12} className="mr-1" />
+																				No comprado
+																			</>
+																		)}
+																	</div>
+																</div>
+															</td>
 														</tr>
 													))}
 												</tbody>
@@ -442,8 +471,7 @@ export default function GestionPedidos() {
 
 										{pedido.observacion_diligenciado && (
 											<div className="mt-3">
-												<p className="text-gray-500 mb-1">Motivo Rechazo
-													:</p>
+												<p className="text-gray-500 mb-1">Motivo Rechazo:</p>
 												<p className="text-gray-700 bg-gray-50 p-3 rounded">{pedido.observacion_diligenciado}</p>
 											</div>
 										)}

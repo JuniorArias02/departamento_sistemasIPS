@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Edit,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from "lucide-react";
 import BackPage from "../../components/BackPage";
 import { URL_IMAGE2 } from "../../../../const/api";
@@ -34,6 +34,7 @@ import { agregarFirmaPorClave } from "../../../../services/usuario_service";
 import Portal from "../../components/Portal";
 import { FirmaAprobacionModal } from "../components/pedidoDetalle/FirmaAprobacionModal";
 import { CotizarItemModal } from "../components/pedidoDetalle/CotizarItemModal";
+import { actualizarEstado } from "../../../../services/cp_items_services";
 
 export default function PedidoDetalle() {
   const { usuario } = useApp();
@@ -43,11 +44,11 @@ export default function PedidoDetalle() {
   const [firmaAprobacion, setFirmaAprobacion] = useState(null);
   const [observacionRechazo, setObservacionRechazo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const data = location.state?.pedido || {};
   const [tipoRechazo, setTipoRechazo] = useState("compras");
   const [modalOpen, setModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [data, setData] = useState(location.state?.pedido || {});
 
   const manejarConfirmacion = async (contrasena) => {
     const res = await agregarFirmaPorClave({
@@ -67,6 +68,31 @@ export default function PedidoDetalle() {
     }
   };
 
+  const handleCompradoChange = async (index, comprado) => {
+    try {
+      const compradoValue = comprado ? 1 : 0;
+
+      await actualizarEstado({
+        item_id: data.items[index].id,
+        comprado: compradoValue,
+        id_usuario: usuario.id
+      });
+
+      const updatedItems = [...data.items];
+      updatedItems[index].comprado = compradoValue;
+      setData({ ...data, items: updatedItems });
+
+      Swal.fire(
+        "Éxito",
+        comprado ? "Ítem marcado como comprado" : "Ítem desmarcado como comprado",
+        "success"
+      );
+    } catch (error) {
+      console.error("Error al actualizar estado comprado:", error);
+      Swal.fire("Error", "No se pudo actualizar el estado del ítem", "error");
+    }
+  };
+
   function base64ToFile(base64, filename) {
     const arr = base64.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -78,7 +104,7 @@ export default function PedidoDetalle() {
     }
     return new File([u8arr], filename, { type: mime });
   }
-  const handleAprobarPedido = async () => {
+  const handleAprobarPedido = async (motivoAprobacion = "") => {
     const result = await Swal.fire({
       title: "¿Aprobar pedido?",
       text: "Esta acción aprobará el pedido seleccionado.",
@@ -92,13 +118,11 @@ export default function PedidoDetalle() {
 
     if (!result.isConfirmed) return;
 
-    // Si no hay firma → abrir modal tuyo
     if (!firmaAprobacion) {
-      setShowFirmaAprobacionForm(true); // abre tu Portal
+      setShowFirmaAprobacionForm(true);
       return;
     }
 
-    // Si ya hay firma → aprobar directo
     setIsSubmitting(true);
     try {
       const fileFirma = base64ToFile(firmaAprobacion, "firma.png");
@@ -107,17 +131,21 @@ export default function PedidoDetalle() {
           ? "responsable_aprobacion_firma"
           : "proceso_compra_firma";
 
+      // 🔥 Subimos la firma
       await subirFirmaPedido({
         id_pedido: data.id,
         tipo_firma: tipoFirma,
         firma: fileFirma,
         id_usuario: usuario.id,
+        motivo_aprobacion: motivoAprobacion, // <-- Enviamos el motivo
       });
 
+      // 🔥 Aprobamos el pedido con el motivo
       await aprobarPedido({
         id_pedido: data.id,
         id_usuario: usuario.id,
         tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra",
+        motivo_aprobacion: motivoAprobacion, // <-- Enviamos el motivo
       });
 
       setShowFirmaAprobacionForm(false);
@@ -452,6 +480,29 @@ export default function PedidoDetalle() {
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">
                       {item.cantidad} unidades
                     </span>
+                    {/* Checkbox para items.comprado */}
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={item.comprado === 1}
+                          onChange={(e) => handleCompradoChange(index, e.target.checked)}
+                          className="hidden"
+                        />
+                        <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${item.comprado === 1
+                          ? 'bg-green-500 border-green-500'
+                          : 'bg-white border-gray-300 hover:border-green-400'
+                          }`}>
+                          {item.comprado === 1 && (
+                            <Check size={14} className="text-white" />
+                          )}
+                        </div>
+                        <span className="text-sm text-gray-600 whitespace-nowrap">
+                          {item.comprado === 1 ? 'Comprado' : 'Marcar como comprado'}
+                        </span>
+                      </label>
+                    </div>
+
                     <button
                       onClick={() => handleCotizar(item)}
                       className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition"
