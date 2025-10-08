@@ -392,8 +392,20 @@ export default function PedidoDetalle() {
             </div>
 
             {/* Aprobación */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-2">Aprobación</h3>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-gray-500">Aprobación</h3>
+                <button
+                  onClick={() => { }}
+                  className="p-1 hover:bg-blue-50 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  title="Editar aprobación"
+                >
+                  <Edit
+                    size={16}
+                    className="text-blue-500 hover:text-blue-700"
+                  />
+                </button>
+              </div>
               <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                 <span className="font-medium">{data.responsable_aprobacion_nombre || 'No asignado'}</span>
                 {data.responsable_aprobacion_firma ? (
@@ -407,6 +419,7 @@ export default function PedidoDetalle() {
                 )}
               </div>
             </div>
+
           </div>
         </div>
       </div>

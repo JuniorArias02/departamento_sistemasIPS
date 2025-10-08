@@ -88,7 +88,8 @@ export const PERMISOS = {
 		VER_ENTREGA_SOLICITUD: 'ver_entrega_solicitud',
 		CREAR_ENTREGA_SOLICITUD: 'crear_entrega_solicitud',
 		CREAR_ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
-		CREAR_DESCUENTO_FIJOS:'crear_descuento_fijos'
+		CREAR_DESCUENTO_FIJOS:'crear_descuento_fijos',
+		VER_CONSOLIDADO_PEDIDOS:'ver_consolidado_pedidos'
 
 	},
 

@@ -78,7 +78,8 @@ export const RUTAS = {
       INFORME_ACTIVOS_FIJOS: `${DASHBOARD}/informe_activos_fijo`,
       CREAR_DESCUENTO_FIJOS: `${DASHBOARD}/crear_descuento_fijo`,
       INFORME_DESCUENTO: `${DASHBOARD}/informe_descuento`,
-      INFORME_DESCUENTO_DETALLES: `${DASHBOARD}/informe_descuento_detalles`
+      INFORME_DESCUENTO_DETALLES: `${DASHBOARD}/informe_descuento_detalles`,
+      INFORME_CONSOLIDADO_PEDIDOS: `${DASHBOARD}/informe_consolidado_pedidos`
     },
 
     PERSONAL: {

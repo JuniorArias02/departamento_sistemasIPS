@@ -49,6 +49,7 @@ import { InformActivosFijos } from "./pages/paginaCliente/gestionPedidosCompras/
 import CrearDescuentoActivo from "./pages/paginaCliente/gestionPedidosCompras/page/CrearDescuentoActivo";
 import { InformeDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeDescuento";
 import { DetalleDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/DetalleDescuento";
+import { InformeConsolidadoPedidos } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeConsolidadoPedidos";
 
 // REPORTE
 import ReportesTablero from "./pages/paginaCliente/reportes/page/ReportesTablero";
@@ -333,6 +334,19 @@ function App() {
 
           {/* vistaDatos */}
 
+          
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.INFORME_CONSOLIDADO_PEDIDOS}
+            element={
+              permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_CONSOLIDADO_PEDIDOS) ? (
+                <InformeConsolidadoPedidos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
           <Route
             path={RUTAS.USER.GESTION_COMPRAS.INFORME_DESCUENTO_DETALLES}
             element={
@@ -560,7 +574,7 @@ function App() {
 
           <Route path={RUTAS.PAGINA_CONSTRUCCION} element={<NotAvailable />} />
 
-          
+
           <Route path={RUTAS.PAGINA_MANTENIMIENTO} element={<NotAvailableTemp />} />
         </Route>
 

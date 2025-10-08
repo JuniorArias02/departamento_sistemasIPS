@@ -16,6 +16,7 @@ import {
 	Download,
 	Loader2,
 	X,
+	Edit
 
 } from 'lucide-react';
 import { URL_IMAGE2 } from "../../../../const/api";
@@ -397,7 +398,6 @@ export default function GestionPedidos() {
 											</div>
 										</div>
 									</div>
-
 									{/* Items del pedido */}
 									<div className="mt-6">
 										<h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">

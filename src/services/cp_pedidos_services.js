@@ -1,5 +1,22 @@
 import axios from "axios";
-import { EXPORTAR_INFORME_PEDIDOS, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
+import { EXPORTAR_INFORME_PEDIDOS, OBTENER_CONSOLIDADO_PEDIDOS, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
+
+
+
+
+
+export const obtenerConsolidadoPedidos = async () => {
+	try {
+	  const { data } = await axios.get(OBTENER_CONSOLIDADO_PEDIDOS);
+	  return data;
+	} catch (error) {
+	  console.error("Error en obtenerConsolidadoPedidos:", error);
+	  throw new Error(
+		error?.response?.data?.error || "Error al listar los pedidos"
+	  );
+	}
+  };
+  
 
 export const subirFirmaPedido = async (formData) => {
 	try {

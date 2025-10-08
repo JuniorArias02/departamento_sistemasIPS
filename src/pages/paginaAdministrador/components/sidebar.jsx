@@ -46,7 +46,8 @@ import {
 	CircleEllipsis,
 	NotebookTabs,
 	HandCoins,
-	Percent
+	Percent,
+	Boxes
 } from "lucide-react";
 
 import { Tooltip } from "recharts";
@@ -564,10 +565,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-
-
-
-
 									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_SOLICITUDES_DESCUENTO) && (
 										<SidebarSubItem
 											icon={<Percent size={16} />}
@@ -587,6 +584,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 											text="Informes de Compras"
 											onClick={() => {
 												navigate(RUTAS.USER.GESTION_COMPRAS.INFORMES);
+												// setTimeout(() => setSidebarOpen(false), 150);
+											}}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORMES}
+											sidebarOpen={sidebarOpen}
+											delay={0.1}
+										/>
+									)}
+
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_INFORMES) && (
+										<SidebarSubItem
+											icon={<Boxes size={16} />}
+											text="Consolidado de Pedidos"
+											onClick={() => {
+												navigate(RUTAS.USER.GESTION_COMPRAS.INFORME_CONSOLIDADO_PEDIDOS);
 												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
 											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORMES}
