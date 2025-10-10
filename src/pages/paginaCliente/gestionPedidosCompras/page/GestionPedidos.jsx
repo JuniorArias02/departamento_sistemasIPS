@@ -452,12 +452,12 @@ export default function GestionPedidos() {
 																		{item.comprado === 1 ? (
 																			<>
 																				<Check size={12} className="mr-1" />
-																				Comprado
+																				Entregado
 																			</>
 																		) : (
 																			<>
 																				<X size={12} className="mr-1" />
-																				No comprado
+																				No Entregado
 																			</>
 																		)}
 																	</div>

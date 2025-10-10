@@ -131,21 +131,19 @@ export default function PedidoDetalle() {
           ? "responsable_aprobacion_firma"
           : "proceso_compra_firma";
 
-      // 🔥 Subimos la firma
       await subirFirmaPedido({
         id_pedido: data.id,
         tipo_firma: tipoFirma,
         firma: fileFirma,
         id_usuario: usuario.id,
-        motivo_aprobacion: motivoAprobacion, // <-- Enviamos el motivo
+        motivo_aprobacion: motivoAprobacion,
       });
 
-      // 🔥 Aprobamos el pedido con el motivo
       await aprobarPedido({
         id_pedido: data.id,
         id_usuario: usuario.id,
         tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra",
-        motivo_aprobacion: motivoAprobacion, // <-- Enviamos el motivo
+        motivo_aprobacion: motivoAprobacion,
       });
 
       setShowFirmaAprobacionForm(false);
@@ -498,7 +496,7 @@ export default function PedidoDetalle() {
                           )}
                         </div>
                         <span className="text-sm text-gray-600 whitespace-nowrap">
-                          {item.comprado === 1 ? 'Comprado' : 'Marcar como comprado'}
+                          {item.comprado === 1 ? 'Entregado' : 'Marcar como Entregado'}
                         </span>
                       </label>
                     </div>
