@@ -592,7 +592,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										/>
 									)}
 
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_INFORMES) && (
+									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_CONSOLIDADO_PEDIDOS) && (
 										<SidebarSubItem
 											icon={<Boxes size={16} />}
 											text="Consolidado de Pedidos"
@@ -600,7 +600,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 												navigate(RUTAS.USER.GESTION_COMPRAS.INFORME_CONSOLIDADO_PEDIDOS);
 												// setTimeout(() => setSidebarOpen(false), 150);
 											}}
-											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.INFORMES}
+											isActive={location.pathname === RUTAS.USER.GESTION_COMPRAS.VER_CONSOLIDADO_PEDIDOS}
 											sidebarOpen={sidebarOpen}
 											delay={0.1}
 										/>

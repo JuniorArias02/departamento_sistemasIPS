@@ -19,6 +19,7 @@ import {
   Edit,
   ChevronDown,
   ChevronUp,
+  ExternalLink
 } from "lucide-react";
 import BackPage from "../../components/BackPage";
 import { URL_IMAGE2 } from "../../../../const/api";
@@ -468,17 +469,28 @@ export default function PedidoDetalle() {
                 className="px-6 py-4 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-800">{item.nombre}</h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Referencia: {item.referencia_items || "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-gray-800">{item.nombre}</h3>
+                    </div>
+                    {item.referencia_items && (
+                      <a
+                        href={item.referencia_items}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-full hover:bg-gray-100 transition"
+                        title="Abrir referencia"
+                      >
+                        <ExternalLink className="w-5 h-5 text-blue-600" />
+                      </a>
+                    )}
+                  </div>                  <div className="flex items-center gap-4">
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">
                       {item.cantidad} unidades
                     </span>
+
                     {/* Checkbox para items.comprado */}
+
                     <div className="flex items-center gap-2">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
