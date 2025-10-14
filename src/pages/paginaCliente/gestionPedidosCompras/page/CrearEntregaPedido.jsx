@@ -108,7 +108,7 @@ export default function CrearEntregaPedido() {
 						<ArchiveRestore className="" size={24} />
 					</div>
 					<div>
-						<h1 className="text-2xl font-bold text-gray-900">Crear Entrega de Pedido</h1>
+						<h1 className="text-2xl font-bold text-gray-900">Control de Entrega Pedido por Proceso </h1>
 						<p className="text-gray-500 mt-1">Complete los detalles de la entrega</p>
 					</div>
 				</div>

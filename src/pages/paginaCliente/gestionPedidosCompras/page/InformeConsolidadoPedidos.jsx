@@ -104,7 +104,7 @@ export function InformeConsolidadoPedidos() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Informe Consolidado de Pedidos
+            Informe Consolidado de Pedidos Por Procesos
           </h1>
           <p className="text-gray-600">
             Gestión y seguimiento de todos los pedidos del sistema
