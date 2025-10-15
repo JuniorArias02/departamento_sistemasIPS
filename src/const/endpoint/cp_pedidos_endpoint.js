@@ -11,3 +11,6 @@ export const EXPORTAR_PEDIDO  = `${URL_PATH}export/exportar_pedido.php`;
 export const EXPORTAR_PDF  = `${URL_PATH}export/exportar_pedido_pdf.php`; 
 
 export const EXPORTAR_INFORME_PEDIDOS = `${URL_PATH}export/exportar_consolidado_pedidos.php`;
+export const EXPORTAR_CONSOLIDADO_PEDIDOS = `${URL_PATH}export/exportar_consolidado_pedidos.php`;
+
+export const AGREGAR_OBSERVACIONES = `${URL_PATH}controllers/cp_pedidos/agregar_observaciones.php`;
