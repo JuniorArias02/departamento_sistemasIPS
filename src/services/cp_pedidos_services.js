@@ -1,16 +1,72 @@
 import axios from "axios";
-import { EXPORTAR_INFORME_PEDIDOS,EXPORTAR_CONSOLIDADO_PEDIDOS, OBTENER_CONSOLIDADO_PEDIDOS, AGREGAR_OBSERVACIONES, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
+import { EXPORTAR_INFORME_PEDIDOS, DESCARGAR_ADJUNTO, SUBIR_ADJUNTO, EXPORTAR_CONSOLIDADO_PEDIDOS, OBTENER_FIRMAS, OBTENER_CONSOLIDADO_PEDIDOS, AGREGAR_OBSERVACIONES, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
+
+
+export const obtenerAdjunto = async (id) => {
+	try {
+		const response = await axios.get(`${DESCARGAR_ADJUNTO}?id=${id}`, {
+			responseType: "blob", // importante
+		});
+
+		const blob = new Blob([response.data], { type: "application/pdf" });
+		const url = window.URL.createObjectURL(blob);
+
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `pedido_${id}.pdf`;
+		a.click();
+
+		window.URL.revokeObjectURL(url);
+	} catch (error) {
+		console.error("Error al descargar el adjunto:", error);
+	}
+};
+
+
+export const agregarAdjunto = async (datos) => {
+	try {
+		const response = await axios.post(SUBIR_ADJUNTO, datos, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+		return response.data;
+	} catch (error) {
+		console.error("Error al agregar adjunto:", error);
+		return { status: false, message: "Error al conectar con el servidor" };
+	}
+};
+
+export const obtenerFirmas64 = async (pedidoId) => {
+	try {
+		const response = await axios.post(OBTENER_FIRMAS, { pedido_id: pedidoId });
+		const data = response.data;
+
+		if (data.success && data.firmas) {
+			const firmasConPrefijo = {};
+			for (const [key, value] of Object.entries(data.firmas)) {
+				firmasConPrefijo[key] = value.startsWith("data:image")
+					? value
+					: `data:image/png;base64,${value}`;
+			}
+			return firmasConPrefijo;
+		}
+
+		return { responsable: null, compra: null };
+	} catch (error) {
+		console.error("Error al obtener firmas:", error);
+		return { responsable: null, compra: null };
+	}
+};
 
 
 
 export const agregarObservaciones = async (datos) => {
-  try {
-    const response = await axios.post(AGREGAR_OBSERVACIONES, datos);
-    return response.data;
-  } catch (error) {
-    console.error("Error al agregar observaciones:", error);
-    return { status: false, message: "Error al conectar con el servidor" };
-  }
+	try {
+		const response = await axios.post(AGREGAR_OBSERVACIONES, datos);
+		return response.data;
+	} catch (error) {
+		console.error("Error al agregar observaciones:", error);
+		return { status: false, message: "Error al conectar con el servidor" };
+	}
 };
 
 

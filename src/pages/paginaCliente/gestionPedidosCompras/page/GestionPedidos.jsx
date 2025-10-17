@@ -28,7 +28,7 @@ import { PERMISOS } from "../../../../secure/permisos/permisos";
 import { obtenerTiposSolicitud } from "../../../../services/cp_tipo_solicitud";
 import { getEstadoIcon } from "../components/getEstadoIcon";
 import { getEstadoColor } from "../components/getEstadoColor";
-import { exportarPedido } from "../../../../services/cp_pedidos_services";
+import { exportarPedido, obtenerAdjunto } from "../../../../services/cp_pedidos_services";
 import Swal from "sweetalert2";
 
 export default function GestionPedidos() {
@@ -67,7 +67,7 @@ export default function GestionPedidos() {
 
 	useEffect(() => {
 		const fetchPedidos = async () => {
-			let data; // se define aquí para usarla en todo el scope
+			let data;
 			try {
 				data = await obtenerPedidos({ usuarioId: usuario.id });
 				if (data.success) {
@@ -143,6 +143,17 @@ export default function GestionPedidos() {
 			setLoadingExport(false); // 🔹 cuando termina quita el loading
 		}
 	};
+
+	const handleDescargarAdjunto = async (id) => {
+		try {
+			await obtenerAdjunto(id);
+		} catch (err) {
+			console.error("Error descargando adjunto:", err);
+			Swal.fire("Error", "Ocurrió un error al descargar el adjunto.", "error");
+		}
+	};
+
+
 
 	if (loading) return (
 		<div className="flex justify-center items-center h-64">
@@ -499,6 +510,20 @@ export default function GestionPedidos() {
 												</>
 											)}
 										</button>
+										{pedido.tiene_adjunto === "Sí" ? (
+											<button
+												onClick={() => handleDescargarAdjunto(pedido.id)}
+												className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+											>
+												<Download size={16} />
+												Descargar adjunto
+											</button>
+										) : (
+											<span className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-md text-sm text-gray-400">
+												<FileText size={16} />
+												Adjunto no subido
+											</span>
+										)}
 										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.GESTIONAR_PEDIDO) && (
 											<button
 												className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"

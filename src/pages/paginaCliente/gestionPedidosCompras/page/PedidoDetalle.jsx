@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import BackPage from "../../components/BackPage";
 import { URL_IMAGE2 } from "../../../../const/api";
-import { rechazarPedido, aprobarPedido, subirFirmaPedido } from "../../../../services/cp_pedidos_services";
+import { rechazarPedido, aprobarPedido, subirFirmaPedido, agregarAdjunto } from "../../../../services/cp_pedidos_services";
 import { useApp } from "../../../../store/AppContext";
 import Swal from "sweetalert2";
 import { FirmaInput } from "../../../appFirma/appFirmas";
@@ -36,7 +36,10 @@ import Portal from "../../components/Portal";
 import { FirmaAprobacionModal } from "../components/pedidoDetalle/FirmaAprobacionModal";
 import { CotizarItemModal } from "../components/pedidoDetalle/CotizarItemModal";
 import { actualizarEstado } from "../../../../services/cp_items_services";
-
+import UploadPdfAuto from "../../../appFirmasEditor/UploadPdfAuto"
+import { analizarPDF } from "../../../appFirmasEditor/services/pdfAnalyzer";
+import { firmarPDF } from "../../../appFirmasEditor/services/pdfSigner"
+import { obtenerFirmas64 } from "../../../../services/cp_pedidos_services";
 export default function PedidoDetalle() {
   const { usuario } = useApp();
   const location = useLocation();
@@ -68,6 +71,73 @@ export default function PedidoDetalle() {
       await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
     }
   };
+
+  function cloneBuffer(buffer) {
+    return buffer.slice(0);
+  }
+
+
+  const procesarPDF = async (arrayBuffer, file) => {
+    try {
+      const bufferClone = arrayBuffer.slice(0);
+
+      const res = await analizarPDF(bufferClone);
+      console.log("Resultado del análisis:", res);
+
+      const posiciones = res.coincidencias || [];
+      const firmas = await obtenerFirmas64(data.id);
+      console.log("Firmas desde backend:", firmas);
+
+      // 🔹 Firmar PDF
+      const bufferClonado = cloneBuffer(arrayBuffer);
+      const pdfFirmado = await firmarPDF(bufferClonado, posiciones, [firmas.responsable, firmas.compra]);
+
+      // 🔹 Crear blob del PDF firmado
+      const blob = new Blob([pdfFirmado], { type: "application/pdf" });
+
+      // 🔹 Mostrar el PDF firmado en otra pestaña (opcional)
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+
+      // 🔹 Subir el PDF al servidor
+      const formData = new FormData();
+      formData.append("archivo", blob, `pedido_${data.id}.pdf`);
+      formData.append("pedido_id", data.id);
+
+      const subida = await agregarAdjunto(formData);
+      console.log("Resultado subida:", subida);
+
+      if (subida?.ruta) {
+        await Swal.fire({
+          icon: "success",
+          title: "PDF firmado y guardado",
+          text: "El adjunto se subió correctamente al servidor.",
+        });
+      } else {
+        await Swal.fire({
+          icon: "warning",
+          title: "PDF firmado, pero no guardado",
+          text: "Hubo un problema al subir el archivo al servidor.",
+        });
+      }
+    } catch (err) {
+      console.error("Error al procesar el PDF:", err);
+      Swal.fire("Error", "Ocurrió un problema al procesar el PDF", "error");
+    }
+  };
+
+
+
+  useEffect(() => {
+    const handler = (e) => {
+      const { pedidoId, file, arrayBuffer } = e.detail;
+      if (pedidoId !== data.id) return;
+      procesarPDF(arrayBuffer, file);
+    };
+
+    window.addEventListener("pdf-selected", handler);
+    return () => window.removeEventListener("pdf-selected", handler);
+  }, [data.id])
 
   const handleCompradoChange = async (index, comprado) => {
     try {
@@ -105,6 +175,7 @@ export default function PedidoDetalle() {
     }
     return new File([u8arr], filename, { type: mime });
   }
+
   const handleAprobarPedido = async (motivoAprobacion = "") => {
     const result = await Swal.fire({
       title: "¿Aprobar pedido?",
@@ -578,6 +649,12 @@ export default function PedidoDetalle() {
         </div>
       )}
 
+      {data.tiene_adjunto === "No" && (
+        <div className="mt-6 border-t pt-4">
+          <h3 className="text-lg font-semibold mb-2">Firmar automáticamente PDF</h3>
+          <UploadPdfAuto pedidoId={data.id} />
+        </div>
+      )}
 
       {/* firma */}
       {showFirmaAprobacionForm && (
@@ -602,6 +679,7 @@ export default function PedidoDetalle() {
         item={selectedItem}
         onSave={handleSaveCotizacion}
       />
+
 
       {/* Botones de acción */}
       <div className="flex justify-end gap-3">

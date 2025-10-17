@@ -14,3 +14,9 @@ export const EXPORTAR_INFORME_PEDIDOS = `${URL_PATH}export/exportar_consolidado_
 export const EXPORTAR_CONSOLIDADO_PEDIDOS = `${URL_PATH}export/exportar_consolidado_pedidos.php`;
 
 export const AGREGAR_OBSERVACIONES = `${URL_PATH}controllers/cp_pedidos/agregar_observaciones.php`;
+
+export const OBTENER_FIRMAS = `${URL_PATH}controllers/cp_pedidos/obtenerFirma64.php`;
+
+export const SUBIR_ADJUNTO = `${URL_PATH}controllers/cp_pedidos/agregarAdjunto.php`;
+
+export const DESCARGAR_ADJUNTO = `${URL_PATH}controllers/cp_pedidos/descargarAdjunto.php`;
