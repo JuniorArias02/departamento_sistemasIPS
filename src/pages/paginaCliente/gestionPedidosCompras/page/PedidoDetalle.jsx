@@ -649,7 +649,7 @@ export default function PedidoDetalle() {
         </div>
       )}
 
-      {data.tiene_adjunto === "No" && (
+      {data.tiene_adjunto === "No" && data.estado_gerencia === "aprobado" && (
         <div className="mt-6 border-t pt-4">
           <h3 className="text-lg font-semibold mb-2">Firmar automáticamente PDF</h3>
           <UploadPdfAuto pedidoId={data.id} />

@@ -184,20 +184,20 @@ export function InformeConsolidadoPedidos() {
   }
 
   useEffect(() => {
-  const handleKeyPress = (e) => {
-    const tableContainer = document.querySelector('.overflow-x-auto');
-    if (!tableContainer) return;
+    const handleKeyPress = (e) => {
+      const tableContainer = document.querySelector('.overflow-x-auto');
+      if (!tableContainer) return;
 
-    if (e.ctrlKey && e.key === 'ArrowRight') {
-      tableContainer.scrollLeft += 200;
-    } else if (e.ctrlKey && e.key === 'ArrowLeft') {
-      tableContainer.scrollLeft -= 200;
-    }
-  };
+      if (e.ctrlKey && e.key === 'ArrowRight') {
+        tableContainer.scrollLeft += 200;
+      } else if (e.ctrlKey && e.key === 'ArrowLeft') {
+        tableContainer.scrollLeft -= 200;
+      }
+    };
 
-  document.addEventListener('keydown', handleKeyPress);
-  return () => document.removeEventListener('keydown', handleKeyPress);
-}, []);
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const SortIcon = ({ field }) => {
     if (sortField !== field) return <ChevronDown className="w-4 h-4 opacity-50" />;
@@ -400,9 +400,13 @@ export function InformeConsolidadoPedidos() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
                       {pedido.CONSECUTIVO}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                    <td
+                      className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate"
+                      title={pedido.DESCRIPCION}
+                    >
                       {pedido.DESCRIPCION}
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {pedido.TIPO_COMPRA}
                     </td>

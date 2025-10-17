@@ -19,18 +19,12 @@ export default function UploadPdfAuto({ pedidoId }) {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-
-      // Emitimos evento global con la info para que el padre lo capture
       const detail = { pedidoId, file, arrayBuffer };
       window.dispatchEvent(new CustomEvent("pdf-selected", { detail }));
-
-      // Opcional: también guardamos algo en local state si lo necesitas
     } catch (err) {
       console.error("Error leyendo el PDF:", err);
-      // podrías mostrar un toast / Swal aquí
     } finally {
       setLoading(false);
-      // limpiar input para permitir re-subir mismo archivo si se necesita
       e.target.value = "";
     }
   };
