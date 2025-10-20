@@ -22,7 +22,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import BackPage from "../../components/BackPage";
-import { URL_IMAGE2 } from "../../../../const/api";
+import { URL_PATH } from "../../../../const/api";
 import { rechazarPedido, aprobarPedido, subirFirmaPedido, agregarAdjunto } from "../../../../services/cp_pedidos_services";
 import { useApp } from "../../../../store/AppContext";
 import Swal from "sweetalert2";
@@ -470,7 +470,7 @@ export default function PedidoDetalle() {
                 <span className="font-medium">{data.elaborado_por_nombre}</span>
                 {data.elaborado_por_firma ? (
                   <img
-                    src={`${URL_IMAGE2}${data.elaborado_por_firma}`}
+                    src={`${URL_PATH}${data.elaborado_por_firma}`}
                     alt="Firma elaborado por"
                     className="h-12"
                   />
@@ -487,7 +487,7 @@ export default function PedidoDetalle() {
                 <span className="font-medium">{data.proceso_compra_nombre || 'No asignado'}</span>
                 {data.proceso_compra_firma ? (
                   <img
-                    src={`${URL_IMAGE2}${data.proceso_compra_firma}`}
+                    src={`${URL_PATH}${data.proceso_compra_firma}`}
                     alt="Firma proceso compra"
                     className="h-12"
                   />
@@ -516,7 +516,7 @@ export default function PedidoDetalle() {
                 <span className="font-medium">{data.responsable_aprobacion_nombre || 'No asignado'}</span>
                 {data.responsable_aprobacion_firma ? (
                   <img
-                    src={`${URL_IMAGE2}${data.responsable_aprobacion_firma}`}
+                    src={`${URL_PATH}${data.responsable_aprobacion_firma}`}
                     alt="Firma aprobación"
                     className="h-12"
                   />
@@ -720,7 +720,7 @@ export default function PedidoDetalle() {
 
       {data.adjunto_url && data.tiene_adjunto === "Sí" && (
         <iframe
-          src={`${URL_IMAGE2}/${data.adjunto_url}`}
+          src={`${URL_PATH}/${data.adjunto_url}`}
           width="100%"
           height="600px"
           title="Visor PDF"
