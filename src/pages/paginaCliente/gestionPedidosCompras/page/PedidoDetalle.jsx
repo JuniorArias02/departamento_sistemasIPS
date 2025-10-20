@@ -718,7 +718,7 @@ export default function PedidoDetalle() {
       )}
 
 
-      {data.adjunto_url && data.tiene_adjunto === "Si" && (
+      {data.adjunto_url && data.tiene_adjunto === "Sí" && (
         <iframe
           src={`${URL_IMAGE2}/${data.adjunto_url}`}
           width="100%"
