@@ -285,16 +285,30 @@ export default function GestionPedidos() {
 
 
 									</div>
-									{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) &&
-										pedido.estado_compras === "aprobado" &&
-										pedido.estado_entrega !== 1 && (
-											<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-												<svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-												</svg>
-												Falta entrega
-											</span>
-										)}
+									<div className="flex flex-col gap-2">
+										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) &&
+											pedido.estado_compras === "aprobado" &&
+											pedido.estado_entrega !== 1 && (
+												<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+													<svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+													</svg>
+													Falta entrega
+												</span>
+											)}
+
+										{permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.SUBIR_ORDEN_COMPRA) &&
+											pedido.tiene_adjunto === "No" &&
+											pedido.estado_gerencia === "aprobado" && (
+												<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+													<svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+													</svg>
+													Falta Adjunto
+												</span>
+											)}
+									</div>
+
 									<div>
 										<h3 className="font-medium text-gray-800">
 											Consecutivo #{pedido.consecutivo || pedido.id}

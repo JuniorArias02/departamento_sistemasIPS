@@ -40,8 +40,12 @@ import UploadPdfAuto from "../../../appFirmasEditor/UploadPdfAuto"
 import { analizarPDF } from "../../../appFirmasEditor/services/pdfAnalyzer";
 import { firmarPDF } from "../../../appFirmasEditor/services/pdfSigner"
 import { obtenerFirmas64 } from "../../../../services/cp_pedidos_services";
+import { PERMISOS } from "../../../../secure/permisos/permisos";
+
 export default function PedidoDetalle() {
-  const { usuario } = useApp();
+  const { usuario, permisos } = useApp();
+  const [pdfData, setPdfData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [showObservacionesForm, setShowObservacionesForm] = useState(false);
   const [showFirmaAprobacionForm, setShowFirmaAprobacionForm] = useState(false);
@@ -53,6 +57,8 @@ export default function PedidoDetalle() {
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState(location.state?.pedido || {});
+  const [pdfFirmadoUrl, setPdfFirmadoUrl] = useState(null);
+
 
   const manejarConfirmacion = async (contrasena) => {
     const res = await agregarFirmaPorClave({
@@ -76,53 +82,55 @@ export default function PedidoDetalle() {
     return buffer.slice(0);
   }
 
+  const handlePreview = ({ file, arrayBuffer, url }) => {
+    setPdfData({ file, arrayBuffer, url });
+  };
 
-  const procesarPDF = async (arrayBuffer, file) => {
+  const handleFirmarYGuardar = async () => {
+    if (!pdfData) return Swal.fire("Atención", "Primero sube un PDF", "warning");
+
     try {
-      const bufferClone = arrayBuffer.slice(0);
+      setLoading(true);
 
-      const res = await analizarPDF(bufferClone);
-      console.log("Resultado del análisis:", res);
+      // 🔹 Usamos directamente el ArrayBuffer ya guardado
+      const bufferOriginal = pdfData.arrayBuffer;
+      const bufferClonado = bufferOriginal.slice(0);
+      const bufferParaAnalizar = bufferOriginal.slice(0);
 
-      const posiciones = res.coincidencias || [];
+      // 🔹 Analizar PDF
+      const posiciones = (await analizarPDF(bufferParaAnalizar)).coincidencias || [];
       const firmas = await obtenerFirmas64(data.id);
-      console.log("Firmas desde backend:", firmas);
 
       // 🔹 Firmar PDF
-      const bufferClonado = cloneBuffer(arrayBuffer);
-      const pdfFirmado = await firmarPDF(bufferClonado, posiciones, [firmas.responsable, firmas.compra]);
+      const pdfFirmado = await firmarPDF(bufferClonado, posiciones, [
+        firmas.responsable,
+        firmas.compra,
+      ]);
 
-      // 🔹 Crear blob del PDF firmado
+      // 🔹 Crear Blob y URL temporal para vista previa
       const blob = new Blob([pdfFirmado], { type: "application/pdf" });
+      const urlTemporal = URL.createObjectURL(blob);
 
-      // 🔹 Mostrar el PDF firmado en otra pestaña (opcional)
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
+      // 👉 Mostrar en una nueva pestaña o iframe temporal
+      window.open(urlTemporal, "_blank");
 
-      // 🔹 Subir el PDF al servidor
+      // 🔹 Subir PDF firmado
       const formData = new FormData();
       formData.append("archivo", blob, `pedido_${data.id}.pdf`);
       formData.append("pedido_id", data.id);
 
       const subida = await agregarAdjunto(formData);
-      console.log("Resultado subida:", subida);
-
       if (subida?.ruta) {
-        await Swal.fire({
-          icon: "success",
-          title: "PDF firmado y guardado",
-          text: "El adjunto se subió correctamente al servidor.",
-        });
+        Swal.fire("Éxito", "PDF firmado, visualizado y subido correctamente", "success");
+        setPdfData(null);
       } else {
-        await Swal.fire({
-          icon: "warning",
-          title: "PDF firmado, pero no guardado",
-          text: "Hubo un problema al subir el archivo al servidor.",
-        });
+        Swal.fire("Error", "No se pudo guardar el archivo", "error");
       }
     } catch (err) {
-      console.error("Error al procesar el PDF:", err);
-      Swal.fire("Error", "Ocurrió un problema al procesar el PDF", "error");
+      console.error(err);
+      Swal.fire("Error", "Hubo un problema al firmar el PDF", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -649,12 +657,49 @@ export default function PedidoDetalle() {
         </div>
       )}
 
-      {data.tiene_adjunto === "No" && data.estado_gerencia === "aprobado" && (
-        <div className="mt-6 border-t pt-4">
-          <h3 className="text-lg font-semibold mb-2">Firmar automáticamente PDF</h3>
-          <UploadPdfAuto pedidoId={data.id} />
-        </div>
-      )}
+      <div className="mb-6">
+        {data.tiene_adjunto === "No" && data.estado_gerencia === "aprobado" && permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.SUBIR_ORDEN_COMPRA) && (
+          <div className="mt-6 border-t border-gray-200 pt-4">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">
+              Firmar automáticamente PDF
+            </h3>
+
+            <UploadPdfAuto
+              pedidoId={data.id}
+              onPreview={handlePreview}
+            />
+
+            {pdfData && (
+              <button
+                onClick={handleFirmarYGuardar}
+                disabled={loading}
+                className={`
+            mt-4 px-4 py-2 rounded-md 
+            transition-all duration-200 ease-in-out
+            font-medium text-white
+            ${loading
+                    ? "bg-gray-400 cursor-not-allowed opacity-60"
+                    : "bg-[#4F39F6] hover:bg-[#4F39B6]/80 focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 focus:outline-none"
+                  }
+          `}
+                aria-busy={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando...
+                  </span>
+                ) : (
+                  "Agregar Firmas y Guardar"
+                )}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* firma */}
       {showFirmaAprobacionForm && (
@@ -670,6 +715,16 @@ export default function PedidoDetalle() {
             manejarConfirmacion={manejarConfirmacion}
           />
         </Portal>
+      )}
+
+
+      {data.adjunto_url && data.tiene_adjunto === "Si" && (
+        <iframe
+          src={`${URL_IMAGE2}/${data.adjunto_url}`}
+          width="100%"
+          height="600px"
+          title="Visor PDF"
+        />
       )}
 
       {/* modal para cotizar */}

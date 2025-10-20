@@ -1,7 +1,9 @@
 import { PDFDocument, rgb } from "pdf-lib";
 
 export async function firmarPDF(arrayBuffer, posiciones, firmasBase64 = []) {
-  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  // dentro de firmarPDF
+const pdfDoc = await PDFDocument.load(arrayBuffer.slice(0));
+
   const page = pdfDoc.getPage(posiciones[0].pagina - 1);
   const { height, width } = page.getSize();
 

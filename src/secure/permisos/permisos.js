@@ -1,3 +1,5 @@
+import { SUBIR_ADJUNTO } from "../../const/endpoint/cp_pedidos_endpoint";
+
 export const PERMISOS = {
 	USUARIOS: {
 		MENU_ITEM: "menu_item_usuario",
@@ -89,7 +91,8 @@ export const PERMISOS = {
 		CREAR_ENTREGA_SOLICITUD: 'crear_entrega_solicitud',
 		CREAR_ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
 		CREAR_DESCUENTO_FIJOS:'crear_descuento_fijos',
-		VER_CONSOLIDADO_PEDIDOS:'ver_consolidado_pedidos'
+		VER_CONSOLIDADO_PEDIDOS:'ver_consolidado_pedidos',
+		SUBIR_ORDEN_COMPRA:'subir_orden_compra',
 
 	},
 

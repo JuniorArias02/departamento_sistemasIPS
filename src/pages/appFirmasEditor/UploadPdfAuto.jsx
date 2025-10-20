@@ -1,36 +1,27 @@
-// components/UploadPdfAuto.jsx
 import React, { useRef, useState } from "react";
 
-export default function UploadPdfAuto({ pedidoId }) {
+export default function UploadPdfAuto({ pedidoId, onPreview }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setLoading(true);
-    setFileName(file.name);
+    const arrayBuffer = await file.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
 
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const detail = { pedidoId, file, arrayBuffer };
-      window.dispatchEvent(new CustomEvent("pdf-selected", { detail }));
-    } catch (err) {
-      console.error("Error leyendo el PDF:", err);
-    } finally {
-      setLoading(false);
-      e.target.value = "";
-    }
+    setFileName(file.name);
+    setPreviewUrl(url);
+
+    // 🔹 Enviar el archivo al padre para luego firmarlo
+    onPreview({ file, arrayBuffer, url });
   };
 
   return (
-    <div className="upload-pdf-auto">
+    <div className="flex flex-col gap-3">
       <input
         ref={inputRef}
         type="file"
@@ -41,16 +32,24 @@ export default function UploadPdfAuto({ pedidoId }) {
 
       <button
         type="button"
-        onClick={handleClick}
-        className="px-4 py-2 rounded bg-sky-600 text-white hover:bg-sky-700"
+        onClick={() => inputRef.current.click()}
+        className="px-4 py-2 rounded bg-[#4F39F6] text-white hover:bg-[#4F39FF]/80"
       >
-        {loading ? "Cargando..." : "Subir PDF y procesar"}
+        Subir PDF para visualizar
       </button>
 
       {fileName && (
-        <span style={{ marginLeft: 12 }}>
-          Archivo listo: <strong>{fileName}</strong>
-        </span>
+        <span className="text-sm text-gray-600">Archivo: {fileName}</span>
+      )}
+
+      {previewUrl && (
+        <iframe
+          src={previewUrl}
+          title="Vista previa PDF"
+          width="100%"
+          height="500px"
+          className="border rounded"
+        />
       )}
     </div>
   );
