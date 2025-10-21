@@ -442,6 +442,7 @@ export default function GestionPedidos() {
 											<table className="min-w-full divide-y divide-gray-200">
 												<thead className="bg-gray-50">
 													<tr>
+														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">codigo</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
 														<th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidad de medida</th>
@@ -452,6 +453,7 @@ export default function GestionPedidos() {
 												<tbody className="bg-white divide-y divide-gray-200">
 													{pedido.items?.map((item, index) => (
 														<tr key={index}>
+															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.codigo_producto}</td>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.nombre}</td>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.cantidad}</td>
 															<td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.unidad_medida}</td>
