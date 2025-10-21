@@ -31,6 +31,7 @@ export default function EntregaActivosFijos() {
   }, []);
 
   function base64ToBlob(base64) {
+    if (!base64 || !base64.includes(",")) return null;
     const byteString = atob(base64.split(",")[1]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
@@ -108,14 +109,14 @@ export default function EntregaActivosFijos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(form);
-    if (!form.firma_quien_entrega || !form.firma_quien_recibe) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Faltan firmas",
-        text: "Debe registrar ambas firmas",
-      });
-    }
+    // console.log(form);
+    // if (!form.firma_quien_entrega || !form.firma_quien_recibe) {
+    //   return Swal.fire({
+    //     icon: "warning",
+    //     title: "Faltan firmas",
+    //     text: "Debe registrar ambas firmas",
+    //   });
+    // }
 
     try {
       // 1️⃣ Crear entrega
@@ -149,13 +150,21 @@ export default function EntregaActivosFijos() {
       }
 
       // 3️⃣ Subir firmas
+      // 3️⃣ Subir firmas (solo si existen)
       const formData = new FormData();
       formData.append("id", entrega.id);
-      formData.append("firma_entrega", base64ToBlob(form.firma_quien_entrega), "firma_entrega.png");
-      formData.append("firma_recibe", base64ToBlob(form.firma_quien_recibe), "firma_recibe.png");
 
-      await subirFirmaActa(formData);
+      if (form.firma_quien_entrega) {
+        formData.append("firma_entrega", base64ToBlob(form.firma_quien_entrega), "firma_entrega.png");
+      }
+      if (form.firma_quien_recibe) {
+        formData.append("firma_recibe", base64ToBlob(form.firma_quien_recibe), "firma_recibe.png");
+      }
 
+      // Solo subir si hay al menos una firma
+      if (form.firma_quien_entrega || form.firma_quien_recibe) {
+        await subirFirmaActa(formData);
+      }
       await Swal.fire({
         icon: "success",
         title: "¡Listo!",
