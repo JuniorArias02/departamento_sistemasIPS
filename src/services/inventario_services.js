@@ -8,13 +8,33 @@ import {
   EXPORTAR_INVENTARIO_JSON,
   GRAFICA_INVENTARIO,
   CONTAR_INVENTARIO,
-  BUSCAR_INVENTARIO_ITEM
+  BUSCAR_INVENTARIO_ITEM,
+  SUBIR_ADJUNTO
 
 } from "../const/endpoint/inventario_endpoint";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
+export const subirAdjunto = async (inventarioId, archivo) => {
+  try {
+    const formData = new FormData();
+    formData.append("inventario_id", inventarioId);
+    formData.append("archivo", archivo);
 
+    const response = await axios.post(SUBIR_ADJUNTO, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al subir adjunto:", error);
+    throw new Error(
+      error?.response?.data?.message || "Error al subir el adjunto"
+    );
+  }
+};
 
 export const buscarItemInventario = async (termino) => {
   try {
@@ -97,7 +117,7 @@ export const eliminarInventario = async (id_inventario, id_usuario) => {
 
 export const obtenerGraficaInventario = async (id) => {
   const res = await axios.post(GRAFICA_INVENTARIO, {
-    id_usuario:id
+    id_usuario: id
   });
   return res.data;
 };

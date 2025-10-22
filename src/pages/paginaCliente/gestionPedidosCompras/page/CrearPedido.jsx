@@ -130,7 +130,7 @@ export default function CrearPedido() {
 		setMensaje({ text: "", type: "" });
 
 		try {
-			// 1️⃣ Validación básica
+			// Validación básica
 			if (items.length === 0) {
 				throw new Error("Debes agregar al menos un ítem");
 			}
@@ -138,7 +138,19 @@ export default function CrearPedido() {
 				throw new Error("Debes agregar tu firma");
 			}
 
-			// 2️⃣ Crear el pedido (sin mandar la firma aquí)
+			
+			const ahora = new Date();
+			const hora = ahora.getHours();
+			const minutos = ahora.getMinutes();
+			const horaActual = hora + minutos / 60;
+			const horaInicio = 7 + 20 / 60;
+			const horaFin = 18;
+
+			if (horaActual < horaInicio || horaActual > horaFin) {
+				throw new Error("Solo puedes crear pedidos entre las 7:20 AM y las 6:00 PM");
+			}
+
+			// 2️⃣ Crear el pedido
 			const pedidoData = {
 				fecha_solicitud: form.fecha_solicitud,
 				proceso_solicitante: form.proceso_solicitante,
@@ -183,10 +195,11 @@ export default function CrearPedido() {
 			Swal.fire({
 				icon: 'success',
 				title: 'Se ha creado el pedido',
-				text: `el pedido ${form.proceso_solicitante} fue registrada correctamente`,
+				text: `El pedido ${form.proceso_solicitante} fue registrado correctamente`,
 				timer: 2000,
 				showConfirmButton: false
 			});
+
 			// 6️⃣ Reset form
 			setForm({
 				fecha_solicitud: new Date().toISOString().split('T')[0],
@@ -205,6 +218,7 @@ export default function CrearPedido() {
 			setLoading(false);
 		}
 	};
+
 
 
 	const manejarConfirmacion = async (contrasena) => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Save, Loader2, Hash, Tag, Building2, User, Cpu, Settings, Barcode, MapPin, ChevronDown, UploadCloud, PlusCircle, Image, Layers, Activity, DollarSign, TrendingDown, Shield, Calendar, ShoppingCart, Info, Truck, CreditCard, FileText, CalendarCheck, Paperclip } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
-import { crearInventario, actualizarInventario } from "../../../services/inventario_services";
+import { crearInventario, actualizarInventario, subirAdjunto } from "../../../services/inventario_services";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -78,13 +78,14 @@ export default function FormularioInventario() {
 				// Nuevas variables
 				codigo_barras: inventarioEdit.codigo_barras || "",
 				grupo: inventarioEdit.grupo || "",
-				vida_util: inventarioEdit.vida_util ? formatDateForInput(inventarioEdit.vida_util) : "",
-				vida_util_niff: inventarioEdit.vida_util_niff ? formatDateForInput(inventarioEdit.vida_util_niff) : "",
+				vida_util: inventarioEdit.vida_util ? inventarioEdit.vida_util : "",
+				vida_util_niff: inventarioEdit.vida_util_niff ? inventarioEdit.vida_util_niff : "",
 				centro_costo: inventarioEdit.centro_costo || "",
 				ubicacion: inventarioEdit.ubicacion || "",
 				proveedor: inventarioEdit.proveedor || "",
 				fecha_compra: inventarioEdit.fecha_compra ? formatDateForInput(inventarioEdit.fecha_compra) : "",
 				soporte: inventarioEdit.soporte || "",
+				soporte_adjunto: inventarioEdit.soporte_adjunto || "",
 				descripcion: inventarioEdit.descripcion || "",
 				estado: inventarioEdit.estado || "",
 				escritura: inventarioEdit.escritura || "",
@@ -131,7 +132,8 @@ export default function FormularioInventario() {
 				meses_niif: "",
 				tipo_adquisicion: "",
 				calibrado: "",
-				observaciones: ""
+				observaciones: "",
+				soporte_adjunto: ""
 			});
 		}
 	}, [inventarioEdit]);
@@ -165,25 +167,35 @@ export default function FormularioInventario() {
 			creado_por: usuario?.id || usuario?.nombre || "desconocido",
 		};
 
+		let inventarioId;
+
 		try {
 			if (inventarioEdit?.id) {
+				// Actualiza inventario existente
 				await actualizarInventario(inventarioEdit.id, datosConUsuario);
-				Swal.fire({
-					icon: "success",
-					title: "¡Actualizado!",
-					text: "Inventario actualizado correctamente",
-					timer: 2000,
-					showConfirmButton: false,
-				});
 			} else {
-				await crearInventario(datosConUsuario);
-				Swal.fire({
-					icon: "success",
-					title: "¡Éxito!",
-					text: "Inventario registrado correctamente",
-					timer: 2000,
-					showConfirmButton: false,
-				});
+				// Crea nuevo inventario y obtén su ID (asegúrate de que crearInventario lo devuelva)
+				const res = await crearInventario(datosConUsuario);
+				inventarioId = res.id;
+			}
+
+			// 👉 Subir adjunto si existe archivo
+			if (formData.soporte_adjunto instanceof File) {
+				await subirAdjunto(inventarioId, formData.soporte_adjunto);
+			}
+
+			Swal.fire({
+				icon: "success",
+				title: inventarioEdit?.id ? "¡Actualizado!" : "¡Éxito!",
+				text: inventarioEdit?.id
+					? "Inventario actualizado correctamente"
+					: "Inventario registrado correctamente",
+				timer: 2000,
+				showConfirmButton: false,
+			});
+
+			// Resetea formulario si era creación
+			if (!inventarioEdit?.id) {
 				setFormData({
 					codigo: "",
 					nombre: "",
@@ -214,7 +226,8 @@ export default function FormularioInventario() {
 					meses_niif: "",
 					tipo_adquisicion: "",
 					calibrado: "",
-					observaciones: ""
+					observaciones: "",
+					soporte_adjunto: "",
 				});
 			}
 		} catch (err) {
@@ -228,6 +241,7 @@ export default function FormularioInventario() {
 			setLoading(false);
 		}
 	};
+
 
 	return (
 		<motion.form
@@ -405,8 +419,6 @@ export default function FormularioInventario() {
 						{/* Campos de fecha financieros */}
 						{[
 							{ name: "fecha_compra", label: "Fecha de Compra", icon: <Calendar size={18} className="text-gray-400" /> },
-							{ name: "vida_util", label: "Vida Útil", icon: <Calendar size={18} className="text-gray-400" /> },
-							{ name: "vida_util_niff", label: "Vida Útil NIIF", icon: <Calendar size={18} className="text-gray-400" /> },
 						].map(({ name, label, icon }, index) => (
 							<motion.div
 								key={name}
@@ -434,6 +446,40 @@ export default function FormularioInventario() {
 								</div>
 							</motion.div>
 						))}
+
+						{[
+							{ name: "vida_util", label: "Vida Útil (meses)", icon: <Calendar size={18} className="text-gray-400" /> },
+							{ name: "vida_util_niff", label: "Vida Útil NIIF (meses)", icon: <Calendar size={18} className="text-gray-400" /> },
+						].map(({ name, label, icon }, index) => (
+							<motion.div
+								key={name}
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: index * 0.05 }}
+								className="space-y-1"
+							>
+								<label htmlFor={name} className="text-sm font-medium text-gray-700 flex items-center gap-1">
+									{icon}
+									<span>{label}</span>
+								</label>
+								<div className="relative">
+									<input
+										type="number" // 👈 cambia de date a number
+										id={name}
+										name={name}
+										value={formData[name] || ''}
+										onChange={handleChange}
+										min="0"
+										className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+										placeholder="Ej: 36"
+									/>
+									<div className="absolute left-3 top-3.5">
+										{icon}
+									</div>
+								</div>
+							</motion.div>
+						))}
+
 
 						{/* Selector de tipo de adquisición */}
 						<motion.div
@@ -574,6 +620,28 @@ export default function FormularioInventario() {
 							className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
 							placeholder="Referencia de soporte/documentación"
 						/>
+						<Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
+					</motion.div>
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.6 }}
+						className="mt-6 space-y-1"
+					>
+						<label htmlFor="soporte" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+							<Paperclip size={18} className="text-gray-400" />
+							<span>adjuntar soporte</span>
+						</label>
+						<input
+							type="file"
+							id="soporte_adjunto"
+							name="soporte_adjunto"
+							onChange={(e) =>
+								setFormData({ ...formData, soporte_adjunto: e.target.files[0] })
+							}
+							className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+						/>
+
 						<Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
 					</motion.div>
 				</div>
