@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listarInventarios, eliminarInventario, buscarInventario, exportarInventarios } from "../../../services/inventario_services";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { Download, Search, Pencil, Trash2, User, Building2, PackageSearch, CheckCircle2, AlertTriangle, RefreshCw, ChevronsRight, ChevronsLeft, XCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Download, Search, Pencil, Trash2, User, Building2,AlertCircle , PackageSearch, CheckCircle2, AlertTriangle, RefreshCw, ChevronsRight, ChevronsLeft, XCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { RUTAS } from "../../../const/routers/routers";
