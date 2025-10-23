@@ -255,7 +255,6 @@ export function InformActivosFijos() {
                             )}
                           </div>
                           <p className="text-xs font-medium text-slate-600 text-center">Quien entrega</p>
-                          <p className="text-xs font-medium text-slate-600 text-center">Quien entrega</p>
                         </div>
 
                         <div className="bg-gradient-to-br from-green-50/80 to-emerald-50/80 rounded-2xl p-4 border border-slate-200/50 shadow-sm">
