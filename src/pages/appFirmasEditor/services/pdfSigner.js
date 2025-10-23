@@ -66,8 +66,8 @@ const pdfDoc = await PDFDocument.load(arrayBuffer.slice(0));
   });
 
 
-  page.drawText("Jefe de Compras", { x: xIzquierda + 15, y: textY - 14, size: 10 });
-  page.drawText("Jefe Autorizado", { x: xDerecha + 25, y: textY - 14, size: 10 });
+  page.drawText("Jefe Autorizado", { x: xIzquierda + 15, y: textY - 14, size: 10 });
+  page.drawText("Jefe de Compras", { x: xDerecha + 25, y: textY - 14, size: 10 });
 
   return await pdfDoc.save();
 }

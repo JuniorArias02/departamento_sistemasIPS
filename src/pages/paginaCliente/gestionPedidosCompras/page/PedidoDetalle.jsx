@@ -103,8 +103,8 @@ export default function PedidoDetalle() {
 
       // 🔹 Firmar PDF
       const pdfFirmado = await firmarPDF(bufferClonado, posiciones, [
-        firmas.responsable,
         firmas.compra,
+        firmas.responsable,
       ]);
 
       // 🔹 Crear Blob y URL temporal para vista previa

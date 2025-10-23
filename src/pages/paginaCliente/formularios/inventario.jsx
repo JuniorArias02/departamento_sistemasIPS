@@ -8,11 +8,15 @@ import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
+import CentroCostoInput from "../inventario/components/centroCostoInput";
+import { buscarDependenciaSede } from "../../../services/cp_dependencia_services";
 export default function FormularioInventario() {
 	const { usuario, permisos } = useApp();
 	const location = useLocation();
 	const inventarioEdit = location.state?.inventario;
 	const [sedes, setSedes] = useState([]);
+	const [dependencias, setDependencias] = useState([]);
+
 	const [formData, setFormData] = useState({
 		codigo: "",
 		nombre: "",
@@ -151,10 +155,21 @@ export default function FormularioInventario() {
 		fetchSedes();
 	}, []);
 
-	const handleChange = (e) => {
+	const handleChange = async (e) => {
 		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value.toUpperCase() });
+		setFormData((prev) => ({ ...prev, [name]: value }));
+
+
+		if (name === "sede_id") {
+			if (value) {
+				const res = await buscarDependenciaSede(value);
+				setDependencias(res.data || []);
+			} else {
+				setDependencias([]);
+			}
+		}
 	};
+
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -280,7 +295,6 @@ export default function FormularioInventario() {
 					{[
 						{ name: "codigo", label: "Código", icon: <Hash size={18} className="text-gray-400" /> },
 						{ name: "nombre", label: "Nombre del Activo", icon: <Tag size={18} className="text-gray-400" /> },
-						{ name: "dependencia", label: "Dependencia", icon: <Building2 size={18} className="text-gray-400" /> },
 						{ name: "responsable", label: "Responsable", icon: <User size={18} className="text-gray-400" /> },
 						{ name: "marca", label: "Marca", icon: <Cpu size={18} className="text-gray-400" /> },
 						{ name: "modelo", label: "Modelo", icon: <Settings size={18} className="text-gray-400" /> },
@@ -316,6 +330,36 @@ export default function FormularioInventario() {
 							</div>
 						</motion.div>
 					))}
+
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						className="space-y-1"
+					>
+						<label htmlFor="dependencia" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+							<Building2 size={18} className="text-gray-400" />
+							<span>Dependencia</span>
+						</label>
+						<div className="relative">
+							<select
+								id="dependencia"
+								name="dependencia"
+								value={formData.dependencia || ""}
+								onChange={handleChange}
+								disabled={!dependencias.length}
+								className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+							>
+								<option value="">Seleccione una dependencia</option>
+								{dependencias.map((d) => (
+									<option key={d.nombre} value={d.nombre}>
+										{d.nombre}
+									</option>
+								))}
+							</select>
+							<Building2 size={18} className="absolute left-3 top-3.5 text-gray-400" />
+						</div>
+					</motion.div>
+
 
 					{/* Selector de sede */}
 					<motion.div
@@ -464,7 +508,7 @@ export default function FormularioInventario() {
 								</label>
 								<div className="relative">
 									<input
-										type="number" // 👈 cambia de date a number
+										type="number"
 										id={name}
 										name={name}
 										value={formData[name] || ''}
@@ -519,7 +563,6 @@ export default function FormularioInventario() {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						{[
 							{ name: "proveedor", label: "Proveedor", icon: <Truck size={18} className="text-gray-400" /> },
-							{ name: "centro_costo", label: "Centro de Costo", icon: <CreditCard size={18} className="text-gray-400" /> },
 							{ name: "matricula", label: "Matrícula", icon: <FileText size={18} className="text-gray-400" /> },
 							{ name: "escritura", label: "Escritura", icon: <FileText size={18} className="text-gray-400" /> },
 							{ name: "meses", label: "Meses Depreciación", icon: <Calendar size={18} className="text-gray-400" /> },
@@ -552,6 +595,12 @@ export default function FormularioInventario() {
 								</div>
 							</motion.div>
 						))}
+
+						<CentroCostoInput
+							value={formData.centro_costo}
+							onChange={handleChange}
+						/>
+
 
 						{/* Campo de fecha de calibrado */}
 						<motion.div
