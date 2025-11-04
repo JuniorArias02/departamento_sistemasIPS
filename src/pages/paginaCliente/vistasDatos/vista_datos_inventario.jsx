@@ -17,7 +17,7 @@ export default function VistaDatosInventarios() {
 	const [filtroTexto, setFiltroTexto] = useState("");
 	const [filtroSede, setFiltroSede] = useState("");
 	const [paginaActual, setPaginaActual] = useState(1);
-	const itemsPorPagina = 20; // cuantos mostrar por página
+	const itemsPorPagina = 20; 
 	const indexUltimo = paginaActual * itemsPorPagina;
 	const indexPrimero = indexUltimo - itemsPorPagina;
 	const inventariosPagina = inventarios.slice(indexPrimero, indexUltimo);
