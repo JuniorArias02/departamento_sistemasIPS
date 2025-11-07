@@ -249,7 +249,7 @@ export function InformActivosFijos() {
                               />
                             ) : (
                               <div className="text-slate-400 flex flex-col items-center">
-                                <User size={20} />  
+                                <User size={20} />
                                 <span className="text-xs mt-1.5 font-medium">Sin firma</span>
                               </div>
                             )}
