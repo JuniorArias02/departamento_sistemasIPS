@@ -150,7 +150,7 @@ export default function FormularioInventario() {
       creado_por: usuario?.id || usuario?.nombre || "desconocido",
     };
 
-    let inventarioId;
+    let inventarioId = inventarioEdit?.id;
 
     try {
       if (inventarioEdit?.id) {
@@ -160,9 +160,10 @@ export default function FormularioInventario() {
         inventarioId = res.id;
       }
 
-      if (formData.soporte_adjunto instanceof File) {
+      if (formData.soporte_adjunto instanceof File && inventarioId) {
         await subirAdjunto(inventarioId, formData.soporte_adjunto);
       }
+
 
       Swal.fire({
         icon: "success",

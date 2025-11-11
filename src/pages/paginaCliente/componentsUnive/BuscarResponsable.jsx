@@ -80,21 +80,28 @@ const BuscarResponsable = ({
 
 	// 🔹 Precargar cuando `value` tenga un ID
 	useEffect(() => {
+		let cancelado = false;
+
 		const precargar = async () => {
-			if (value && !selectedPerson) {
-				try {
-					const persona = await buscarPersonalId(value);
-					if (persona) {
-						setSelectedPerson(persona);
-						setQuery(`${persona.nombre} (${persona.cedula})`);
-					}
-				} catch (err) {
-					console.error("Error precargando persona:", err);
+			if (!value || selectedPerson?.id === value) return;
+
+			try {
+				const persona = await buscarPersonalId(value);
+				if (persona && !cancelado) {
+					setSelectedPerson(persona);
+					setQuery(`${persona.nombre} (${persona.cedula})`);
 				}
+			} catch (err) {
+				console.error("Error precargando persona:", err);
 			}
 		};
+
 		precargar();
+		return () => {
+			cancelado = true;
+		};
 	}, [value]);
+
 
 	const handleSelect = (persona) => {
 		onChange({

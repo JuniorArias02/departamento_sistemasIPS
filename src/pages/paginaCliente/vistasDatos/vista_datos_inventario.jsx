@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { listarInventarios, eliminarInventario, buscarInventario, exportarInventarios } from "../../../services/inventario_services";
 import Swal from "sweetalert2";
 import BackPage from "../components/BackPage";
-import { Download, Search, Pencil, Trash2, User, Building2,AlertCircle , PackageSearch, CheckCircle2, AlertTriangle, RefreshCw, ChevronsRight, ChevronsLeft, XCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Download, Search, Pencil, Eye, Trash2, User, Building2, AlertCircle, PackageSearch, CheckCircle2, AlertTriangle, RefreshCw, ChevronsRight, ChevronsLeft, XCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { RUTAS } from "../../../const/routers/routers";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import { useApp } from "../../../store/AppContext";
+import { URL_IMAGE2 } from "../../../const/api";
 
 export default function VistaDatosInventarios() {
 	const { usuario, permisos } = useApp();
@@ -17,15 +18,18 @@ export default function VistaDatosInventarios() {
 	const [filtroTexto, setFiltroTexto] = useState("");
 	const [filtroSede, setFiltroSede] = useState("");
 	const [paginaActual, setPaginaActual] = useState(1);
-	const itemsPorPagina = 20; 
+	const itemsPorPagina = 20;
 	const indexUltimo = paginaActual * itemsPorPagina;
 	const indexPrimero = indexUltimo - itemsPorPagina;
 	const inventariosPagina = inventarios.slice(indexPrimero, indexUltimo);
 	const totalPaginas = Math.ceil(inventarios.length / itemsPorPagina);
+	const [pdfSeleccionado, setPdfSeleccionado] = useState(null);
+	const [pdfCargando, setPdfCargando] = useState(false);
 
 	const fetchData = async () => {
 		try {
 			const data = await listarInventarios(usuario.id);
+			console.log(data);
 			setInventarios(data);
 		} catch (err) {
 			console.error("Error cargando inventarios", err);
@@ -304,6 +308,24 @@ export default function VistaDatosInventarios() {
 											<div className="flex justify-end gap-2">
 												<button
 													onClick={() => {
+														if (item.soporte_adjunto) {
+															setPdfCargando(true);
+															setPdfSeleccionado(`${URL_IMAGE2}/${item.soporte_adjunto}`);
+														}
+													}}
+
+													disabled={!item.soporte_adjunto}
+													className={`p-2 rounded-lg transition-colors cursor-pointer ${item.soporte_adjunto
+														? "bg-green-100 text-green-700 hover:bg-green-200"
+														: "bg-gray-100 text-gray-400 cursor-not-allowed"
+														}`}
+													title={item.soporte_adjunto ? "Ver soporte" : "Sin soporte"}
+												>
+													<Eye size={18} />
+												</button>
+
+												<button
+													onClick={() => {
 														if (!puedeEditar) {
 															Swal.fire({
 																icon: 'warning',
@@ -368,6 +390,42 @@ export default function VistaDatosInventarios() {
 					</table>
 				</div >
 			</div >
+
+			{pdfSeleccionado && (
+				<motion.div
+					className="fixed inset-0 bg-black/10 flex items-center justify-center z-50"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+				>
+					<div className="bg-white rounded-xl shadow-2xl w-[90%] md:w-[70%] lg:w-[50%] h-[80%] relative flex flex-col overflow-hidden">
+						<button
+							onClick={() => {
+								setPdfSeleccionado(null);
+								setPdfCargando(false);
+							}}
+							className="absolute top-3 right-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full p-2 z-20"
+						>
+							✕
+						</button>
+
+						{pdfCargando && (
+							<div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10">
+								<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-500 border-solid"></div>
+								<p className="mt-3 text-gray-600 text-sm font-medium">Cargando PDF...</p>
+							</div>
+						)}
+
+						<iframe
+							src={pdfSeleccionado}
+							title="Vista previa del PDF"
+							className="w-full h-full rounded-b-xl"
+							onLoad={() => setPdfCargando(false)}
+						></iframe>
+					</div>
+				</motion.div>
+			)}
+
+
 
 			{/* Paginación mejorada */}
 			< div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6" >

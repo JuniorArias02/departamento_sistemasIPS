@@ -10,7 +10,8 @@ const BuscarDependencia = ({
 	labelDependencia = "Dependencia",
 	required = false,
 	reset = false,
-	icon = <MapPin className="h-4 w-4 text-gray-500" />
+	icon = <MapPin className="h-4 w-4 text-gray-500" />,
+	formSedeId = null
 }) => {
 	const [sedes, setSedes] = useState([]);
 	const [dependencias, setDependencias] = useState([]);
@@ -56,6 +57,25 @@ const BuscarDependencia = ({
 		};
 		fetchDependencias();
 	}, [sedeId]);
+
+	useEffect(() => {
+		const precargar = async () => {
+			if (!formSedeId) return;
+
+			try {
+				setLoadingDeps(true);
+				const deps = await listarDependenciasPorSede(formSedeId);
+				setDependencias(deps.dependencias || []);
+				setSedeId(formSedeId);
+			} catch (err) {
+				console.error("Error precargando sede/dependencia:", err);
+			} finally {
+				setLoadingDeps(false);
+			}
+		};
+		precargar();
+	}, [formSedeId]);
+
 
 	// reset
 	useEffect(() => {

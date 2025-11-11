@@ -10,3 +10,4 @@ export const OBTENER_ENTREGA_ACTIVOS = `${URL_PATH}controllers/cp_entrega_activo
 
 export const DESCARGAR_ENTREGA_ACTIVOS = `${URL_PATH}export/exportar_entrega_activos_fijos.php`;
 
+export const OBTENER_ENTREGA_ACTIVOS_ID = `${URL_PATH}controllers/cp_entrega_activos_fijos_items/obtener_items_activos.php`;

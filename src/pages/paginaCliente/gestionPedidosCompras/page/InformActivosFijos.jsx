@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarEntregasActivos, exportarInformeEntregaActivos } from "../../../../services/cp_entrega_activos_services";
-import { Download, Search, Filter, User, CreditCard, Briefcase, MapPin, Calendar, FileText, BadgeDollarSign } from "lucide-react";
+import { Download, Search, Filter, User, CreditCard, Briefcase, MapPin, Calendar, FileText, BadgeDollarSign, Pencil } from "lucide-react";
 import { URL_IMAGE } from "../../../../const/api";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,8 @@ export function InformActivosFijos() {
     cargarEntregas();
   }, []);
 
+
+  
   // Filtrar entregas basado en búsqueda y filtros
   const filteredEntregas = entregas.filter(entrega => {
     const matchesSearch =
@@ -73,6 +75,12 @@ export function InformActivosFijos() {
     }
   };
 
+
+  const handleEdit = (entrega) => {
+    navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_ENTREGA_ACTIVOS_FIJOS, {
+      state: { entrega }
+    });
+  };
 
   const descargarInformeGeneral = async () => {
     setDescargandoGeneral(true);
@@ -200,6 +208,7 @@ export function InformActivosFijos() {
                         >
                           <BadgeDollarSign size={20} />
                         </button>
+
                         <button
                           onClick={() => handleDownload(entrega.entrega_id)}
                           className="p-2 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-slate-200/60 text-slate-600 hover:text-slate-800 hover:from-slate-100 hover:to-slate-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -207,6 +216,14 @@ export function InformActivosFijos() {
                           title="Descargar documento"
                         >
                           <Download size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(entrega)}
+                          className="p-2 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-slate-200/60 text-slate-600 hover:text-slate-800 hover:from-slate-100 hover:to-slate-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                          disabled={descargando}
+                          title="Editar documento"
+                        >
+                          <Pencil size={20} />
                         </button>
                       </div>
                     </div>

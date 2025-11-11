@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
-import { subirFirmaActa, crearEntregaActivos, subirItemsEntrega } from '../../../../services/cp_entrega_activos_services';
+import { subirFirmaActa, crearEntregaActivos, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega } from '../../../../services/cp_entrega_activos_services';
 import { User, Package, FileSignature, Search, Plus, Trash2, Check } from 'lucide-react';
 import BuscarResponsable from '../../componentsUnive/BuscarResponsable';
 import { listarSedes } from '../../../../services/sedes_service';
 import BuscarInventario from '../../componentsUnive/BuscarInventario';
 import BuscarDependencia from '../../componentsUnive/BuscarDependencia';
 import Swal from "sweetalert2";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function EntregaActivosFijos() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const entregaEdit = location.state?.entrega;
+
   const [sedes, setSedes] = useState([]);
   const [resetInventario, setResetInventario] = useState(false);
   const [resetResponsable, setResetResponsable] = useState(false);
+  const [nuevaFirmaEntrega, setNuevaFirmaEntrega] = useState(null);
+  const [nuevaFirmaRecibe, setNuevaFirmaRecibe] = useState(null);
+
 
   const [form, setForm] = useState({
     personal_id: "",
-    sede: "",
+    sede_id: "",
     fecha: new Date().toISOString().split('T')[0],
     items: [],
     firma_quien_entrega: "",
@@ -30,19 +38,70 @@ export default function EntregaActivosFijos() {
     cargarSedes();
   }, []);
 
-  function base64ToBlob(base64) {
-    if (!base64 || !base64.includes(",")) return null;
-    const byteString = atob(base64.split(",")[1]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
+  useEffect(() => {
+    if (entregaEdit) {
+      setForm({
+        personal_id: entregaEdit.personal_id || "",
+        sede_id: entregaEdit.sede_id || "",
+        proceso_solicitante: entregaEdit.proceso_solicitante || "",
+        fecha: entregaEdit.fecha_entrega
+          ? entregaEdit.fecha_entrega.split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        items: entregaEdit.items || [],
+        firma_quien_entrega: entregaEdit.firma_quien_entrega || "",
+        firma_quien_recibe: entregaEdit.firma_quien_recibe || "",
+      });
     }
-    return new Blob([ab], { type: "image/png" });
+  }, [entregaEdit]);
+
+  useEffect(() => {
+    console.log(entregaEdit);
+    const obtenerItems = async () => {
+      if (!entregaEdit?.entrega_id) return;
+
+      const res = await cargarItemsEntrega(entregaEdit.entrega_id);
+      console.log(res);
+      if (res.success && res.data.length > 0) {
+        setForm(prev => ({
+          ...prev,
+          items: res.data.map(item => ({
+            id: item.item_id,
+            contieneAccesorios: item.es_accesorio ? "si" : "no",
+            descripcionAccesorios: item.accesorio_descripcion || "",
+            nombre: item.nombre_item || "Item cargado",
+            codigo: item.codigo_item || "",
+            serial: item.serial_item || ""
+          }))
+        }));
+      }
+    };
+
+    obtenerItems();
+  }, [entregaEdit]);
+
+
+
+
+  function base64ToBlob(base64) {
+    try {
+      // Si tiene el encabezado, lo separamos
+      const parts = base64.split(",");
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    } catch (error) {
+      console.error("Error convirtiendo base64 a Blob:", error);
+      return null;
+    }
   }
 
 
-  // Estados para búsquedas y selecciones
+
   const [busquedaPersonal, setBusquedaPersonal] = useState("");
   const [busquedaItem, setBusquedaItem] = useState("");
   const [personalFiltrado, setPersonalFiltrado] = useState([]);
@@ -75,7 +134,6 @@ export default function EntregaActivosFijos() {
   };
 
 
-  // Agregar item a la lista
   const agregarItem = () => {
     if (!itemSeleccionado) return;
 
@@ -90,14 +148,13 @@ export default function EntregaActivosFijos() {
       items: [...prev.items, nuevoItem]
     }));
 
-    // Resetear selección
+
     setItemSeleccionado(null);
     setBusquedaItem("");
     setContieneAccesorios("no");
     setDescripcionAccesorios("");
   };
 
-  // Eliminar item de la lista
   const eliminarItem = (index) => {
     const nuevosItems = [...form.items];
     nuevosItems.splice(index, 1);
@@ -109,18 +166,9 @@ export default function EntregaActivosFijos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(form);
-    // if (!form.firma_quien_entrega || !form.firma_quien_recibe) {
-    //   return Swal.fire({
-    //     icon: "warning",
-    //     title: "Faltan firmas",
-    //     text: "Debe registrar ambas firmas",
-    //   });
-    // }
-
     try {
-      // 1️⃣ Crear entrega
-      const entrega = await crearEntregaActivos({
+      const entrega = await guardarEntregaActivos({
+        id: entregaEdit?.entrega_id || null,
         personal_id: form.personal_id,
         sede_id: form.sede_id,
         fecha_entrega: form.fecha,
@@ -131,12 +179,12 @@ export default function EntregaActivosFijos() {
         return Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudo crear la entrega",
+          text: entrega.error || "No se pudo guardar la entrega",
         });
       }
 
-      // 2️⃣ Subir items
-      if (form.items.length > 0) {
+      // 🟡 Subir items
+      if (form.items && form.items.length > 0) {
         const itemsPayload = form.items.map(item => ({
           item_id: item.id,
           es_accesorio: item.contieneAccesorios === "si" ? 1 : 0,
@@ -149,51 +197,59 @@ export default function EntregaActivosFijos() {
         });
       }
 
-      // 3️⃣ Subir firmas
-      // 3️⃣ Subir firmas (solo si existen)
+      // 🟢 Subir firmas
       const formData = new FormData();
       formData.append("id", entrega.id);
 
       if (form.firma_quien_entrega) {
-        formData.append("firma_entrega", base64ToBlob(form.firma_quien_entrega), "firma_entrega.png");
-      }
-      if (form.firma_quien_recibe) {
-        formData.append("firma_recibe", base64ToBlob(form.firma_quien_recibe), "firma_recibe.png");
+        const blobEntrega = base64ToBlob(form.firma_quien_entrega);
+        if (blobEntrega)
+          formData.append("firma_entrega", blobEntrega, "firma_entrega.png");
       }
 
-      // Solo subir si hay al menos una firma
-      if (form.firma_quien_entrega || form.firma_quien_recibe) {
-        await subirFirmaActa(formData);
+      if (form.firma_quien_recibe) {
+        const blobRecibe = base64ToBlob(form.firma_quien_recibe);
+        if (blobRecibe)
+          formData.append("firma_recibe", blobRecibe, "firma_recibe.png");
       }
+
+      await subirFirmaActa(formData);
+
       await Swal.fire({
         icon: "success",
         title: "¡Listo!",
-        text: "Entrega creada correctamente con firmas",
+        text: form.id
+          ? "Entrega actualizada correctamente"
+          : "Entrega creada correctamente",
       });
 
-      // Resetear formulario
-      setForm({
-        responsable: "",
-        sede: "",
-        fecha: new Date().toISOString().split('T')[0],
-        items: [],
-        firma_quien_entrega: "",
-        firma_quien_recibe: ""
-      });
-      setItemSeleccionado(null);
-      setContieneAccesorios("no");
-      setDescripcionAccesorios("");
-      setResetInventario(prev => !prev);
-      setResetResponsable(prev => !prev);
+      if (!form.id) {
+        setForm({
+          responsable: "",
+          sede: "",
+          fecha: new Date().toISOString().split("T")[0],
+          items: [],
+          firma_quien_entrega: "",
+          firma_quien_recibe: ""
+        });
+        setItemSeleccionado(null);
+        setContieneAccesorios("no");
+        setDescripcionAccesorios("");
+        setResetInventario(prev => !prev);
+        setResetResponsable(prev => !prev);
+      }
+      navigate(-1);
     } catch (err) {
       console.error(err);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrió un error al crear la entrega",
+        text: "Ocurrió un error al guardar la entrega",
       });
     }
   };
+
+
 
 
   return (
@@ -229,8 +285,6 @@ export default function EntregaActivosFijos() {
                   label="Buscar Personal"
                   reset={resetResponsable}
                 />
-
-
               </div>
 
               <div className="space-y-2">
@@ -242,6 +296,7 @@ export default function EntregaActivosFijos() {
                     labelSede="Seleccione una sede"
                     labelDependencia="Seleccione el proceso solicitante"
                     required
+                    formSedeId={form.sede_id}
                     icon={
                       <div className="p-1.5 bg-indigo-100 rounded-md">
                         <User size={16} className="text-indigo-600" />
@@ -272,117 +327,133 @@ export default function EntregaActivosFijos() {
                 <Package size={20} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">Agregar Items</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Agregar Ítems</h2>
                 <p className="text-sm text-gray-600">Busque y seleccione los activos a entregar</p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <BuscarInventario
-                name="itemSeleccionado"
-                value={itemSeleccionado ? itemSeleccionado.id : ""}
-                onChange={(item) => seleccionarItem(item)}
-                label="Buscar Item"
-                required
-                reset={resetInventario}
-              />
-            </div>
-
-            {itemSeleccionado && (
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Item Seleccionado</label>
-                    <div className="p-3 bg-white border border-gray-300 rounded-lg">
-                      <div className="font-medium">{itemSeleccionado.nombre}</div>
-                      <div className="text-sm text-gray-600">Código: {itemSeleccionado.codigo} - Serial: {itemSeleccionado.serial}</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">¿Contiene Accesorios?</label>
-                    <div className="flex space-x-4">
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          value="si"
-                          checked={contieneAccesorios === "si"}
-                          onChange={() => setContieneAccesorios("si")}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span className="ml-2 text-gray-700">Sí</span>
-                      </label>
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          value="no"
-                          checked={contieneAccesorios === "no"}
-                          onChange={() => setContieneAccesorios("no")}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span className="ml-2 text-gray-700">No</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {contieneAccesorios === "si" && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Descripción de Accesorios</label>
-                      <textarea
-                        value={descripcionAccesorios}
-                        onChange={(e) => setDescripcionAccesorios(e.target.value)}
-                        placeholder="Describa los accesorios incluidos"
-                        rows={3}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                      />
-                    </div>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={agregarItem}
-                    className="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  >
-                    <Plus className="mr-2" size={18} />
-                    Agregar Item
-                  </button>
+            {/* Si NO es edición, permitir agregar items */}
+            {!entregaEdit && (
+              <>
+                <div className="space-y-2">
+                  <BuscarInventario
+                    name="itemSeleccionado"
+                    value={itemSeleccionado ? itemSeleccionado.id : ""}
+                    onChange={(item) => seleccionarItem(item)}
+                    label="Buscar Item"
+                    required
+                    reset={resetInventario}
+                  />
                 </div>
-              </div>
+
+                {itemSeleccionado && (
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Item Seleccionado</label>
+                        <div className="p-3 bg-white border border-gray-300 rounded-lg">
+                          <div className="font-medium">{itemSeleccionado.nombre}</div>
+                          <div className="text-sm text-gray-600">
+                            Código: {itemSeleccionado.codigo} - Serial: {itemSeleccionado.serial}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">¿Contiene Accesorios?</label>
+                        <div className="flex space-x-4">
+                          <label className="inline-flex items-center">
+                            <input
+                              type="radio"
+                              value="si"
+                              checked={contieneAccesorios === "si"}
+                              onChange={() => setContieneAccesorios("si")}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                            />
+                            <span className="ml-2 text-gray-700">Sí</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <input
+                              type="radio"
+                              value="no"
+                              checked={contieneAccesorios === "no"}
+                              onChange={() => setContieneAccesorios("no")}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                            />
+                            <span className="ml-2 text-gray-700">No</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {contieneAccesorios === "si" && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción de Accesorios</label>
+                          <textarea
+                            value={descripcionAccesorios}
+                            onChange={(e) => setDescripcionAccesorios(e.target.value)}
+                            placeholder="Describa los accesorios incluidos"
+                            rows={3}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          />
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={agregarItem}
+                        className="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      >
+                        <Plus className="mr-2" size={18} />
+                        Agregar Item
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Lista de items agregados */}
+            {/* Lista de ítems agregados */}
             {form.items.length > 0 && (
               <div className="mt-8">
                 <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
                   <Package className="mr-2" size={20} />
-                  Items Agregados
+                  Ítems Agregados
                 </h3>
                 <div className="space-y-3">
                   {form.items.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm"
+                    >
                       <div>
                         <div className="font-medium text-gray-900">{item.nombre}</div>
-                        <div className="text-sm text-gray-600">Código: {item.codigo} - Serial: {item.serial}</div>
+                        <div className="text-sm text-gray-600">
+                          Código: {item.codigo} - Serial: {item.serial}
+                        </div>
                         {item.contieneAccesorios === "si" && (
                           <div className="mt-1 text-sm text-gray-700">
                             <span className="font-medium">Accesorios:</span> {item.descripcionAccesorios}
                           </div>
                         )}
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => eliminarItem(index)}
-                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
-                        title="Eliminar item"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+
+                      {!entregaEdit && (
+                        <button
+                          type="button"
+                          onClick={() => eliminarItem(index)}
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
+                          title="Eliminar item"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
           </section>
+
 
           {/* Tercer apartado: Firmas */}
           <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">

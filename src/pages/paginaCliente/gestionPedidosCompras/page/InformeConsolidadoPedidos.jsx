@@ -37,6 +37,10 @@ export function InformeConsolidadoPedidos() {
   const [saving, setSaving] = useState(false);
   const [selectedObservation, setSelectedObservation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fechaSolicitud, setFechaSolicitud] = useState("");
+  const [fechaRespuesta, setFechaRespuesta] = useState("");
+  const [firmaAprobacion, setFirmaAprobacion] = useState("");
+  const [fechaEnvio, setFechaEnvio] = useState("");
 
   const handleEdit = (pedido) => {
     setSelectedPedido(pedido);
@@ -71,6 +75,10 @@ export function InformeConsolidadoPedidos() {
       const datos = {
         pedido_id: selectedPedido.ID,
         observacion: observacion,
+        fecha_solicitud_cotizacion: fechaSolicitud,
+        fecha_respuesta_cotizacion: fechaRespuesta,
+        firma_aprobacion_orden: firmaAprobacion,
+        fecha_envio_proveedor: fechaEnvio,
         usuario_id: usuario.id,
       };
 
@@ -79,24 +87,33 @@ export function InformeConsolidadoPedidos() {
       if (response.status) {
         Swal.fire({
           icon: "success",
-          title: "¡Observación guardada!",
-          text: "La observación se registró correctamente.",
+          title: "¡Datos guardados!",
+          text: "Las observaciones y fechas se registraron correctamente.",
           timer: 2000,
           showConfirmButton: false,
         });
+
         setPedidos(prev =>
           prev.map(p =>
             p.ID === selectedPedido.ID
-              ? { ...p, OBSERVACIONES_PEDIDOS: observacion }
+              ? {
+                ...p,
+                OBSERVACIONES_PEDIDOS: observacion,
+                FECHA_SOLICITUD_COTIZACION: fechaSolicitud,
+                FECHA_RESPUESTA_COTIZACION: fechaRespuesta,
+                FIRMA_APROBACION_ORDEN: firmaAprobacion,
+                FECHA_ENVIO_PROVEEDOR: fechaEnvio,
+              }
               : p
           )
         );
+
         handleClose();
       } else {
         Swal.fire({
           icon: "warning",
           title: "Atención",
-          text: response.message || "No se pudo guardar la observación.",
+          text: response.message || "No se pudo guardar la información.",
         });
       }
     } catch (err) {
@@ -104,12 +121,14 @@ export function InformeConsolidadoPedidos() {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrió un error al guardar la observación.",
+        text: "Ocurrió un error al guardar los datos.",
       });
     } finally {
       setSaving(false);
     }
   };
+
+
 
 
   useEffect(() => {
@@ -304,8 +323,6 @@ export function InformeConsolidadoPedidos() {
         </div>
 
         {/* Table */}
-
-
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -375,7 +392,34 @@ export function InformeConsolidadoPedidos() {
                     Observaciones
                     <SortIcon field="OBSERVACIONES_PEDIDOS" />
                   </th>
-
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("OBSERVACIONES_PEDIDOS")}
+                  >
+                    Fecha de solicitud de cotizacion a proveedores
+                    <SortIcon field="OBSERVACIONES_PEDIDOS" />
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("OBSERVACIONES_PEDIDOS")}
+                  >
+                    Fecha de respuesta de cotizacion de proveedor
+                    <SortIcon field="OBSERVACIONES_PEDIDOS" />
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("OBSERVACIONES_PEDIDOS")}
+                  >
+                    Firma aprobacion orden de compra
+                    <SortIcon field="OBSERVACIONES_PEDIDOS" />
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("OBSERVACIONES_PEDIDOS")}
+                  >
+                    Fecha envio al proveedor orden de compra
+                    <SortIcon field="OBSERVACIONES_PEDIDOS" />
+                  </th>
 
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Acciones
@@ -427,6 +471,18 @@ export function InformeConsolidadoPedidos() {
                         }
                       </div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {pedido.FECHA_SOLICITUD_COTIZACION}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {pedido.FECHA_RESPUESTA_COTIZACION}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {pedido.FIRMA_APROBACION_ORDEN}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {pedido.FECHA_ENVIO_PROVEEDOR}
+                    </td>
                     {/* 🆕 Celda del lápiz */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <button
@@ -468,10 +524,62 @@ export function InformeConsolidadoPedidos() {
                 </button>
 
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                  agregar observaciones
+                  Agregar observaciones
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* 🗓 Campos de fecha */}
+                  <div className="grid gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Fecha solicitud de cotización a proveedor
+                      </label>
+                      <input
+                        type="date"
+                        value={fechaSolicitud || ""}
+                        onChange={(e) => setFechaSolicitud(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Fecha de respuesta de cotización del proveedor
+                      </label>
+                      <input
+                        type="date"
+                        value={fechaRespuesta || ""}
+                        onChange={(e) => setFechaRespuesta(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Firma aprobación de la orden de compra
+                      </label>
+                      <input
+                        type="date"
+                        value={firmaAprobacion || ""}
+                        onChange={(e) => setFirmaAprobacion(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Fecha de envío al proveedor orden de compra
+                      </label>
+                      <input
+                        type="date"
+                        value={fechaEnvio || ""}
+                        onChange={(e) => setFechaEnvio(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 📝 Observaciones */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Observaciones
@@ -485,6 +593,7 @@ export function InformeConsolidadoPedidos() {
                     ></textarea>
                   </div>
 
+                  {/* Botones */}
                   <div className="flex justify-end gap-2 mt-4">
                     <button
                       type="button"
@@ -504,6 +613,7 @@ export function InformeConsolidadoPedidos() {
               </div>
             </div>
           )}
+
 
           {/* Modal de Observaciones */}
           {isModalOpen && (

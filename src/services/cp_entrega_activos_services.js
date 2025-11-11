@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DESCARGAR_ENTREGA_ACTIVOS, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
+import { DESCARGAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS_ID, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
 
 export const exportarInformeEntregaActivos = async (datos) => {
 	try {
@@ -50,6 +50,16 @@ export const crearEntregaActivos = async (form) => {
 	}
 };
 
+export const guardarEntregaActivos = async (form) => {
+	try {
+		const response = await axios.post(CREAR_ENTREGA_ACTIVOS, form);
+		return response.data; // { ok, id, message }
+	} catch (error) {
+		console.error("Error al guardar entrega", error);
+		return { ok: false, error: "No se pudo conectar con el servidor" };
+	}
+};
+
 export const subirFirmaActa = async (formData) => {
 	try {
 		const response = await axios.post(SUBIR_FIRMA_ENTREGA_ACTIVOS, formData);
@@ -59,3 +69,17 @@ export const subirFirmaActa = async (formData) => {
 		return { status: false, message: "Fallo en la petición" };
 	}
 };
+
+export const cargarItemsEntrega = async (entrega_activos_id) => {
+	try {
+		const response = await axios.get(OBTENER_ENTREGA_ACTIVOS_ID, {
+			params: { entrega_activos_id }
+		});
+		return response.data;
+	} catch (error) {
+		console.error("Error al cargar items de entrega", error);
+		return { ok: false, data: [] };
+	}
+};
+
+
