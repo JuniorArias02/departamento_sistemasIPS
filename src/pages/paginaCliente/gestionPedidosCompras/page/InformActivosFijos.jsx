@@ -52,8 +52,6 @@ export function InformActivosFijos() {
   const handleDownload = async (id) => {
     try {
       setDescargando(true);
-      console.log("Descargando informe para ID:", id);
-      // 👇 aquí sí esperas la promesa
       await exportarInformeEntregaActivos({ id });
 
       Swal.fire({
@@ -62,7 +60,6 @@ export function InformActivosFijos() {
         text: "Informe descargado correctamente",
       });
 
-      console.log("Descargando informe para ID:", id);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -84,8 +81,6 @@ export function InformActivosFijos() {
 
   const descargarInformeGeneral = async () => {
     setDescargandoGeneral(true);
-
-    // Simular descarga del informe general
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     setDescargandoGeneral(false);

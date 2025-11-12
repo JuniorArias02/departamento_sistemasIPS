@@ -3,6 +3,7 @@ import { FirmaInput } from "../../../appFirma/appFirmas";
 import { subirFirmaActa, crearEntregaActivos, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega } from '../../../../services/cp_entrega_activos_services';
 import { User, Package, FileSignature, Search, Plus, Trash2, Check } from 'lucide-react';
 import BuscarResponsable from '../../componentsUnive/BuscarResponsable';
+import BuscarCoordinador from '../../componentsUnive/BuscarCoordinador';
 import { listarSedes } from '../../../../services/sedes_service';
 import BuscarInventario from '../../componentsUnive/BuscarInventario';
 import BuscarDependencia from '../../componentsUnive/BuscarDependencia';
@@ -17,12 +18,14 @@ export default function EntregaActivosFijos() {
   const [sedes, setSedes] = useState([]);
   const [resetInventario, setResetInventario] = useState(false);
   const [resetResponsable, setResetResponsable] = useState(false);
+  const [resetCoordinador, setResetCoordinador] = useState(false);
   const [nuevaFirmaEntrega, setNuevaFirmaEntrega] = useState(null);
   const [nuevaFirmaRecibe, setNuevaFirmaRecibe] = useState(null);
-
+0
 
   const [form, setForm] = useState({
     personal_id: "",
+    coordinador_id: "",
     sede_id: "",
     fecha: new Date().toISOString().split('T')[0],
     items: [],
@@ -42,6 +45,7 @@ export default function EntregaActivosFijos() {
     if (entregaEdit) {
       setForm({
         personal_id: entregaEdit.personal_id || "",
+        coordinador_id: entregaEdit.coordinador_id || "",
         sede_id: entregaEdit.sede_id || "",
         proceso_solicitante: entregaEdit.proceso_solicitante || "",
         fecha: entregaEdit.fecha_entrega
@@ -170,6 +174,7 @@ export default function EntregaActivosFijos() {
       const entrega = await guardarEntregaActivos({
         id: entregaEdit?.entrega_id || null,
         personal_id: form.personal_id,
+        coordinador_id: form.coordinador_id,
         sede_id: form.sede_id,
         fecha_entrega: form.fecha,
         proceso_solicitante: form.proceso_solicitante
@@ -284,6 +289,13 @@ export default function EntregaActivosFijos() {
                   onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
                   label="Buscar Personal"
                   reset={resetResponsable}
+                />
+                <BuscarCoordinador
+                  name="coordinador_id"
+                  value={form.coordinador_id}
+                  onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
+                  label="Buscar Coordinador"
+                  reset={resetCoordinador}
                 />
               </div>
 

@@ -29,7 +29,6 @@ export default function VistaDatosInventarios() {
 	const fetchData = async () => {
 		try {
 			const data = await listarInventarios(usuario.id);
-			console.log(data);
 			setInventarios(data);
 		} catch (err) {
 			console.error("Error cargando inventarios", err);
