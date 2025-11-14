@@ -107,7 +107,12 @@ export function InformeConsolidadoPedidos() {
               : p
           )
         );
-
+        setObservacion("");
+        setFechaSolicitud("");
+        setFechaRespuesta("");
+        setFirmaAprobacion("");
+        setFechaEnvio("");
+        setSelectedPedido(null);
         handleClose();
       } else {
         Swal.fire({
