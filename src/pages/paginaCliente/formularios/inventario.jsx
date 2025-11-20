@@ -20,7 +20,7 @@ import renderDependenciaSelect from "../inventario/components/inventario/renderD
 import renderSedeSelect from "../inventario/components/inventario/renderSedeSelect";
 import renderSelectField from "../inventario/components/inventario/renderSelectField";
 import renderInputField from "../inventario/components/inventario/renderInputField";
-
+import BuscarResponsable from "../componentsUnive/BuscarResponsable";
 
 // Configuración de campos del formulario
 
@@ -284,13 +284,11 @@ export default function FormularioInventario() {
           {/* Campos adicionales de información básica */}
           {renderSedeSelect({ formData, handleChange, sedes })}
 
-          <CamposInputs
+          <BuscarResponsable
             name="responsable"
+            value={formData.responsable}
+            onChange={handleChange}
             label="Responsable"
-            type="text"
-            icon={<User size={18} className="text-gray-400" />}
-            formData={formData}
-            handleChange={handleChange}
           />
 
           <CentroCostoInput
