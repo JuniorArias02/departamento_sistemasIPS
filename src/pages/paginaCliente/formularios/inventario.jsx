@@ -29,7 +29,10 @@ const OPCIONES_SELECT = {
   grupo: ["EC", "ME", "MAQ", "IMC"],
   estado: ["NUEVO", "BUEN ESTADO"],
   tipoBien: ["mueble", "inmueble"],
-  tipoAdquisicion: ["INVENTARIO_INICIAL"]
+  tipoAdquisicion: ["INVENTARIO_INICIAL"],
+  tieneAccesorio: ["Si", "No"],
+  vidaUtil: [11, 60, 120],
+  vidaUtilNiff: [11, 60, 120]
 };
 
 export default function FormularioInventario() {
@@ -68,7 +71,7 @@ export default function FormularioInventario() {
       codigo_barras: "", grupo: "", vida_util: "", vida_util_niff: "", centro_costo: "", ubicacion: "", proveedor: "",
       fecha_compra: "", soporte: "", descripcion: "", estado: "", escritura: "", matricula: "", valor_compra: "",
       salvamenta: "", depreciacion: "", depreciacion_niif: "", meses: "", meses_niif: "", tipo_adquisicion: "",
-      calibrado: "", observaciones: "", tipo_bien: "", soporte_adjunto: ""
+      calibrado: "", observaciones: "", tipo_bien: "", soporte_adjunto: "", coordinador_id: ""
     };
   }
 
@@ -108,7 +111,8 @@ export default function FormularioInventario() {
         tipo_adquisicion: inventarioEdit.tipo_adquisicion || "",
         calibrado: inventarioEdit.calibrado ? formatDateForInput(inventarioEdit.calibrado) : "",
         observaciones: inventarioEdit.observaciones || "",
-        tipo_bien: inventarioEdit.tipo_bien || ""
+        tipo_bien: inventarioEdit.tipo_bien || "",
+        coordinador_id: inventarioEdit.coordinador_id || ""
       }));
     }
   }, [inventarioEdit]);
@@ -201,8 +205,6 @@ export default function FormularioInventario() {
     informacionFinanciera: [
       { name: "fecha_compra", label: "Fecha de Compra", icon: <Calendar size={18} className="text-gray-400" />, type: "date", formData, handleChange },
       { name: "valor_compra", label: "Valor de Compra", icon: <DollarSign size={18} className="text-gray-400" />, type: "number", formData, handleChange },
-      { name: "vida_util", label: "Vida Útil (meses)", icon: <Calendar size={18} className="text-gray-400" />, type: "number", formData, handleChange },
-      { name: "vida_util_niff", label: "Vida Útil NIIF (meses)", icon: <Calendar size={18} className="text-gray-400" />, type: "number", formData, handleChange },
     ],
     depreciacion: [
       { name: "depreciacion", label: "Depreciación", type: "number", icon: <TrendingDown size={18} className="text-gray-400" />, formData, handleChange },
@@ -211,8 +213,8 @@ export default function FormularioInventario() {
       { name: "meses_niif", label: "Meses Dep. NIIF", type: "number", icon: <Calendar size={18} className="text-gray-400" />, formData, handleChange },
     ],
     informacionAdicional: [
-      { name: "matricula", label: "Matrícula", icon: <FileText size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "escritura", label: "Escritura", icon: <FileText size={18} className="text-gray-400" />, type: "text", formData, handleChange },
+      { name: "matricula", label: "Matrícula", icon: <FileText size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "salvamenta", label: "Valor Salvamento", icon: <Shield size={18} className="text-gray-400" />, type: "text", formData, handleChange },
     ]
   };
@@ -272,17 +274,25 @@ export default function FormularioInventario() {
             handleChange
           })}
 
+          {renderSelectField({
+            name: "tiene_accesorio",
+            label: "tiene accesorio",
+            icon: <ScrollText size={18} className="text-gray-400" />,
+            options: OPCIONES_SELECT.tieneAccesorio,
+            formData,
+            handleChange
+          })}
+
+
+
           <CamposInputs
             name="accesorios"
-            label="Accesorios"
+            label="descripcion Accesorios"
             type="text"
             icon={<ScrollText size={18} className="text-gray-400" />}
             formData={formData}
             handleChange={handleChange}
           />
-
-          {/* Campos adicionales de información básica */}
-          {renderSedeSelect({ formData, handleChange, sedes })}
 
           <BuscarResponsable
             name="responsable"
@@ -291,70 +301,15 @@ export default function FormularioInventario() {
             label="Responsable"
           />
 
-          <CentroCostoInput
-            value={formData.centro_costo}
+          <BuscarResponsable
+            name="coordinador_id"
+            value={formData.coordinador_id}
             onChange={handleChange}
+            label="Coordinador"
           />
 
-          {renderDependenciaSelect({ formData, handleChange, dependencias })}
-
-          <CamposInputs
-            name="codigo_barras"
-            label="Código de Barras"
-            type="text"
-            icon={<ScrollText size={18} className="text-gray-400" />}
-            formData={formData}
-            handleChange={handleChange}
-          />
-
-          {/* Fecha de calibrado */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-1"
-          >
-            <label htmlFor="calibrado" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <CalendarCheck size={18} className="text-gray-400" />
-              <span>Fecha de Calibrado</span>
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                id="calibrado"
-                name="calibrado"
-                value={formData.calibrado || ''}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-              <CalendarCheck size={18} className="absolute left-3 top-3.5 text-gray-400" />
-            </div>
-          </motion.div>
-
-          {/* Ubicación específica */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-1"
-          >
-            <label htmlFor="ubicacion" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <MapPin size={18} className="text-gray-400" />
-              <span>Ubicación específica</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="ubicacion"
-                name="ubicacion"
-                value={formData.ubicacion || ''}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                placeholder="Ingrese la ubicación"
-              />
-              <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
-            </div>
-          </motion.div>
+          {/* Campos adicionales de información básica */}
+          {renderSedeSelect({ formData, handleChange, sedes })}
 
           {/* Observaciones */}
           <motion.div
@@ -377,6 +332,16 @@ export default function FormularioInventario() {
               placeholder="Ingrese observaciones relevantes"
             />
           </motion.div>
+
+          {/* <CamposInputs
+            name="codigo_barras"
+            label="Código de Barras"
+            type="text"
+            icon={<ScrollText size={18} className="text-gray-400" />}
+            formData={formData}
+            handleChange={handleChange}
+          /> */}
+
         </div>
 
         {/* Sección 2: Información financiera y depreciación */}
@@ -387,6 +352,55 @@ export default function FormularioInventario() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {CAMPOS_FORMULARIO.informacionFinanciera.map(renderInputField)}
+
+            {renderSelectField({
+              name: "vida_util",
+              label: "vida_util",
+              icon: <ScrollText size={18} className="text-gray-400" />,
+              options: OPCIONES_SELECT.vidaUtil,
+              formData,
+              handleChange
+            })}
+
+            {renderSelectField({
+              name: "vida_util_niff",
+              label: "vida_util_niff",
+              icon: <ScrollText size={18} className="text-gray-400" />,
+              options: OPCIONES_SELECT.vidaUtilNiff,
+              formData,
+              handleChange
+            })}
+
+            {renderDependenciaSelect({ formData, handleChange, dependencias })}
+
+            <CentroCostoInput
+              value={formData.centro_costo}
+              onChange={handleChange}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-1"
+            >
+              <label htmlFor="ubicacion" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <MapPin size={18} className="text-gray-400" />
+                <span>Ubicación específica</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="ubicacion"
+                  name="ubicacion"
+                  value={formData.ubicacion || ''}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="Ingrese la ubicación"
+                />
+                <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
+              </div>
+            </motion.div>
 
             {/* Tipo de Bien */}
             {renderSelectField({
@@ -410,6 +424,33 @@ export default function FormularioInventario() {
               formData,
               handleChange
             })}
+
+
+
+            {/* Fecha de calibrado */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-1"
+            >
+              <label htmlFor="calibrado" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <CalendarCheck size={18} className="text-gray-400" />
+                <span>Fecha de Calibrado</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  id="calibrado"
+                  name="calibrado"
+                  value={formData.calibrado || ''}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                />
+                <CalendarCheck size={18} className="absolute left-3 top-3.5 text-gray-400" />
+              </div>
+            </motion.div>
+
           </div>
         </div>
 
