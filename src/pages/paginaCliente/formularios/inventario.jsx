@@ -29,7 +29,7 @@ const OPCIONES_SELECT = {
   grupo: ["EC", "ME", "MAQ", "IMC"],
   estado: ["NUEVO", "BUEN ESTADO"],
   tipoBien: ["mueble", "inmueble"],
-  tipoAdquisicion: ["INVENTARIO_INICIAL"],
+  tipoAdquisicion: ["03"],
   tieneAccesorio: ["Si", "No"],
   vidaUtil: [11, 60, 120],
   vidaUtilNiff: [11, 60, 120]
