@@ -21,6 +21,7 @@ import renderSedeSelect from "../inventario/components/inventario/renderSedeSele
 import renderSelectField from "../inventario/components/inventario/renderSelectField";
 import renderInputField from "../inventario/components/inventario/renderInputField";
 import BuscarResponsable from "../componentsUnive/BuscarResponsable";
+import BuscarDependencia from "../componentsUnive/BuscarDependencia";
 
 // Configuración de campos del formulario
 
@@ -87,7 +88,7 @@ export default function FormularioInventario() {
         marca: inventarioEdit.marca || "",
         modelo: inventarioEdit.modelo || "",
         serial: inventarioEdit.serial || "",
-        sede_id: inventarioEdit.sede_id || "",
+        // sede_id: inventarioEdit.sede_id || "",
         codigo_barras: inventarioEdit.codigo_barras || "",
         grupo: inventarioEdit.grupo || "",
         vida_util: inventarioEdit.vida_util ? inventarioEdit.vida_util : "",
@@ -112,7 +113,8 @@ export default function FormularioInventario() {
         calibrado: inventarioEdit.calibrado ? formatDateForInput(inventarioEdit.calibrado) : "",
         observaciones: inventarioEdit.observaciones || "",
         tipo_bien: inventarioEdit.tipo_bien || "",
-        coordinador_id: inventarioEdit.coordinador_id || ""
+        coordinador_id: inventarioEdit.coordinador_id || "",
+        proceso_solicitante: inventarioEdit.proceso_solicitante || ""
       }));
     }
   }, [inventarioEdit]);
@@ -308,8 +310,19 @@ export default function FormularioInventario() {
             label="Coordinador"
           />
 
-          {/* Campos adicionales de información básica */}
-          {renderSedeSelect({ formData, handleChange, sedes })}
+          <BuscarDependencia
+            name="dependencia"
+            value={formData.dependencia}
+            onChange={handleChange}
+            labelSede="Seleccione una sede"
+            labelDependencia="Seleccione el proceso solicitante"
+            required
+            icon={
+              <div className="p-1.5 bg-indigo-100 rounded-md">
+                <User size={16} className="text-indigo-600" />
+              </div>
+            }
+          />
 
           {/* Observaciones */}
           <motion.div
