@@ -9,4 +9,5 @@ export const EXPORTAR_INVENTARIO_JSON = `${URL_PATH}export/inventario/json_expor
 export const GRAFICA_INVENTARIO = `${URL_PATH}controllers/inventario/grafica_inventario.php`;
 export const BUSCAR_INVENTARIO = `${URL_PATH}controllers/inventario/buscar_inventario.php`;
 export const BUSCAR_INVENTARIO_ITEM = `${URL_PATH}controllers/inventario/buscar_inventario_item.php`;
+export const BUSCAR_PRODUCTO_SERVICIO = `${URL_PATH}controllers/cp_productos_servicios/buscarProducto.php`; 
 export const SUBIR_ADJUNTO = `${URL_PATH}controllers/inventario/subir_adjunto.php`;

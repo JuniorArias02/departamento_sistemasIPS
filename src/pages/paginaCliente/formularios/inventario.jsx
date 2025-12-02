@@ -22,6 +22,7 @@ import renderSelectField from "../inventario/components/inventario/renderSelectF
 import renderInputField from "../inventario/components/inventario/renderInputField";
 import BuscarResponsable from "../componentsUnive/BuscarResponsable";
 import BuscarDependencia from "../componentsUnive/BuscarDependencia";
+import BuscarProductoServicio from "../componentsUnive/BuscarProductoServicio";
 
 // Configuración de campos del formulario
 
@@ -196,6 +197,10 @@ export default function FormularioInventario() {
 
   const CAMPOS_FORMULARIO = {
     informacionBasica: [
+      { name: "codigo", label: "Serial de Inventario", icon: <Hash size={18} className="text-gray-400" />, type: "text", formData, handleChange }
+    ],
+
+    informacionBasica2: [
       { name: "codigo", label: "Serial de Inventario", icon: <Hash size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "nombre", label: "Nombre del Activo", icon: <Tag size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "marca", label: "Marca", icon: <Cpu size={18} className="text-gray-400" />, type: "text", formData, handleChange },
@@ -256,7 +261,18 @@ export default function FormularioInventario() {
       <div className="space-y-8">
         {/* Sección 1: Información básica */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
           {CAMPOS_FORMULARIO.informacionBasica.map(renderInputField)}
+
+          <BuscarProductoServicio
+            label="Serial de Inventario"
+            name="nombre"
+            value={formData.nombre}
+            onChange={handleChange}
+          />
+
+          {CAMPOS_FORMULARIO.informacionBasica2.map(renderInputField)}
 
           {renderSelectField({
             name: "grupo",
@@ -345,15 +361,6 @@ export default function FormularioInventario() {
               placeholder="Ingrese observaciones relevantes"
             />
           </motion.div>
-
-          {/* <CamposInputs
-            name="codigo_barras"
-            label="Código de Barras"
-            type="text"
-            icon={<ScrollText size={18} className="text-gray-400" />}
-            formData={formData}
-            handleChange={handleChange}
-          /> */}
 
         </div>
 

@@ -9,7 +9,8 @@ import {
   GRAFICA_INVENTARIO,
   CONTAR_INVENTARIO,
   BUSCAR_INVENTARIO_ITEM,
-  SUBIR_ADJUNTO
+  SUBIR_ADJUNTO,
+  BUSCAR_PRODUCTO_SERVICIO
 
 } from "../const/endpoint/inventario_endpoint";
 import * as XLSX from "xlsx";
@@ -49,6 +50,23 @@ export const buscarItemInventario = async (termino) => {
     );
   }
 };
+
+export async function buscarProductoServicio(query) {
+  try {
+    const res = await axios.get(`${BUSCAR_PRODUCTO_SERVICIO}?query=${encodeURIComponent(query)}`);
+
+    if (res.data.success && Array.isArray(res.data.resultados)) {
+      return res.data.resultados;
+    }
+
+    return [];
+
+  } catch (error) {
+    console.error("Error buscando producto:", error);
+    return [];
+  }
+}
+
 
 
 export const crearInventario = async (datos) => {
