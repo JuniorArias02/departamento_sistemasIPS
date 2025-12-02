@@ -830,7 +830,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							text="Descargar Imagen"
 							onClick={() => {
 								const link = document.createElement('a');
-								link.href = '/noviembre.png';
+								link.href = '/fondoMensual.png';
 								link.download = 'img';
 								link.click();
 							}}
