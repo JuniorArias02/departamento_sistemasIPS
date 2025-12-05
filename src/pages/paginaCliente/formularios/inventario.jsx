@@ -23,7 +23,7 @@ import renderInputField from "../inventario/components/inventario/renderInputFie
 import BuscarResponsable from "../componentsUnive/BuscarResponsable";
 import BuscarDependencia from "../componentsUnive/BuscarDependencia";
 import BuscarProductoServicio from "../componentsUnive/BuscarProductoServicio";
-
+import BuscarCodigoBarras from "../componentsUnive/BuscarCodigoBarras";
 // Configuración de campos del formulario
 
 
@@ -201,8 +201,6 @@ export default function FormularioInventario() {
     ],
 
     informacionBasica2: [
-      { name: "codigo", label: "Serial de Inventario", icon: <Hash size={18} className="text-gray-400" />, type: "text", formData, handleChange },
-      { name: "nombre", label: "Nombre del Activo", icon: <Tag size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "marca", label: "Marca", icon: <Cpu size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "modelo", label: "Modelo", icon: <Settings size={18} className="text-gray-400" />, type: "text", formData, handleChange },
       { name: "serial", label: "Serial", icon: <Barcode size={18} className="text-gray-400" />, type: "text", formData, handleChange },
@@ -257,16 +255,15 @@ export default function FormularioInventario() {
         </p>
       </div>
 
-      {/* Campos del formulario */}
       <div className="space-y-8">
-        {/* Sección 1: Información básica */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+          
+       
 
           {CAMPOS_FORMULARIO.informacionBasica.map(renderInputField)}
 
           <BuscarProductoServicio
-            label="Serial de Inventario"
+            label="Nombre del Activo"
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}

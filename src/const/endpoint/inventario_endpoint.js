@@ -10,4 +10,5 @@ export const GRAFICA_INVENTARIO = `${URL_PATH}controllers/inventario/grafica_inv
 export const BUSCAR_INVENTARIO = `${URL_PATH}controllers/inventario/buscar_inventario.php`;
 export const BUSCAR_INVENTARIO_ITEM = `${URL_PATH}controllers/inventario/buscar_inventario_item.php`;
 export const BUSCAR_PRODUCTO_SERVICIO = `${URL_PATH}controllers/cp_productos_servicios/buscarProducto.php`; 
+export const BUSCAR_PRODUCTO_CODIGO = `${URL_PATH}controllers/cp_productos_servicios/buscarCodigo.php`; 
 export const SUBIR_ADJUNTO = `${URL_PATH}controllers/inventario/subir_adjunto.php`;

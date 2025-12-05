@@ -11,3 +11,8 @@ export const OBTENER_ENTREGA_ACTIVOS = `${URL_PATH}controllers/cp_entrega_activo
 export const DESCARGAR_ENTREGA_ACTIVOS = `${URL_PATH}export/exportar_entrega_activos_fijos.php`;
 
 export const OBTENER_ENTREGA_ACTIVOS_ID = `${URL_PATH}controllers/cp_entrega_activos_fijos_items/obtener_items_activos.php`;
+
+export const OBTENER_INVENTARIO_COORDINADOR = `${URL_PATH}controllers/cp_entrega_activos_fijos_items/obtenerInventario.php`;
+
+
+export const GUARDAR_ITEMS_ENTREGA = `${URL_PATH}controllers/cp_entrega_activos_fijos_items/guardar_items_entrega.php`;

@@ -5,21 +5,24 @@ import { FirmaInput } from "../../../appFirma/appFirmas";
 import { buscarPerifericoo } from "../../../../services/pc_perifericos_services";
 import { buscarEquipo } from "../../../../services/pc_equipos_services";
 import { buscarPersonal } from "../../../../services/personal_services";
+import BuscarEquipo from "../../componentsUnive/BuscarEquipo";
+import BuscarPerifericos from "../../componentsUnive/BuscarPerifericos";
 import Swal from 'sweetalert2';
 import {
   ClipboardList, Search, User, Calendar, Plus, Trash2, Save,
   FileText, Edit3, Cable, List, Loader2, Info
 } from 'lucide-react';
 import BuscarResponsable from "../../componentsUnive/BuscarResponsable";
+
+
 const VistaCrearActaEntrega = () => {
   const { usuario } = useApp();
-  const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
+
   const [perifericoBusqueda, setPerifericoBusqueda] = useState("");
   const [perifericoSeleccionado, setPerifericoSeleccionado] = useState(null);
   const [perifericoSeleccionadoId, setPerifericoSeleccionadoId] = useState("");
 
   const [busquedaEquipo, setBusquedaEquipo] = useState("");
-  const [resultadosEquipos, setResultadosEquipos] = useState([]);
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
 
   const [personalResultados, setPersonalResultados] = useState([]);
@@ -56,36 +59,39 @@ const VistaCrearActaEntrega = () => {
     observaciones: ""
   });
 
-  const buscarPeriferico = async (valor) => {
-    setPeriferico({ ...periferico, nombre: valor });
+  const [perifericos, setPerifericos] = useState([]);
 
-    if (valor.trim().length >= 2) {
-      const resultados = await buscarPerifericoo(valor);
-      setResultadosBusqueda(resultados);
-      // console.log("Resultados búsqueda:", resultadosBusqueda);
-    } else {
-      setResultadosBusqueda([]);
-    }
+
+  const agregarPeriferico = (item) => {
+    setForm((prev) => {
+      const existe = prev.perifericos.some(
+        (p) => p.inventario_id === item.inventario_id
+      );
+      if (existe) return prev;
+
+      return {
+        ...prev,
+        perifericos: [
+          ...prev.perifericos,
+          {
+            inventario_id: item.inventario_id,
+            nombre: item.nombre,
+            serial: item.serial,
+            marca: item.marca,
+            modelo: item.modelo,
+            cantidad: 1,
+          },
+        ],
+      };
+    });
   };
+
+
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const agregarPeriferico = () => {
-    if (periferico.nombre.trim()) {
-      setForm({
-        ...form,
-        perifericos: [...form.perifericos, periferico]
-      });
-      setPeriferico({
-        nombre: "",
-        cantidad: 1,
-        marca: "",
-        modelo: "",
-        observaciones: ""
-      });
-    }
-  };
 
   const buscarFuncionario = async (texto) => {
     setPersonalBusqueda(texto);
@@ -105,7 +111,7 @@ const VistaCrearActaEntrega = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGuardando(true); // activamos loading
+    setGuardando(true);
 
     Swal.fire({
       title: 'Guardando acta...',
@@ -132,7 +138,7 @@ const VistaCrearActaEntrega = () => {
       };
 
       const res = await crearActaEntrega(payload);
-
+      console.log(res);
       if (res.status) {
         Swal.fire({
           icon: 'success',
@@ -202,59 +208,15 @@ const VistaCrearActaEntrega = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Campo ID Equipo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-                <Search className="text-gray-500" size={16} />
-                Buscar Equipo
-              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="text-gray-400" size={18} />
+                <div className="mb-3">
+                  <BuscarEquipo
+                    name="equipo_id"
+                    value={form.equipo_id}
+                    onChange={handleChange}
+                    label="Equipo"
+                  />
                 </div>
-                <input
-                  type="text"
-                  value={busquedaEquipo}
-                  onChange={async (e) => {
-                    setBusquedaEquipo(e.target.value);
-                    if (e.target.value.length >= 2) {
-                      const res = await buscarEquipo(e.target.value);
-                      setResultadosEquipos(res);
-                    } else {
-                      setResultadosEquipos([]);
-                    }
-                  }}
-                  placeholder="Ingrese serial o número de inventario..."
-                  className="border pl-10 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Seleccionar Equipo
-              </label>
-              <select
-                value={equipoSeleccionado?.id || ""}
-                onChange={(e) => {
-                  const eq = resultadosEquipos.find(eqp => eqp.id == e.target.value);
-                  if (eq) {
-                    setEquipoSeleccionado(eq);
-                    setForm({ ...form, equipo_id: eq.id });
-                  }
-                }}
-                className="border p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
-              >
-                <option value="">-- Selecciona un equipo --</option>
-                {resultadosEquipos.map((eq) => (
-                  <option key={eq.id} value={eq.id}>
-                    {eq.nombre_equipo} - {eq.marca} {eq.modelo} - {eq.serial}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Campo Funcionario */}
-            <div>
-              <div className="relative">
                 <BuscarResponsable
                   name="funcionario_id"
                   value={form.funcionario_id}
@@ -316,133 +278,49 @@ const VistaCrearActaEntrega = () => {
             Gestión de Periféricos
           </h2>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-              <Search className="text-gray-500" size={16} />
-              Buscar Periférico
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="text-gray-400" size={18} />
-              </div>
-              <input
-                type="text"
-                value={perifericoBusqueda}
-                onChange={async (e) => {
-                  setPerifericoBusqueda(e.target.value);
-                  if (e.target.value.trim().length >= 2) {
-                    const resultados = await buscarPerifericoo(e.target.value);
-                    setResultadosBusqueda(resultados);
-                  } else {
-                    setResultadosBusqueda([]);
-                  }
-                }}
-                className="border pl-10 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
-                placeholder="Buscar por código, nombre o serial..."
-              />
-            </div>
-          </div>
+          <BuscarPerifericos onSelect={agregarPeriferico} />
 
-          {resultadosBusqueda.length > 0 && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Seleccionar Periférico
-              </label>
-              <select
-                value={perifericoSeleccionadoId || ""}
-                onChange={(e) => {
-                  const selected = resultadosBusqueda.find(p => p.id === parseInt(e.target.value));
-                  if (selected) {
-                    setPerifericoSeleccionado(selected);
-                    setPerifericoSeleccionadoId(selected.id);
-                  }
-                }}
-                className="border p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 transition-colors"
-              >
-                <option value="">-- Selecciona un periférico --</option>
-                {resultadosBusqueda.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} - {p.codigo} - {p.serial}
-                  </option>
+          {form.perifericos.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl mt-4">
+              <h4 className="font-medium text-gray-800 mb-4 flex items-center gap-2">
+                <List className="text-blue-600" size={20} />
+                Periféricos Agregados
+              </h4>
+
+              <ul className="divide-y divide-blue-100">
+                {form.perifericos.map((p, index) => (
+                  <li key={index} className="py-4 flex justify-between items-center">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-gray-800">{p.nombre}</span>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+                          {p.cantidad}x
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {p.marca} {p.modelo} • {p.serial}
+                      </div>
+                    </div>
+
+                    {/* ELIMINAR */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nuevos = [...form.perifericos];
+                        nuevos.splice(index, 1);
+                        setForm({ ...form, perifericos: nuevos });
+                      }}
+                      className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </li>
                 ))}
-              </select>
+              </ul>
             </div>
           )}
-
-          <button
-            type="button"
-            disabled={!perifericoSeleccionado}
-            onClick={() => {
-              if (!form.perifericos.some(p => p.inventario_id === perifericoSeleccionado.id)) {
-                setForm({
-                  ...form,
-                  perifericos: [
-                    ...form.perifericos,
-                    {
-                      inventario_id: perifericoSeleccionado.id,
-                      nombre: perifericoSeleccionado.nombre,
-                      codigo: perifericoSeleccionado.codigo,
-                      serial: perifericoSeleccionado.serial,
-                      marca: perifericoSeleccionado.marca,
-                      modelo: perifericoSeleccionado.modelo,
-                      cantidad: 1
-                    }
-                  ]
-                });
-              }
-              setPerifericoSeleccionado(null);
-              setPerifericoSeleccionadoId("");
-              setPerifericoBusqueda("");
-              setResultadosBusqueda([]);
-            }}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${perifericoSeleccionado
-              ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
-          >
-            <Plus size={18} />
-            Agregar periférico
-          </button>
         </div>
 
-        {/* Lista de periféricos */}
-        {form.perifericos.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl">
-            <h4 className="font-medium text-gray-800 mb-4 flex items-center gap-2">
-              <List className="text-blue-600" size={20} />
-              Periféricos Agregados
-            </h4>
-            <ul className="divide-y divide-blue-100">
-              {form.perifericos.map((p, index) => (
-                <li key={index} className="py-4 flex justify-between items-center">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-800">{p.nombre}</span>
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
-                        {p.cantidad}x
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {p.marca} {p.modelo} • {p.codigo} • {p.serial}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const nuevos = [...form.perifericos];
-                      nuevos.splice(index, 1);
-                      setForm({ ...form, perifericos: nuevos });
-                    }}
-                    className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         {/* Botón de envío */}
         <div className="flex justify-end pt-4">

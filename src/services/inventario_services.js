@@ -10,7 +10,8 @@ import {
   CONTAR_INVENTARIO,
   BUSCAR_INVENTARIO_ITEM,
   SUBIR_ADJUNTO,
-  BUSCAR_PRODUCTO_SERVICIO
+  BUSCAR_PRODUCTO_SERVICIO,
+  BUSCAR_PRODUCTO_CODIGO
 
 } from "../const/endpoint/inventario_endpoint";
 import * as XLSX from "xlsx";
@@ -66,6 +67,26 @@ export async function buscarProductoServicio(query) {
     return [];
   }
 }
+
+
+export async function buscarProductoServicioCodigo(query) {
+  try {
+    const res = await axios.get(
+      `${BUSCAR_PRODUCTO_CODIGO}?q=${encodeURIComponent(query)}`
+    );
+
+    if (res.data.success && Array.isArray(res.data.data)) {
+      return res.data.data; 
+    }
+
+    return [];
+
+  } catch (error) {
+    console.error("Error buscando producto:", error);
+    return [];
+  }
+}
+
 
 
 

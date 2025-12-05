@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BUSCAR_PERIFERICO } from '../const/endpoint/pc_equipo_endpoint';
+import { BUSCAR_PERIFERICOS } from '../const/endpoint/pc_equipo_endpoint';
 
 export const buscarPerifericoo = async (termino) => {
 	try {
@@ -12,3 +12,17 @@ export const buscarPerifericoo = async (termino) => {
 		return [];
 	}
 };
+
+export const buscarPerifericos = async (query) => {
+	if (!query || query.trim().length < 2) {
+		return { success: true, resultados: [] };
+	}
+	try {
+		const res = await axios.get(`${BUSCAR_PERIFERICOS}?query=${encodeURIComponent(query)}`);
+		return res.data;
+	} catch (error) {
+		console.error("Error al buscar equipo:", error);
+		return { success: false, resultados: [] };
+	}
+};
+

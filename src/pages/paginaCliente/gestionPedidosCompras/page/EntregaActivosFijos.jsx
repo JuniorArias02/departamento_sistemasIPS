@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
-import { subirFirmaActa, crearEntregaActivos, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega } from '../../../../services/cp_entrega_activos_services';
+import { subirFirmaActa, crearEntregaActivos, guardarItemsEntrega, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega, buscarInventarioEntrega } from '../../../../services/cp_entrega_activos_services';
 import { User, Package, FileSignature, Search, Plus, Trash2, Check } from 'lucide-react';
 import BuscarResponsable from '../../componentsUnive/BuscarResponsable';
 import BuscarCoordinador from '../../componentsUnive/BuscarCoordinador';
@@ -21,17 +21,22 @@ export default function EntregaActivosFijos() {
   const [resetCoordinador, setResetCoordinador] = useState(false);
   const [nuevaFirmaEntrega, setNuevaFirmaEntrega] = useState(null);
   const [nuevaFirmaRecibe, setNuevaFirmaRecibe] = useState(null);
-0
-
+  0
   const [form, setForm] = useState({
     personal_id: "",
     coordinador_id: "",
     sede_id: "",
-    fecha: new Date().toISOString().split('T')[0],
+    dependencia_id: "",
+    proceso_solicitante: "",
+    fecha: new Date().toISOString().split("T")[0],
     items: [],
     firma_quien_entrega: "",
     firma_quien_recibe: "",
   });
+
+
+
+
 
   useEffect(() => {
     const cargarSedes = async () => {
@@ -57,6 +62,32 @@ export default function EntregaActivosFijos() {
       });
     }
   }, [entregaEdit]);
+
+  useEffect(() => {
+    const cargarInventario = async () => {
+      if (!form.coordinador_id || !form.sede_id || !form.proceso_solicitante) return;
+
+      const res = await buscarInventarioEntrega(
+        form.coordinador_id,
+        form.sede_id,
+        form.proceso_solicitante
+      );
+
+      console.log("📦 Inventario recibido:", res);
+
+      if (res.success) {
+        setForm(prev => ({
+          ...prev,
+          itemsDatos: res.data,
+          items: res.data.map(item => item.id)
+        }));
+      }
+    };
+
+    cargarInventario();
+  }, [form.coordinador_id, form.sede_id, form.proceso_solicitante]);
+
+
 
   useEffect(() => {
     console.log(entregaEdit);
@@ -170,6 +201,11 @@ export default function EntregaActivosFijos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("📦 Datos a enviar:", {
+      entrega_activos_id: form.entrega_activos_id,
+      items: form.items
+    });
+
     try {
       const entrega = await guardarEntregaActivos({
         id: entregaEdit?.entrega_id || null,
@@ -188,18 +224,10 @@ export default function EntregaActivosFijos() {
         });
       }
 
-      // 🟡 Subir items
+      // 🟡 Guardar items (solo IDs)
       if (form.items && form.items.length > 0) {
-        const itemsPayload = form.items.map(item => ({
-          item_id: item.id,
-          es_accesorio: item.contieneAccesorios === "si" ? 1 : 0,
-          accesorio_descripcion: item.descripcionAccesorios
-        }));
-
-        await subirItemsEntrega({
-          entrega_activos_id: entrega.id,
-          items: itemsPayload
-        });
+        console.log("📤 Items enviados:", form.items);
+        await guardarItemsEntrega(entrega.id, form.items);
       }
 
       // 🟢 Subir firmas
@@ -208,14 +236,12 @@ export default function EntregaActivosFijos() {
 
       if (form.firma_quien_entrega) {
         const blobEntrega = base64ToBlob(form.firma_quien_entrega);
-        if (blobEntrega)
-          formData.append("firma_entrega", blobEntrega, "firma_entrega.png");
+        if (blobEntrega) formData.append("firma_entrega", blobEntrega, "firma_entrega.png");
       }
 
       if (form.firma_quien_recibe) {
         const blobRecibe = base64ToBlob(form.firma_quien_recibe);
-        if (blobRecibe)
-          formData.append("firma_recibe", blobRecibe, "firma_recibe.png");
+        if (blobRecibe) formData.append("firma_recibe", blobRecibe, "firma_recibe.png");
       }
 
       await subirFirmaActa(formData);
@@ -234,15 +260,14 @@ export default function EntregaActivosFijos() {
           sede: "",
           fecha: new Date().toISOString().split("T")[0],
           items: [],
+          itemsDatos: [],
           firma_quien_entrega: "",
           firma_quien_recibe: ""
         });
-        setItemSeleccionado(null);
-        setContieneAccesorios("no");
-        setDescripcionAccesorios("");
         setResetInventario(prev => !prev);
         setResetResponsable(prev => !prev);
       }
+
       navigate(-1);
     } catch (err) {
       console.error(err);
@@ -253,6 +278,7 @@ export default function EntregaActivosFijos() {
       });
     }
   };
+
 
 
 
@@ -290,13 +316,20 @@ export default function EntregaActivosFijos() {
                   label="Buscar Personal"
                   reset={resetResponsable}
                 />
-                <BuscarCoordinador
+                <BuscarResponsable
+                  name="coordinador_id"
+                  value={form.coordinador_id}
+                  onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
+                  label="Buscar Coordinador"
+                  reset={resetResponsable}
+                />
+                {/* <BuscarCoordinador
                   name="coordinador_id"
                   value={form.coordinador_id}
                   onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
                   label="Buscar Coordinador"
                   reset={resetCoordinador}
-                />
+                /> */}
               </div>
 
               <div className="space-y-2">
@@ -305,16 +338,13 @@ export default function EntregaActivosFijos() {
                     name="proceso_solicitante"
                     value={form.proceso_solicitante}
                     onChange={handleChange}
-                    labelSede="Seleccione una sede"
-                    labelDependencia="Seleccione el proceso solicitante"
+                    labelSede="Sede"
+                    labelDependencia="Dependencia"
                     required
                     formSedeId={form.sede_id}
-                    icon={
-                      <div className="p-1.5 bg-indigo-100 rounded-md">
-                        <User size={16} className="text-indigo-600" />
-                      </div>
-                    }
                   />
+
+
                 </div>
 
               </div>
@@ -334,137 +364,39 @@ export default function EntregaActivosFijos() {
 
           {/* Segundo apartado: Agregar items */}
           <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+
             <div className="flex items-center mb-6">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white mr-3">
                 <Package size={20} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">Agregar Ítems</h2>
-                <p className="text-sm text-gray-600">Busque y seleccione los activos a entregar</p>
+                <h2 className="text-xl font-semibold text-gray-800">Ítems del Inventario</h2>
+                <p className="text-sm text-gray-600">Filtrados por Coordinador, Sede y Dependencia</p>
               </div>
             </div>
 
-            {/* Si NO es edición, permitir agregar items */}
-            {!entregaEdit && (
-              <>
-                <div className="space-y-2">
-                  <BuscarInventario
-                    name="itemSeleccionado"
-                    value={itemSeleccionado ? itemSeleccionado.id : ""}
-                    onChange={(item) => seleccionarItem(item)}
-                    label="Buscar Item"
-                    required
-                    reset={resetInventario}
-                  />
-                </div>
-
-                {itemSeleccionado && (
-                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Item Seleccionado</label>
-                        <div className="p-3 bg-white border border-gray-300 rounded-lg">
-                          <div className="font-medium">{itemSeleccionado.nombre}</div>
-                          <div className="text-sm text-gray-600">
-                            Código: {itemSeleccionado.codigo} - Serial: {itemSeleccionado.serial}
-                          </div>
-                        </div>
+            {!form.itemsDatos || form.itemsDatos.length === 0 ? (
+              <p className="text-gray-600">No hay ítems disponibles para los filtros seleccionados.</p>
+            ) : (
+              <div className="space-y-3">
+                {form.itemsDatos.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        ID {item.id} — Nombre: {item.nombre}
                       </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">¿Contiene Accesorios?</label>
-                        <div className="flex space-x-4">
-                          <label className="inline-flex items-center">
-                            <input
-                              type="radio"
-                              value="si"
-                              checked={contieneAccesorios === "si"}
-                              onChange={() => setContieneAccesorios("si")}
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
-                            <span className="ml-2 text-gray-700">Sí</span>
-                          </label>
-                          <label className="inline-flex items-center">
-                            <input
-                              type="radio"
-                              value="no"
-                              checked={contieneAccesorios === "no"}
-                              onChange={() => setContieneAccesorios("no")}
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
-                            <span className="ml-2 text-gray-700">No</span>
-                          </label>
-                        </div>
+                      <div className="text-sm text-gray-600">
+                        Código: {item.codigo} — Serial: {item.serial}
                       </div>
-
-                      {contieneAccesorios === "si" && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción de Accesorios</label>
-                          <textarea
-                            value={descripcionAccesorios}
-                            onChange={(e) => setDescripcionAccesorios(e.target.value)}
-                            placeholder="Describa los accesorios incluidos"
-                            rows={3}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                          />
-                        </div>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={agregarItem}
-                        className="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      >
-                        <Plus className="mr-2" size={18} />
-                        Agregar Item
-                      </button>
                     </div>
                   </div>
-                )}
-              </>
-            )}
-
-            {/* Lista de ítems agregados */}
-            {form.items.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                  <Package className="mr-2" size={20} />
-                  Ítems Agregados
-                </h3>
-                <div className="space-y-3">
-                  {form.items.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm"
-                    >
-                      <div>
-                        <div className="font-medium text-gray-900">{item.nombre}</div>
-                        <div className="text-sm text-gray-600">
-                          Código: {item.codigo} - Serial: {item.serial}
-                        </div>
-                        {item.contieneAccesorios === "si" && (
-                          <div className="mt-1 text-sm text-gray-700">
-                            <span className="font-medium">Accesorios:</span> {item.descripcionAccesorios}
-                          </div>
-                        )}
-                      </div>
-
-                      {!entregaEdit && (
-                        <button
-                          type="button"
-                          onClick={() => eliminarItem(index)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
-                          title="Eliminar item"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
             )}
+
           </section>
+
+
 
 
           {/* Tercer apartado: Firmas */}

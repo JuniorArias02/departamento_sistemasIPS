@@ -729,6 +729,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 										sidebarOpen={sidebarOpen}
 										delay={0.4}
 									/>
+									<SidebarSubItem
+										icon={<NotebookTabs size={16} />}
+										text="Listado de Actas Entrega"
+										onClick={() => {
+											if (permisos.includes(PERMISOS.GESTION_EQUIPOS.VER_ACTA_MANTENIMIENTO)) {
+												navigate(RUTAS.USER.EQUIPOS.VER_ACTAS_ENTREGA);
+											} else {
+												mostrarAlertaSinPermiso();
+											}
+										}}
+										isActive={location.pathname === RUTAS.USER.EQUIPOS.VER_ACTAS_ENTREGA}
+										sidebarOpen={sidebarOpen}
+										delay={0.4}
+									/>
 								</SidebarCollapsible>
 							)}
 							{/* reporte */}

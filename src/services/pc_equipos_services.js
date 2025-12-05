@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_EQUIPO, OBTENER_EQUIPOS, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS,BUSCAR_EQUIPO,SUBIR_IMAGEN } from "../const/endpoint/pc_equipo_endpoint";
+import { CREAR_EQUIPO, OBTENER_EQUIPOS, LISTAR_ACTAS_ENTREGA, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS, BUSCAR_EQUIPO, SUBIR_IMAGEN, BUSCAR_EQUIPOS } from "../const/endpoint/pc_equipo_endpoint";
 
 
 export const crearEquipo = async (datos) => {
@@ -29,14 +29,40 @@ export const subirImagen = async (formData) => {
 
 
 export const buscarEquipo = async (q) => {
-  try {
-    const res = await axios.get(`${BUSCAR_EQUIPO}?q=${encodeURIComponent(q)}`);
-    return res.data;
-  } catch (error) {
-    console.error("Error al buscar equipo:", error);
-    return [];
-  }
+	try {
+		const res = await axios.get(`${BUSCAR_EQUIPO}?q=${encodeURIComponent(q)}`);
+		return res.data;
+	} catch (error) {
+		console.error("Error al buscar equipo:", error);
+		return [];
+	}
 };
+
+export const buscarEquipos = async (query) => {
+	try {
+		const res = await axios.get(`${BUSCAR_EQUIPOS}?query=${encodeURIComponent(query)}`);
+		return res.data;
+	} catch (error) {
+		console.error("Error al buscar equipo:", error);
+		return { success: false, resultados: [] };
+	}
+};
+
+
+
+export const listarActaEntrega = async () => {
+	try {
+		const res = await axios.get(LISTAR_ACTAS_ENTREGA);
+		return res.data;
+	} catch (error) {
+		console.error("Error al listar actas de entrega:", error);
+		return { success: false, data: [] };
+	}
+};
+
+
+
+
 
 export const editarEquipo = async (datos) => {
 	try {
@@ -55,7 +81,7 @@ export const obtenerTotalEquipos = async () => {
 		return response.data;
 	} catch (error) {
 		console.error('Error al obtener total de equipos', error);
-		return { status: false, total: 0 }; 
+		return { status: false, total: 0 };
 	}
 };
 

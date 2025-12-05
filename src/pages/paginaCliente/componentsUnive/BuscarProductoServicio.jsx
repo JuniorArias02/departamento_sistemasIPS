@@ -81,16 +81,26 @@ const BuscarProductoServicio = ({
 
 	// Seleccionar
 	const handleSelect = (item) => {
+
+		// Enviar el código del producto al form
 		onChange({
-			target: { name, value: item.id }
+			target: { name: "codigo_barras", value: item.codigo_producto }
 		});
 
-		setQuery(`${item.nombre} (${item.codigo_producto})`);
+		// Enviar el nombre al form
+		onChange({
+			target: { name: "nombre", value: item.nombre }
+		});
+
+		// Mostrar en el input actual
+		setQuery(item.nombre);
 		setSelectedItem(item);
 		setResultados([]);
 		setIsOpen(false);
 		setManualSelection(true);
 	};
+
+
 
 
 	const handleInputFocus = () => {
