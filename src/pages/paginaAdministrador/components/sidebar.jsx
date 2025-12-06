@@ -851,6 +851,18 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							sidebarOpen={sidebarOpen}
 							delay={0.1}
 						/>
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar fondoApp"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = 'https://clinicalhouse.co/deparSistemApi/public/fondoApp.exe';
+								link.download = 'exe';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}
+						/>
 					</SidebarCollapsible>
 
 					{/* Cerrar sesión */}
