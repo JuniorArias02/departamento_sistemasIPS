@@ -21,6 +21,8 @@ export default function EntregaActivosFijos() {
   const [resetCoordinador, setResetCoordinador] = useState(false);
   const [nuevaFirmaEntrega, setNuevaFirmaEntrega] = useState(null);
   const [nuevaFirmaRecibe, setNuevaFirmaRecibe] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   0
   const [form, setForm] = useState({
     personal_id: "",
@@ -214,12 +216,16 @@ export default function EntregaActivosFijos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("📦 Datos a enviar:", {
-      entrega_activos_id: form.entrega_activos_id,
-      items: form.items
-    });
+    if (isLoading) return; // evita doble clic
+
+    setIsLoading(true); // 🔒 BLOQUEA TODO
 
     try {
+      console.log("📦 Datos a enviar:", {
+        entrega_activos_id: form.entrega_activos_id,
+        items: form.items
+      });
+
       const entrega = await guardarEntregaActivos({
         id: entregaEdit?.entrega_id || null,
         personal_id: form.responsable_id,
@@ -230,6 +236,7 @@ export default function EntregaActivosFijos() {
       });
 
       if (!entrega.ok) {
+        setIsLoading(false); // 🔓 DESBLOQUEA
         return Swal.fire({
           icon: "error",
           title: "Error",
@@ -237,9 +244,8 @@ export default function EntregaActivosFijos() {
         });
       }
 
-      // 🟡 Guardar items (solo IDs)
+      // 🟡 Guardar items
       if (form.items && form.items.length > 0) {
-        console.log("📤 Items enviados:", form.items);
         await guardarItemsEntrega(entrega.id, form.items);
       }
 
@@ -262,9 +268,7 @@ export default function EntregaActivosFijos() {
       await Swal.fire({
         icon: "success",
         title: "¡Listo!",
-        text: form.id
-          ? "Entrega actualizada correctamente"
-          : "Entrega creada correctamente",
+        text: form.id ? "Entrega actualizada correctamente" : "Entrega creada correctamente",
       });
 
       if (!form.id) {
@@ -282,6 +286,7 @@ export default function EntregaActivosFijos() {
       }
 
       navigate(-1);
+
     } catch (err) {
       console.error(err);
       Swal.fire({
@@ -289,8 +294,11 @@ export default function EntregaActivosFijos() {
         title: "Error",
         text: "Ocurrió un error al guardar la entrega",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
 
 
@@ -446,10 +454,11 @@ export default function EntregaActivosFijos() {
           <div className="flex justify-end pt-4">
             <button
               type="submit"
+              disabled={isLoading}
               className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg shadow-md transition flex items-center"
             >
               <Check className="mr-2" size={20} />
-              Completar Entrega
+              {isLoading ? "Guardando..." : "Guardar entrega"}
             </button>
           </div>
         </form>
