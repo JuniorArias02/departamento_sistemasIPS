@@ -455,11 +455,44 @@ export default function EntregaActivosFijos() {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg shadow-md transition flex items-center"
+              className={`px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 
+    hover:from-blue-700 hover:to-indigo-800 text-white font-medium 
+    rounded-lg shadow-md transition flex items-center justify-center gap-2
+    ${isLoading ? "opacity-60 cursor-not-allowed" : ""}
+  `}
             >
-              <Check className="mr-2" size={20} />
-              {isLoading ? "Guardando..." : "Guardar entrega"}
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Check className="mr-2" size={20} />
+                  Guardar entrega
+                </>
+              )}
             </button>
+
           </div>
         </form>
       </div>
