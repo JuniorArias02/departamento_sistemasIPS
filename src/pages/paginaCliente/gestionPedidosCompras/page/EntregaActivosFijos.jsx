@@ -24,6 +24,7 @@ export default function EntregaActivosFijos() {
   0
   const [form, setForm] = useState({
     personal_id: "",
+    responsable_id: "",
     coordinador_id: "",
     sede_id: "",
     dependencia_id: "",
@@ -50,6 +51,7 @@ export default function EntregaActivosFijos() {
     if (entregaEdit) {
       setForm({
         personal_id: entregaEdit.personal_id || "",
+        responsable_id: entregaEdit.responsable_id || "",
         coordinador_id: entregaEdit.coordinador_id || "",
         sede_id: entregaEdit.sede_id || "",
         proceso_solicitante: entregaEdit.proceso_solicitante || "",
@@ -65,15 +67,23 @@ export default function EntregaActivosFijos() {
 
   useEffect(() => {
     const cargarInventario = async () => {
-      if (!form.coordinador_id || !form.sede_id || !form.proceso_solicitante) return;
+      // Validar que los 3 sean obligatorios
+      if (
+        !form.responsable_id ||
+        !form.coordinador_id ||
+        !form.proceso_solicitante
+      ) {
+        console.warn("Faltan campos obligatorios para cargar inventario");
+        return;
+      }
 
       const res = await buscarInventarioEntrega(
+        form.responsable_id,
         form.coordinador_id,
-        form.sede_id,
         form.proceso_solicitante
       );
 
-      console.log("📦 Inventario recibido:", res);
+      console.log("cargar inventario ", res);
 
       if (res.success) {
         setForm(prev => ({
@@ -85,7 +95,11 @@ export default function EntregaActivosFijos() {
     };
 
     cargarInventario();
-  }, [form.coordinador_id, form.sede_id, form.proceso_solicitante]);
+  }, [
+    form.responsable_id,
+    form.coordinador_id,
+    form.proceso_solicitante
+  ]);
 
 
 
@@ -119,7 +133,6 @@ export default function EntregaActivosFijos() {
 
   function base64ToBlob(base64) {
     try {
-      // Si tiene el encabezado, lo separamos
       const parts = base64.split(",");
       const mime = parts[0].match(/:(.*?);/)[1];
       const bstr = atob(parts[1]);
@@ -209,7 +222,7 @@ export default function EntregaActivosFijos() {
     try {
       const entrega = await guardarEntregaActivos({
         id: entregaEdit?.entrega_id || null,
-        personal_id: form.personal_id,
+        personal_id: form.responsable_id,
         coordinador_id: form.coordinador_id,
         sede_id: form.sede_id,
         fecha_entrega: form.fecha,
@@ -310,8 +323,8 @@ export default function EntregaActivosFijos() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <BuscarResponsable
-                  name="personal_id"
-                  value={form.personal_id}
+                  name="responsable_id"
+                  value={form.responsable_id}
                   onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
                   label="Buscar Personal"
                   reset={resetResponsable}
@@ -339,7 +352,7 @@ export default function EntregaActivosFijos() {
                     value={form.proceso_solicitante}
                     onChange={handleChange}
                     labelSede="Sede"
-                    labelDependencia="Dependencia"
+                    labelDependencia="proceso"
                     required
                     formSedeId={form.sede_id}
                   />

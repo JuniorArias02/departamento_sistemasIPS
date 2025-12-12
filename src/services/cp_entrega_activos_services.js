@@ -30,15 +30,15 @@ export const listarEntregasActivos = async () => {
 	}
 };
 
-export const buscarInventarioEntrega = async (coordinador_id, sede_id, dependencia_id) => {
+export const buscarInventarioEntrega = async (responsable_id, coordinador_id, dependencia_id) => {
 	try {
 		const data = {
 			coordinador_id,
-			sede_id,
+			responsable_id,
 			dependencia_id
 		};
+
 		const response = await axios.post(OBTENER_INVENTARIO_COORDINADOR, data);
-		console.log("buscar invnetairo por3 filtros" , response);
 		return response.data;
 
 	} catch (error) {
@@ -46,6 +46,7 @@ export const buscarInventarioEntrega = async (coordinador_id, sede_id, dependenc
 		return { success: false };
 	}
 };
+
 
 
 export const subirItemsEntrega = async (data) => {
