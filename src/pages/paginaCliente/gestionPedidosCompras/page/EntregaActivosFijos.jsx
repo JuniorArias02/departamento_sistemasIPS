@@ -9,6 +9,7 @@ import BuscarInventario from '../../componentsUnive/BuscarInventario';
 import BuscarDependencia from '../../componentsUnive/BuscarDependencia';
 import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router-dom";
+import {Circle} from 'lucide-react';
 
 export default function EntregaActivosFijos() {
   const location = useLocation();

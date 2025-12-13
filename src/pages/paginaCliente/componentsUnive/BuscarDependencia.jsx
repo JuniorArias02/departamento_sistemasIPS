@@ -3,7 +3,7 @@ import { listarSedes, listarDependenciasPorSede } from "../../../services/sedes_
 import { Building, GitBranch, ChevronDown, Loader2, MapPin } from "lucide-react";
 
 const BuscarDependencia = ({
-	name = "dependencia_id",
+	name = "proceso_id",
 	value,
 	onChange,
 	labelSede = "Sede",

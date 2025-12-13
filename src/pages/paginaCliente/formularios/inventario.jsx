@@ -69,7 +69,7 @@ export default function FormularioInventario() {
 
   function obtenerEstadoInicial() {
     return {
-      codigo: "", nombre: "", dependencia: "", responsable: "", marca: "", modelo: "", serial: "", sede_id: "",
+      codigo: "", nombre: "", dependencia: "", responsable: "", responsable_id: "", marca: "", modelo: "", serial: "", sede_id: "",
       codigo_barras: "", grupo: "", vida_util: "", vida_util_niff: "", centro_costo: "", ubicacion: "", proveedor: "",
       fecha_compra: "", soporte: "", descripcion: "", estado: "", escritura: "", matricula: "", valor_compra: "",
       salvamenta: "", depreciacion: "", depreciacion_niif: "", meses: "", meses_niif: "", tipo_adquisicion: "",
@@ -86,9 +86,11 @@ export default function FormularioInventario() {
         nombre: inventarioEdit.nombre || "",
         dependencia: inventarioEdit.dependencia || "",
         responsable: inventarioEdit.responsable || "",
+        responsable_id: inventarioEdit.responsable_id || "",
         marca: inventarioEdit.marca || "",
         modelo: inventarioEdit.modelo || "",
         serial: inventarioEdit.serial || "",
+        proceso_id:inventarioEdit.proceso_id || "",
         // sede_id: inventarioEdit.sede_id || "",
         codigo_barras: inventarioEdit.codigo_barras || "",
         grupo: inventarioEdit.grupo || "",
@@ -310,8 +312,8 @@ export default function FormularioInventario() {
           />
 
           <BuscarResponsable
-            name="responsable"
-            value={formData.responsable}
+            name="responsable_id"
+            value={formData.responsable_id}
             onChange={handleChange}
             label="Responsable"
           />
@@ -324,8 +326,8 @@ export default function FormularioInventario() {
           />
 
           <BuscarDependencia
-            name="dependencia"
-            value={formData.dependencia}
+            name="proceso_id"
+            value={formData.proceso_id}
             onChange={handleChange}
             labelSede="Seleccione una sede"
             labelDependencia="Seleccione el proceso solicitante"
