@@ -61,21 +61,24 @@ const BuscarDependencia = ({
 
 	useEffect(() => {
 		const precargar = async () => {
-			if (!formSedeId) return;
+			if (!formSedeId || !value) return;
 
 			try {
 				setLoadingDeps(true);
+				setSedeId(formSedeId);
+
 				const deps = await listarDependenciasPorSede(formSedeId);
 				setDependencias(deps.dependencias || []);
-				setSedeId(formSedeId);
 			} catch (err) {
 				console.error("Error precargando sede/dependencia:", err);
 			} finally {
 				setLoadingDeps(false);
 			}
 		};
+
 		precargar();
-	}, [formSedeId]);
+	}, [formSedeId, value]);
+
 
 
 	// reset

@@ -90,8 +90,8 @@ export default function FormularioInventario() {
         marca: inventarioEdit.marca || "",
         modelo: inventarioEdit.modelo || "",
         serial: inventarioEdit.serial || "",
-        proceso_id:inventarioEdit.proceso_id || "",
-        // sede_id: inventarioEdit.sede_id || "",
+        proceso_id: inventarioEdit.proceso_id || "",
+        sede_id: inventarioEdit.sede_id || "",
         codigo_barras: inventarioEdit.codigo_barras || "",
         grupo: inventarioEdit.grupo || "",
         vida_util: inventarioEdit.vida_util ? inventarioEdit.vida_util : "",
@@ -259,8 +259,8 @@ export default function FormularioInventario() {
 
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-       
+
+
 
           {CAMPOS_FORMULARIO.informacionBasica.map(renderInputField)}
 
@@ -327,6 +327,7 @@ export default function FormularioInventario() {
 
           <BuscarDependencia
             name="proceso_id"
+            formSedeId={formData.sede_id}
             value={formData.proceso_id}
             onChange={handleChange}
             labelSede="Seleccione una sede"

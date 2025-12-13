@@ -36,6 +36,7 @@ const BuscarProductoServicio = ({
 		return () => clearTimeout(handler);
 	}, [query]);
 
+
 	// Reset externo
 	useEffect(() => {
 		if (reset) {
@@ -45,6 +46,22 @@ const BuscarProductoServicio = ({
 			onChange({ target: { name, value: "" } });
 		}
 	}, [reset]);
+
+
+
+
+	// Sincronizar value (modo editar / limpiar)
+	useEffect(() => {
+		if (value) {
+			setQuery(value);
+			setSelectedItem({ nombre: value });
+		} else {
+			setQuery("");
+			setSelectedItem(null);
+		}
+	}, [value]);
+
+
 
 	// Buscar inventario (por código o nombre)
 	useEffect(() => {
