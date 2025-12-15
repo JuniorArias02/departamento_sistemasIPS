@@ -5,5 +5,6 @@ export const OBTENER_PERSONAL = `${URL_PATH}controllers/personal/obtener_persona
 export const BUSCAR_PERSONAL = `${URL_PATH}controllers/personal/buscar_personal.php`;
 export const BUSCAR_PERSONAL_COORD = `${URL_PATH}controllers/personal/buscar_personal_coord.php`;
 export const BUSCAR_PERSONAL_ID = `${URL_PATH}controllers/personal/buscar_personal_por_id.php`;
+export const LISTAR_CARGO = `${URL_PATH}controllers/personal/listar_cargo.php`;
 
 

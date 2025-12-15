@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApp } from "../../../../store/AppContext";
-import { crearPersonal } from "../../../../services/personal_services";
-import { 
-  UserPlus, 
-  User, 
-  IdCard, 
-  Phone, 
-  Briefcase, 
-  Building, 
+import { crearPersonal, listarCargo } from "../../../../services/personal_services";
+import {
+  UserPlus,
+  User,
+  IdCard,
+  Phone,
+  Briefcase,
+  Building,
   Save,
   ArrowLeft
 } from 'lucide-react';
@@ -15,12 +15,13 @@ import Swal from 'sweetalert2';
 
 export default function CrearPersonalVista() {
   const { usuario } = useApp();
+  const [cargos, setCargos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nombre: "",
     cedula: "",
     telefono: "",
-    cargo: "",
+    cargo_id: "",
     proceso: ""
   });
 
@@ -30,6 +31,16 @@ export default function CrearPersonalVista() {
       [e.target.name]: e.target.value
     });
   };
+
+  useEffect(() => {
+    const cargarCargos = async () => {
+      const data = await listarCargo();
+      setCargos(data);
+    };
+
+    cargarCargos();
+  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +53,7 @@ export default function CrearPersonalVista() {
       };
 
       const response = await crearPersonal(datos);
-      
+
       if (response.data.status) {
         await Swal.fire({
           icon: 'success',
@@ -51,14 +62,13 @@ export default function CrearPersonalVista() {
           confirmButtonColor: '#2563eb',
           confirmButtonText: 'Aceptar'
         });
-        
+
         // Reset form
         setFormData({
           nombre: "",
           cedula: "",
           telefono: "",
-          cargo: "",
-          proceso: ""
+          cargo_id: ""
         });
       } else {
         if (response.data.faltantes) {
@@ -176,52 +186,28 @@ export default function CrearPersonalVista() {
                 <Briefcase size={16} />
                 Cargo *
               </label>
-              <input
-                type="text"
-                name="cargo"
-                value={formData.cargo}
+
+              <select
+                name="cargo_id"
+                value={formData.cargo_id}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingresa el cargo"
                 required
-              />
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Seleccione un cargo</option>
+                {cargos.map((cargo) => (
+                  <option key={cargo.id} value={cargo.id}>
+                    {cargo.nombre}
+                  </option>
+                ))}
+              </select>
+
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
                 <Briefcase size={18} className="text-gray-400" />
               </div>
             </div>
 
-            {/* Campo Proceso */}
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Building size={16} />
-                Proceso *
-              </label>
-              <select
-                name="proceso"
-                value={formData.proceso}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                required
-              >
-                <option value="">Selecciona un proceso</option>
-                <option value="Administración">Administración</option>
-                <option value="Contabilidad">Contabilidad</option>
-                <option value="Recursos Humanos">Recursos Humanos</option>
-                <option value="Sistemas">Sistemas</option>
-                <option value="Mantenimiento">Mantenimiento</option>
-                <option value="Compras">Compras</option>
-                <option value="Ventas">Ventas</option>
-                <option value="Atención al Cliente">Atención al Cliente</option>
-              </select>
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
-                <Building size={18} className="text-gray-400" />
-              </div>
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none mt-6">
-                <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </div>
-            </div>
+
 
             {/* Botones */}
             <div className="flex gap-3 pt-4">
