@@ -138,7 +138,7 @@ const VistaCrearActaEntrega = () => {
       };
 
       const res = await crearActaEntrega(payload);
-      console.log(res);
+      // console.log(res);
       if (res.status) {
         Swal.fire({
           icon: 'success',

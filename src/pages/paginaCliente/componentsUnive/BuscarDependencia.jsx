@@ -47,7 +47,7 @@ const BuscarDependencia = ({
 			setLoadingDeps(true);
 			try {
 				const data = await listarDependenciasPorSede(sedeId);
-				console.log(data.dependencias);
+				// console.log(data.dependencias);
 				setDependencias(data.dependencias || []);
 			} catch (err) {
 				console.error("Error cargando dependencias:", err);

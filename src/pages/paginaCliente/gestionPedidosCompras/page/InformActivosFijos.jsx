@@ -23,6 +23,8 @@ export function InformActivosFijos() {
     const cargarEntregas = async () => {
       setLoading(true);
       const res = await listarEntregasActivos();
+
+      // console.log(res);
       if (res.ok) {
         setEntregas(res.data);
       }
@@ -32,7 +34,7 @@ export function InformActivosFijos() {
   }, []);
 
 
-  
+
   // Filtrar entregas basado en búsqueda y filtros
   const filteredEntregas = entregas.filter(entrega => {
     const matchesSearch =

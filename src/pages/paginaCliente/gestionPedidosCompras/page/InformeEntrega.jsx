@@ -32,6 +32,7 @@ export function InformeEntrega() {
 		const fetchData = async () => {
 			try {
 				const data = await obtenerEntregaSolicitud();
+				
 				setEntregas(data.data);
 			} catch (error) {
 				console.error("Error al cargar entregas:", error);

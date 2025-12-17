@@ -33,7 +33,6 @@ const VistaActasEntrega = () => {
 	const cargarActas = async () => {
 		setLoading(true);
 		const res = await listarActaEntrega();
-
 		if (res.success) {
 			setActas(res.data);
 		} else {

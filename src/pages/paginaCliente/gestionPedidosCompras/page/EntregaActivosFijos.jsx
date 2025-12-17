@@ -9,7 +9,7 @@ import BuscarInventario from '../../componentsUnive/BuscarInventario';
 import BuscarDependencia from '../../componentsUnive/BuscarDependencia';
 import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router-dom";
-import {Circle} from 'lucide-react';
+import { Circle } from 'lucide-react';
 
 export default function EntregaActivosFijos() {
   const location = useLocation();
@@ -51,34 +51,37 @@ export default function EntregaActivosFijos() {
   }, []);
 
   useEffect(() => {
-    if (entregaEdit) {
-      setForm({
-        personal_id: entregaEdit.personal_id || "",
-        responsable_id: entregaEdit.responsable_id || "",
-        coordinador_id: entregaEdit.coordinador_id || "",
-        sede_id: entregaEdit.sede_id || "",
-        proceso_solicitante: entregaEdit.proceso_solicitante || "",
-        fecha: entregaEdit.fecha_entrega
-          ? entregaEdit.fecha_entrega.split("T")[0]
-          : new Date().toISOString().split("T")[0],
-        items: entregaEdit.items || [],
-        firma_quien_entrega: entregaEdit.firma_quien_entrega || "",
-        firma_quien_recibe: entregaEdit.firma_quien_recibe || "",
-      });
-    }
+    if (!entregaEdit) return;
+
+    setForm(prev => ({
+      ...prev,
+      personal_id: entregaEdit.personal_id || "",
+      responsable_id: entregaEdit.personal_id || "",
+      coordinador_id: entregaEdit.coordinador_id || "",
+      sede_id: entregaEdit.sede_id || "",
+      proceso_solicitante: entregaEdit.proceso_solicitante || "",
+      fecha: entregaEdit.fecha_entrega?.split("T")[0] || "",
+
+      items: Array.isArray(entregaEdit.items)
+        ? entregaEdit.items.map(item => ({
+          id: item.item_id,          // 👈 id real del inventario
+          nombre: item.nombre,
+          codigo: item.codigo,
+          serial: item.serial,
+          contieneAccesorios: item.es_accesorio === 1 ? "si" : "no",
+          descripcionAccesorios: item.accesorio_descripcion ?? ""
+        }))
+        : [],
+
+      firma_quien_entrega: entregaEdit.firma_quien_entrega || "",
+      firma_quien_recibe: entregaEdit.firma_quien_recibe || ""
+    }));
   }, [entregaEdit]);
+
 
   useEffect(() => {
     const cargarInventario = async () => {
-      // Validar que los 3 sean obligatorios
-      if (
-        !form.responsable_id ||
-        !form.coordinador_id ||
-        !form.proceso_solicitante
-      ) {
-        console.warn("Faltan campos obligatorios para cargar inventario");
-        return;
-      }
+      if (!form.responsable_id || !form.coordinador_id || !form.proceso_solicitante) return;
 
       const res = await buscarInventarioEntrega(
         form.responsable_id,
@@ -86,50 +89,19 @@ export default function EntregaActivosFijos() {
         form.proceso_solicitante
       );
 
-      console.log("cargar inventario ", res);
-
       if (res.success) {
         setForm(prev => ({
           ...prev,
-          itemsDatos: res.data,
-          items: res.data.map(item => item.id)
+          itemsDatos: res.data // 👈 SOLO inventario
         }));
       }
     };
 
     cargarInventario();
-  }, [
-    form.responsable_id,
-    form.coordinador_id,
-    form.proceso_solicitante
-  ]);
+  }, [form.responsable_id, form.coordinador_id, form.proceso_solicitante]);
 
 
 
-  useEffect(() => {
-    console.log(entregaEdit);
-    const obtenerItems = async () => {
-      if (!entregaEdit?.entrega_id) return;
-
-      const res = await cargarItemsEntrega(entregaEdit.entrega_id);
-      console.log(res);
-      if (res.success && res.data.length > 0) {
-        setForm(prev => ({
-          ...prev,
-          items: res.data.map(item => ({
-            id: item.item_id,
-            contieneAccesorios: item.es_accesorio ? "si" : "no",
-            descripcionAccesorios: item.accesorio_descripcion || "",
-            nombre: item.nombre_item || "Item cargado",
-            codigo: item.codigo_item || "",
-            serial: item.serial_item || ""
-          }))
-        }));
-      }
-    };
-
-    obtenerItems();
-  }, [entregaEdit]);
 
 
 
@@ -345,13 +317,6 @@ export default function EntregaActivosFijos() {
                   label="Buscar Coordinador"
                   reset={resetResponsable}
                 />
-                {/* <BuscarCoordinador
-                  name="coordinador_id"
-                  value={form.coordinador_id}
-                  onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
-                  label="Buscar Coordinador"
-                  reset={resetCoordinador}
-                /> */}
               </div>
 
               <div className="space-y-2">

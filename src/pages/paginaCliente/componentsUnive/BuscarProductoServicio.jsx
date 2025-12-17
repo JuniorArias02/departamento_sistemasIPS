@@ -55,11 +55,18 @@ const BuscarProductoServicio = ({
 		if (value) {
 			setQuery(value);
 			setSelectedItem({ nombre: value });
+			setResultados([]);
+			setIsOpen(false);
+			setManualSelection(true);
 		} else {
 			setQuery("");
 			setSelectedItem(null);
+			setResultados([]);
+			setIsOpen(false);
 		}
 	}, [value]);
+
+
 
 
 

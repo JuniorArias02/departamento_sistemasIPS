@@ -26,59 +26,53 @@ const BuscarResponsable = ({
 	const [selectedPerson, setSelectedPerson] = useState(null);
 	const [manualSelection, setManualSelection] = useState(false);
 
-	// 🔹 Debounce input
+	// 🔹 Debounce
 	useEffect(() => {
-		const handler = setTimeout(() => {
-			setDebouncedQuery(query);
-		}, 500);
-		return () => clearTimeout(handler);
+		const t = setTimeout(() => setDebouncedQuery(query), 500);
+		return () => clearTimeout(t);
 	}, [query]);
 
-	// 🔹 Reset desde afuera
+	// 🔹 Reset externo
 	useEffect(() => {
 		if (reset) {
 			setQuery("");
 			setSelectedPerson(null);
 			setResultados([]);
+			setIsOpen(false);
 			onChange({ target: { name, value: "" } });
 		}
 	}, [reset]);
 
-	// 🔹 Buscar por texto
+	// 🔹 Buscar por texto (solo cuando el usuario escribe)
 	useEffect(() => {
 		if (manualSelection) {
 			setManualSelection(false);
 			return;
 		}
 
-		// 👇 si ya tengo un seleccionado y el query coincide con él, no busques
-		if (selectedPerson && query.includes(selectedPerson.cedula)) {
+		if (debouncedQuery.length < 2) {
+			setResultados([]);
+			setIsOpen(false);
 			return;
 		}
 
 		const buscar = async () => {
-			if (debouncedQuery.length < 2) {
-				setResultados([]);
-				setIsOpen(false);
-				return;
-			}
 			setLoading(true);
 			setIsOpen(true);
 			try {
 				const data = await buscarPersonal(debouncedQuery);
 				setResultados(data.slice(0, 10));
-			} catch (error) {
-				console.error("Error buscando personal:", error);
+			} catch {
 				setResultados([]);
 			} finally {
 				setLoading(false);
 			}
 		};
+
 		buscar();
 	}, [debouncedQuery]);
 
-
-	// 🔹 Precargar cuando `value` tenga un ID
+	// 🔹 Precargar cuando llega un value (ID)
 	useEffect(() => {
 		let cancelado = false;
 
@@ -90,23 +84,21 @@ const BuscarResponsable = ({
 				if (persona && !cancelado) {
 					setSelectedPerson(persona);
 					setQuery(`${persona.nombre} (${persona.cedula})`);
+					setResultados([]);
+					setIsOpen(false);        // 👈 evita que se abra
+					setManualSelection(true);
 				}
-			} catch (err) {
-				console.error("Error precargando persona:", err);
+			} catch (e) {
+				console.error(e);
 			}
 		};
 
 		precargar();
-		return () => {
-			cancelado = true;
-		};
+		return () => (cancelado = true);
 	}, [value]);
 
-
 	const handleSelect = (persona) => {
-		onChange({
-			target: { name, value: persona.id },
-		});
+		onChange({ target: { name, value: persona.id } });
 		setQuery(`${persona.nombre} (${persona.cedula})`);
 		setSelectedPerson(persona);
 		setResultados([]);
@@ -114,23 +106,12 @@ const BuscarResponsable = ({
 		setManualSelection(true);
 	};
 
-	const handleInputFocus = () => {
-		if (resultados.length > 0) {
-			setIsOpen(true);
-		}
-	};
-
-	const handleInputBlur = () => {
-		setTimeout(() => setIsOpen(false), 200);
-	};
-
 	const clearSelection = () => {
 		setQuery("");
 		setSelectedPerson(null);
-		onChange({
-			target: { name, value: "" },
-		});
 		setResultados([]);
+		setIsOpen(false);
+		onChange({ target: { name, value: "" } });
 	};
 
 	return (
@@ -150,8 +131,8 @@ const BuscarResponsable = ({
 					type="text"
 					value={query}
 					onChange={(e) => setQuery(e.target.value)}
-					onFocus={handleInputFocus}
-					onBlur={handleInputBlur}
+					// onFocus={handleInputFocus}
+					// onBlur={handleInputBlur}
 					placeholder="Buscar por nombre o cédula..."
 					className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
 				/>
