@@ -223,7 +223,7 @@ export default function PedidoDetalle() {
         id_pedido: data.id,
         id_usuario: usuario.id,
         tipo: data.estado_compras === "aprobado" ? "gerencia" : "compra",
-        motivo_aprobacion: motivoAprobacion,
+        observacion: motivoAprobacion,
       });
 
       setShowFirmaAprobacionForm(false);

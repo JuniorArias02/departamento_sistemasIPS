@@ -140,7 +140,7 @@ export default function GestionPedidos() {
 				text: "No se pudo exportar el pedido. Intenta nuevamente.",
 			});
 		} finally {
-			setLoadingExport(false); // 🔹 cuando termina quita el loading
+			setLoadingExport(false);
 		}
 	};
 

@@ -103,6 +103,7 @@ export default function FormularioInventario() {
         soporte: inventarioEdit.soporte || "",
         soporte_adjunto: inventarioEdit.soporte_adjunto || "",
         descripcion: inventarioEdit.descripcion || "",
+        num_factu: inventarioEdit.num_factu || "",
         estado: inventarioEdit.estado || "",
         escritura: inventarioEdit.escritura || "",
         matricula: inventarioEdit.matricula || "",
@@ -117,7 +118,9 @@ export default function FormularioInventario() {
         observaciones: inventarioEdit.observaciones || "",
         tipo_bien: inventarioEdit.tipo_bien || "",
         coordinador_id: inventarioEdit.coordinador_id || "",
-        proceso_solicitante: inventarioEdit.proceso_solicitante || ""
+        proceso_solicitante: inventarioEdit.proceso_solicitante || "",
+        tiene_accesorio: inventarioEdit.tiene_accesorio || "",
+        descripcion_accesorio: inventarioEdit.descripcion_accesorio || "",
       }));
     }
   }, [inventarioEdit]);
@@ -303,7 +306,7 @@ export default function FormularioInventario() {
 
 
           <CamposInputs
-            name="accesorios"
+            name="descripcion_accesorio"
             label="descripcion Accesorios"
             type="text"
             icon={<ScrollText size={18} className="text-gray-400" />}
