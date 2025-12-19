@@ -8,6 +8,7 @@ import { validarRutas } from "../../secure/validarRutas";
 import { obtenerPermisos } from "../../services/permisos_services";
 import getVersion from "../../../version";
 import FormularioRecuperacion from "../formularioRecuperarContraseña/FormularioRecuperacion";
+import FireworksIntro from "./components/FireworksIntro";
 
 export default function FormularioLogin() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function FormularioLogin() {
   const [mostrarRecuperacion, setMostrarRecuperacion] = useState(false);
   const [bloqueadoHasta, setBloqueadoHasta] = useState(null);
   const [tiempoRestante, setTiempoRestante] = useState(0);
+  const [mostrarIntro, setMostrarIntro] = useState(true);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,7 +51,6 @@ export default function FormularioLogin() {
 
     try {
       const data = await loginUsuario(formData);
-
       if (data.usuario) {
         const permisosObtenidos = await obtenerPermisos(data.usuario.id);
         login(data.usuario, permisosObtenidos);
@@ -92,9 +93,9 @@ export default function FormularioLogin() {
     return `${min}:${sec}`;
   };
 
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4">
+      {mostrarIntro && <FireworksIntro onComplete={() => setMostrarIntro(false)} />}
       <div className="w-full max-w-4xl bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-neutral-100 relative">
 
         {/* Contenedor para el formulario de login */}
@@ -142,11 +143,11 @@ export default function FormularioLogin() {
                       className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-neutral-400"
                       placeholder="usuario@house"
                       required
-                      disabled={loading}  
+                      disabled={loading}
                     />
                     <User className="w-5 h-5 text-neutral-400 absolute right-3 top-3.5" />
                   </div>
-                </div>  
+                </div>
 
                 <div className="space-y-1">
                   <label htmlFor="contrasena" className="text-sm font-medium text-neutral-700">

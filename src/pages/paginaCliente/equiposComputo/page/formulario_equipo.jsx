@@ -228,9 +228,10 @@ const FormularioEquipo = () => {
 					setImagen(null);
 				}
 			} else {
+				let faltantes = res.faltantes.join(", ");
 				await Swal.fire({
 					title: 'Error',
-					text: res.message,
+					text: res.message + " : " + faltantes,
 					icon: 'error',
 					confirmButtonColor: '#4f46e5',
 				});
