@@ -38,10 +38,6 @@ export default function EntregaActivosFijos() {
     firma_quien_recibe: "",
   });
 
-
-
-
-
   useEffect(() => {
     const cargarSedes = async () => {
       const data = await listarSedes();
@@ -64,7 +60,7 @@ export default function EntregaActivosFijos() {
 
       items: Array.isArray(entregaEdit.items)
         ? entregaEdit.items.map(item => ({
-          id: item.item_id,          // 👈 id real del inventario
+          id: item.item_id,
           nombre: item.nombre,
           codigo: item.codigo,
           serial: item.serial,
@@ -92,18 +88,18 @@ export default function EntregaActivosFijos() {
       if (res.success) {
         setForm(prev => ({
           ...prev,
-          itemsDatos: res.data // 👈 SOLO inventario
+          itemsDatos: res.data,
+          items: res.data.map(item => ({
+            item_id: item.id,
+            es_accesorio: 0,
+            accesorio_descripcion: ""
+          }))
         }));
       }
     };
 
     cargarInventario();
   }, [form.responsable_id, form.coordinador_id, form.proceso_solicitante]);
-
-
-
-
-
 
 
   function base64ToBlob(base64) {
@@ -122,8 +118,6 @@ export default function EntregaActivosFijos() {
       return null;
     }
   }
-
-
 
   const [busquedaPersonal, setBusquedaPersonal] = useState("");
   const [busquedaItem, setBusquedaItem] = useState("");
@@ -217,10 +211,21 @@ export default function EntregaActivosFijos() {
         });
       }
 
-      // 🟡 Guardar items
-      if (form.items && form.items.length > 0) {
-        await guardarItemsEntrega(entrega.id, form.items);
+      const itemsParaEnviar = form.itemsDatos.map(item => ({
+        item_id: item.id,
+        es_accesorio: item.es_accesorio || 0,
+        accesorio_descripcion: item.accesorio_descripcion || ""
+      }));
+
+
+      // // 🟡 Guardar items
+      const esEdicion = Boolean(entregaEdit?.entrega_id);
+
+      // SOLO EN CREACIÓN
+      if (!esEdicion && itemsParaEnviar.length > 0) {
+        await guardarItemsEntrega(entrega.id, itemsParaEnviar);
       }
+
 
       // 🟢 Subir firmas
       const formData = new FormData();
