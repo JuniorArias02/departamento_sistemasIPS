@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_EQUIPO, OBTENER_EQUIPOS, LISTAR_ACTAS_ENTREGA, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS, BUSCAR_EQUIPO, SUBIR_IMAGEN, BUSCAR_EQUIPOS } from "../const/endpoint/pc_equipo_endpoint";
+import { CREAR_EQUIPO,ACTUALIZAR_FIRMAS, EXPORTAR_ACTA_ENTREGA_EQUIPOS, OBTENER_EQUIPOS, LISTAR_ACTAS_ENTREGA, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS, BUSCAR_EQUIPO, SUBIR_IMAGEN, BUSCAR_EQUIPOS } from "../const/endpoint/pc_equipo_endpoint";
 
 
 export const crearEquipo = async (datos) => {
@@ -11,6 +11,8 @@ export const crearEquipo = async (datos) => {
 		return [];
 	}
 };
+
+
 
 export const subirImagen = async (formData) => {
 	try {
@@ -25,6 +27,17 @@ export const subirImagen = async (formData) => {
 		return [];
 	}
 };
+
+export const actualizar_firmas = async (formData) => {
+	try {
+		const { data } = await axios.post(ACTUALIZAR_FIRMAS, formData);
+		return data;
+	} catch (error) {
+		console.error('Error al subir firma', error);
+		throw error; // mejor manejarlo arriba
+	}
+};
+
 
 
 
@@ -61,7 +74,22 @@ export const listarActaEntrega = async () => {
 };
 
 
+export const exportActaEntrega = async (entregaId) => {
+	try {
+		const response = await axios.get(
+			`${EXPORTAR_ACTA_ENTREGA_EQUIPOS}?id_entrega=${entregaId}`,
+			{ responseType: 'blob' }
+		);
 
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = `acta_entrega_${entregaId}.xlsx`;
+		link.click();
+	} catch (error) {
+		console.error('Error al descargar acta', error);
+	}
+};
 
 
 export const editarEquipo = async (datos) => {

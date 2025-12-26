@@ -24,3 +24,9 @@ export const ELIMINAR_ACTA_MANTENIMIENTO = `${URL_PATH}controllers/pc_mantenimie
 
 
 export const LISTAR_ACTAS_ENTREGA = `${URL_PATH}controllers/pc_entrega/listar_entregas.php`;
+
+
+export const EXPORTAR_ACTA_ENTREGA_EQUIPOS = `${URL_PATH}export/exportar_acta_entrega_equipos.php`;
+
+
+export const ACTUALIZAR_FIRMAS = `${URL_PATH}controllers/cp_entrega_activos_fijos/actualizar_firmas.php`;

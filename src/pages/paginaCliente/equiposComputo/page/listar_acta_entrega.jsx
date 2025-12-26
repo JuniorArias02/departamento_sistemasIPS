@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarActaEntrega } from "../../../../services/pc_equipos_services";
+import { listarActaEntrega, exportActaEntrega, actualizar_firmas } from "../../../../services/pc_equipos_services";
 import {
 	Loader2,
 	User,
@@ -57,13 +57,64 @@ const VistaActasEntrega = () => {
 		setEditandoFirma({ id: actaId, tipo });
 	};
 
-	const finalizarEdicionFirma = () => {
-		setEditandoFirma({ id: null, tipo: null });
+	const base64ToFile = (base64) => {
+		const arr = base64.split(',');
+		const mime = arr[0].match(/:(.*?);/)[1];
+		const bstr = atob(arr[1]);
+		let n = bstr.length;
+		const u8arr = new Uint8Array(n);
+
+		while (n--) u8arr[n] = bstr.charCodeAt(n);
+
+		return new File([u8arr], 'firma.png', { type: mime });
 	};
 
-	const descargarActa = (acta) => {
-		console.log("Descargando acta:", acta.id);
+
+	const finalizarEdicionFirma = async () => {
+		if (!editandoFirma.id || !editandoFirma.tipo) return;
+
+		const acta = actas.find(a => a.id === editandoFirma.id);
+		if (!acta) return;
+
+		const formData = new FormData();
+		formData.append("id", acta.id);
+
+		if (editandoFirma.tipo === "entrega") {
+			const file = base64ToFile(acta.firma_entrega);
+			formData.append("firma_entrega", file);
+		} else {
+			const file = base64ToFile(acta.firma_recibe);
+			formData.append("firma_recibe", file);
+		}
+
+		try {
+			const res = await actualizar_firmas(formData);
+
+			setActas(prev =>
+				prev.map(a =>
+					a.id === acta.id
+						? {
+							...a,
+							firma_entrega: res.firma_entrega,
+							firma_recibe: res.firma_recibe
+						}
+						: a
+				)
+			);
+
+			setEditandoFirma({ id: null, tipo: null });
+		} catch (e) {
+			console.error(e);
+			alert("Error guardando firma");
+		}
 	};
+
+
+
+	const descargarActa = (acta) => {
+		exportActaEntrega(acta.id);
+	};
+
 
 	const imprimirActa = (acta) => {
 		window.print();
@@ -227,6 +278,7 @@ const VistaActasEntrega = () => {
 										</div>
 
 										<div className="grid grid-cols-2 gap-3">
+
 											{/* Firma Entrega */}
 											<div className="border rounded-lg p-3">
 												<div className="flex items-center justify-between mb-2">

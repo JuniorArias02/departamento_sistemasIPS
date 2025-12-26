@@ -24,7 +24,8 @@ export default function EntregaActivosFijos() {
   const [nuevaFirmaRecibe, setNuevaFirmaRecibe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  0
+  // 
+
   const [form, setForm] = useState({
     personal_id: "",
     responsable_id: "",
@@ -177,8 +178,6 @@ export default function EntregaActivosFijos() {
     nuevosItems.splice(index, 1);
     setForm({ ...form, items: nuevosItems });
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
