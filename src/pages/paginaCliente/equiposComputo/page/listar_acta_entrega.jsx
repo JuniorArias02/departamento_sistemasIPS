@@ -17,7 +17,8 @@ import {
 	Printer,
 	Eye,
 	Plus,
-	Pencil
+	Pencil,
+	RotateCcw
 } from "lucide-react";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { IMAGEN_URL } from "../../../../const/endpoint/mantenimiento_endpoint";
@@ -135,310 +136,303 @@ const VistaActasEntrega = () => {
 	};
 
 	return (
-		<div className="p-4 bg-gray-50 min-h-screen">
-			<div className="max-w-6xl mx-auto">
-				{/* Header */}
-				<div className="mb-8">
-					<h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-						<FileText className="w-7 h-7 text-blue-600" />
-						Actas de Entrega
-					</h1>
-					<p className="text-gray-600">
-						Visualiza y gestiona todas las actas de entrega de equipos
-					</p>
+		<div className="min-h-screen bg-slate-50/50 p-6 md:p-8 font-sans">
+			<div className="max-w-7xl mx-auto">
+				{/* Header Moderno */}
+				<div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+					<div>
+						<h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+							<div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-600/20">
+								<FileText className="w-6 h-6 text-white" />
+							</div>
+							Actas de Entrega
+						</h1>
+						<p className="text-slate-500 mt-2 text-lg font-light">
+							Gestión centralizada de entregas y devoluciones de equipos
+						</p>
+					</div>
+
+					{/* Stats o Filtros podrían ir aquí */}
 				</div>
 
-				{/* Loading */}
+				{/* Loading State Refinado */}
 				{loading && (
-					<div className="flex items-center justify-center py-12">
-						<Loader2 className="w-8 h-8 text-blue-600 animate-spin mr-3" />
-						<p className="text-gray-600">Cargando actas...</p>
+					<div className="flex flex-col items-center justify-center py-24">
+						<div className="relative">
+							<div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+							<div className="absolute inset-0 flex items-center justify-center">
+								<div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+							</div>
+						</div>
+						<p className="mt-4 text-slate-500 font-medium animate-pulse">Cargando información...</p>
 					</div>
 				)}
 
-				{/* Sin resultados */}
+				{/* Empty State Moderno */}
 				{!loading && actas.length === 0 && (
-					<div className="text-center py-12 bg-white rounded-xl border">
-						<FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-						<h3 className="text-lg font-semibold text-gray-700 mb-1">
-							No hay actas registradas
+					<div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 shadow-sm">
+						<div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+							<FileText className="w-10 h-10 text-slate-400" />
+						</div>
+						<h3 className="text-xl font-bold text-slate-900 mb-2">
+							No se encontraron registros
 						</h3>
-						<p className="text-gray-500">
-							No se encontraron actas de entrega en el sistema.
+						<p className="text-slate-500 max-w-sm mx-auto">
+							Actualmente no hay actas de entrega registradas en el sistema.
 						</p>
 					</div>
 				)}
 
-				{/* Grid de Cartas - SOLO 2 COLUMNAS */}
+				{/* Grid de Cards Premium */}
 				{!loading && actas.length > 0 && (
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 						{actas.map((acta) => (
 							<div
 								key={acta.id}
-								className="bg-white rounded-xl border border-gray-300 shadow-sm hover:shadow-md transition-shadow duration-200"
+								className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-slate-100 overflow-hidden relative"
 							>
-								{/* Header compacto */}
-								<div className="p-4 border-b bg-gray-50">
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-3">
-											<div className={`px-2 py-1 rounded text-xs font-medium ${acta.devuelto ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-												{acta.devuelto ? 'DEVUELTO' : 'ACTIVO'}
-											</div>
-											<span className="text-sm text-gray-500">ID: {acta.id}</span>
-										</div>
-										<Package className="w-5 h-5 text-gray-400" />
-									</div>
-									<h3 className="font-bold text-gray-800 mt-2">
-										{acta.nombre_equipo}
-									</h3>
-								</div>
+								{/* Decoración Top */}
+								<div className={`absolute top-0 left-0 right-0 h-1 ${acta.devuelto ? 'bg-emerald-500' : 'bg-blue-500'}`} />
 
-								{/* Contenido principal */}
-								<div className="p-4">
-									{/* Información básica en 2 columnas */}
-									<div className="grid grid-cols-2 gap-4 mb-4">
-										<div className="space-y-2">
-											<div className="flex items-center gap-2">
-												<User className="w-4 h-4 text-gray-500" />
-												<span className="text-sm font-medium text-gray-700">Funcionario</span>
-											</div>
-											<div className="ml-6">
-												<p className="text-sm text-gray-800">{acta.funcionario_nombre}</p>
-												<p className="text-xs text-gray-500">CC: {acta.funcionario_cedula}</p>
-											</div>
-										</div>
-
-										<div className="space-y-2">
-											<div className="flex items-center gap-2">
-												<Laptop className="w-4 h-4 text-gray-500" />
-												<span className="text-sm font-medium text-gray-700">Equipo</span>
-											</div>
-											<div className="ml-6">
-												<p className="text-sm text-gray-800">
-													{acta.equipo_marca} {acta.equipo_modelo}
-												</p>
-												<p className="text-xs text-gray-500">Serial: {acta.equipo_serial}</p>
-											</div>
-										</div>
-
-										<div className="space-y-2">
-											<div className="flex items-center gap-2">
-												<Calendar className="w-4 h-4 text-gray-500" />
-												<span className="text-sm font-medium text-gray-700">Fecha</span>
-											</div>
-											<div className="ml-6">
-												<p className="text-sm text-gray-800">{formatFecha(acta.fecha_entrega)}</p>
-											</div>
-										</div>
-
-										<div className="space-y-2">
-											<div className="flex items-center gap-2">
-												<Hash className="w-4 h-4 text-gray-500" />
-												<span className="text-sm font-medium text-gray-700">Inventario</span>
-											</div>
-											<div className="ml-6">
-												<p className="text-sm text-gray-800">{acta.inventario_equipo}</p>
-											</div>
-										</div>
-									</div>
-
-									{/* Periféricos compactos */}
-									{acta.perifericos && acta.perifericos.length > 0 && (
-										<div className="mb-4 p-3 bg-gray-50 rounded-lg">
-											<div className="flex items-center gap-2 mb-2">
-												<Package className="w-4 h-4 text-gray-500" />
-												<span className="text-sm font-medium text-gray-700">Periféricos</span>
-												<span className="text-xs text-gray-500 ml-auto">
-													({acta.perifericos.length})
+								{/* Header Card */}
+								<div className="p-6 pb-4">
+									<div className="flex items-start justify-between mb-4">
+										<div>
+											<div className="flex items-center gap-3 mb-2">
+												<span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 ${acta.devuelto
+														? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
+														: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+													}`}>
+													<span className={`w-1.5 h-1.5 rounded-full ${acta.devuelto ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
+													{acta.devuelto ? 'Devuelto' : 'Activo'}
 												</span>
+												<span className="text-xs text-slate-400 font-mono">#{acta.id.toString().padStart(4, '0')}</span>
 											</div>
+											<h3 className="text-xl font-bold text-slate-800 leading-tight">
+												{acta.nombre_equipo}
+											</h3>
+										</div>
+										<div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+											<Package className="w-5 h-5 text-slate-400" />
+										</div>
+									</div>
+
+									{/* Grid de Información */}
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mt-6">
+										{/* Columna Izquierda */}
+										<div className="space-y-4">
+											<div className="flex gap-3 items-start">
+												<div className="mt-0.5 bg-indigo-50 p-1.5 rounded-lg shrink-0">
+													<User className="w-4 h-4 text-indigo-500" />
+												</div>
+												<div>
+													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Funcionario</p>
+													<p className="text-sm font-medium text-slate-900">{acta.funcionario_nombre}</p>
+													<p className="text-xs text-slate-500 mt-0.5">CC: {acta.funcionario_cedula}</p>
+												</div>
+											</div>
+
+											<div className="flex gap-3 items-start">
+												<div className="mt-0.5 bg-violet-50 p-1.5 rounded-lg shrink-0">
+													<Laptop className="w-4 h-4 text-violet-500" />
+												</div>
+												<div>
+													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Detalles Equipo</p>
+													<p className="text-sm font-medium text-slate-900">{acta.equipo_marca} {acta.equipo_modelo}</p>
+													<p className="text-xs text-slate-500 mt-0.5 font-mono">SN: {acta.equipo_serial}</p>
+												</div>
+											</div>
+										</div>
+
+										{/* Columna Derecha */}
+										<div className="space-y-4">
+											<div className="flex gap-3 items-start">
+												<div className="mt-0.5 bg-amber-50 p-1.5 rounded-lg shrink-0">
+													<Calendar className="w-4 h-4 text-amber-500" />
+												</div>
+												<div>
+													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Fecha Entrega</p>
+													<p className="text-sm font-medium text-slate-900">{formatFecha(acta.fecha_entrega)}</p>
+												</div>
+											</div>
+
+											<div className="flex gap-3 items-start">
+												<div className="mt-0.5 bg-cyan-50 p-1.5 rounded-lg shrink-0">
+													<Hash className="w-4 h-4 text-cyan-500" />
+												</div>
+												<div>
+													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Inventario</p>
+													<p className="text-sm font-medium text-slate-900 font-mono">{acta.inventario_equipo}</p>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									{/* Periféricos Modernos */}
+									{acta.perifericos && acta.perifericos.length > 0 && (
+										<div className="mt-6 pt-4 border-t border-slate-100">
+											<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+												Periféricos Incluidos
+												<span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">{acta.perifericos.length}</span>
+											</p>
 											<div className="flex flex-wrap gap-2">
-												{acta.perifericos.slice(0, 3).map((periferico, idx) => (
+												{acta.perifericos.map((periferico, idx) => (
 													<span
 														key={idx}
-														className="text-xs bg-white px-2 py-1 rounded border"
+														className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 text-slate-600 border border-slate-100"
 													>
-														{periferico.nombre} x{periferico.cantidad}
+														<span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+														{periferico.nombre}
+														<span className="text-slate-400 ml-0.5 text-[10px]">x{periferico.cantidad}</span>
 													</span>
 												))}
-												{acta.perifericos.length > 3 && (
-													<span className="text-xs text-gray-500">
-														+{acta.perifericos.length - 3} más
-													</span>
-												)}
 											</div>
 										</div>
 									)}
 
-									{/* Firmas simplificadas */}
-									<div className="mb-4">
-										<div className="flex items-center gap-2 mb-3">
-											<Fingerprint className="w-4 h-4 text-gray-500" />
-											<span className="text-sm font-medium text-gray-700">Firmas</span>
-										</div>
-
-										<div className="grid grid-cols-2 gap-3">
-
-											{/* Firma Entrega */}
-											<div className="border rounded-lg p-3">
-												<div className="flex items-center justify-between mb-2">
-													<div className="flex items-center gap-1">
-														<Signature className="w-3 h-3 text-blue-600" />
-														<span className="text-xs font-medium text-gray-700">Entrega</span>
+									{/* Sección de Firmas Refinada */}
+									<div className="mt-6">
+										<div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100">
+											<div className="grid grid-cols-2 gap-4">
+												{/* Firma Entrega */}
+												<div className="relative group/firma">
+													<div className="flex items-center justify-between mb-2">
+														<span className="text-xs font-semibold text-slate-400 uppercase">Firma Entrega</span>
+														{acta.firma_entrega && <CheckCircle className="w-3 h-3 text-emerald-500" />}
 													</div>
-													{acta.firma_entrega ? (
-														<CheckCircle className="w-4 h-4 text-green-500" />
-													) : (
-														<XCircle className="w-4 h-4 text-gray-400" />
-													)}
-												</div>
 
-												{editandoFirma.id === acta.id && editandoFirma.tipo === "entrega" ? (
-													<div className="space-y-2">
-														<FirmaInput
-															value={acta.firma_entrega || ""}
-															onChange={(value) => handleFirmaChange(acta.id, "entrega", value)}
-															label=""
-															size="small"
-														/>
-														<div className="flex gap-2">
-															<button
-																onClick={finalizarEdicionFirma}
-																className="flex-1 bg-blue-600 text-white py-1 px-2 rounded text-xs hover:bg-blue-700"
-															>
-																Guardar
-															</button>
-															<button
-																onClick={() => setEditandoFirma({ id: null, tipo: null })}
-																className="flex-1 bg-gray-200 text-gray-800 py-1 px-2 rounded text-xs hover:bg-gray-300"
-															>
-																Cancelar
-															</button>
+													{editandoFirma.id === acta.id && editandoFirma.tipo === "entrega" ? (
+														<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
+															<FirmaInput
+																value={acta.firma_entrega || ""}
+																onChange={(value) => handleFirmaChange(acta.id, "entrega", value)}
+																label=""
+																size="small"
+															/>
+															<div className="flex gap-2 mt-2">
+																<button
+																	onClick={finalizarEdicionFirma}
+																	className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
+																>
+																	Guardar
+																</button>
+																<button
+																	onClick={() => setEditandoFirma({ id: null, tipo: null })}
+																	className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
+																>
+																	Cancelar
+																</button>
+															</div>
 														</div>
-													</div>
-												) : (
-													<div className="text-center">
-														{acta.firma_entrega ? (
-															<div className="mb-2">
+													) : (
+														<div
+															className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden group-hover/card:bg-white"
+															onClick={() => iniciarEdicionFirma(acta.id, "entrega")}
+														>
+															{acta.firma_entrega ? (
 																<img
 																	src={`${IMAGEN_URL}${acta.firma_entrega}`}
 																	alt="Firma entrega"
-																	className="max-w-full h-12 mx-auto border rounded"
+																	className="h-full w-auto object-contain mix-blend-multiply opacity-90"
 																/>
-															</div>
-														) : (
-															<div className="text-gray-400 py-2">
-																<Signature className="w-6 h-6 mx-auto mb-1" />
-																<p className="text-xs">Sin firma</p>
-															</div>
-														)}
-														<button
-															onClick={() => iniciarEdicionFirma(acta.id, "entrega")}
-															className="text-xs text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1 w-full"
-														>
-															<Edit className="w-3 h-3" />
-															{acta.firma_entrega ? "Cambiar" : "Agregar"}
-														</button>
-													</div>
-												)}
-											</div>
-
-											{/* Firma Recibe */}
-											<div className="border rounded-lg p-3">
-												<div className="flex items-center justify-between mb-2">
-													<div className="flex items-center gap-1">
-														<Signature className="w-3 h-3 text-green-600" />
-														<span className="text-xs font-medium text-gray-700">Recibe</span>
-													</div>
-													{acta.firma_recibe ? (
-														<CheckCircle className="w-4 h-4 text-green-500" />
-													) : (
-														<XCircle className="w-4 h-4 text-gray-400" />
+															) : (
+																<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
+																	<Plus className="w-5 h-5" />
+																	<span className="text-[10px] font-medium">Agregar</span>
+																</div>
+															)}
+														</div>
 													)}
 												</div>
 
-												{editandoFirma.id === acta.id && editandoFirma.tipo === "recibe" ? (
-													<div className="space-y-2">
-														<FirmaInput
-															value={acta.firma_recibe || ""}
-															onChange={(value) => handleFirmaChange(acta.id, "recibe", value)}
-															label=""
-															size="small"
-														/>
-														<div className="flex gap-2">
-															<button
-																onClick={finalizarEdicionFirma}
-																className="flex-1 bg-green-600 text-white py-1 px-2 rounded text-xs hover:bg-green-700"
-															>
-																Guardar
-															</button>
-															<button
-																onClick={() => setEditandoFirma({ id: null, tipo: null })}
-																className="flex-1 bg-gray-200 text-gray-800 py-1 px-2 rounded text-xs hover:bg-gray-300"
-															>
-																Cancelar
-															</button>
-														</div>
+												{/* Firma Recibe */}
+												<div className="relative group/firma">
+													<div className="flex items-center justify-between mb-2">
+														<span className="text-xs font-semibold text-slate-400 uppercase">Firma Recibe</span>
+														{acta.firma_recibe && <CheckCircle className="w-3 h-3 text-emerald-500" />}
 													</div>
-												) : (
-													<div className="text-center">
-														{acta.firma_recibe ? (
-															<div className="mb-2">
+
+													{editandoFirma.id === acta.id && editandoFirma.tipo === "recibe" ? (
+														<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
+															<FirmaInput
+																value={acta.firma_recibe || ""}
+																onChange={(value) => handleFirmaChange(acta.id, "recibe", value)}
+																label=""
+																size="small"
+															/>
+															<div className="flex gap-2 mt-2">
+																<button
+																	onClick={finalizarEdicionFirma}
+																	className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
+																>
+																	Guardar
+																</button>
+																<button
+																	onClick={() => setEditandoFirma({ id: null, tipo: null })}
+																	className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
+																>
+																	Cancelar
+																</button>
+															</div>
+														</div>
+													) : (
+														<div
+															className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden"
+															onClick={() => iniciarEdicionFirma(acta.id, "recibe")}
+														>
+															{acta.firma_recibe ? (
 																<img
 																	src={`${IMAGEN_URL}${acta.firma_recibe}`}
 																	alt="Firma recibe"
-																	className="max-w-full h-12 mx-auto border rounded"
+																	className="h-full w-auto object-contain mix-blend-multiply opacity-90"
 																/>
-															</div>
-														) : (
-															<div className="text-gray-400 py-2">
-																<Signature className="w-6 h-6 mx-auto mb-1" />
-																<p className="text-xs">Sin firma</p>
-															</div>
-														)}
-														<button
-															onClick={() => iniciarEdicionFirma(acta.id, "recibe")}
-															className="text-xs text-green-600 hover:text-green-800 flex items-center justify-center gap-1 w-full"
-														>
-															{acta.firma_recibe ? (
-																<Pencil className="w-3 h-3 mr-1" />
 															) : (
-																<Plus className="w-3 h-3 mr-1" />
+																<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
+																	<Plus className="w-5 h-5" />
+																	<span className="text-[10px] font-medium">Agregar</span>
+																</div>
 															)}
-															{acta.firma_recibe ? "Cambiar" : "Agregar"}
-														</button>
-													</div>
-												)}
+														</div>
+													)}
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 
-								{/* Acciones al fondo - siempre visibles */}
-								<div className="p-3 border-t bg-gray-50">
+								{/* Footer de Acciones Premium */}
+								<div className="bg-slate-50/50 p-4 border-t border-slate-100 flex flex-wrap gap-3 items-center justify-between">
 									<div className="flex gap-2">
 										<button
 											onClick={() => verDetalles(acta)}
-											className="flex items-center justify-center p-2 bg-white text-gray-700 rounded-lg border hover:bg-gray-50"
+											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
 											title="Ver detalles"
 										>
 											<Eye className="w-4 h-4" />
 										</button>
 										<button
 											onClick={() => descargarActa(acta)}
-											className="flex items-center justify-center p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
 											title="Descargar PDF"
 										>
 											<Download className="w-4 h-4" />
 										</button>
 										<button
 											onClick={() => imprimirActa(acta)}
-											className="flex items-center justify-center p-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
 											title="Imprimir"
 										>
 											<Printer className="w-4 h-4" />
 										</button>
 									</div>
+
+									<button
+										onClick={() => alert("Funcionalidad en desarrollo")}
+										className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
+									>
+										<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
+										<span>Devolver Equipo</span>
+									</button>
 								</div>
 							</div>
 						))}
