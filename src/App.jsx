@@ -34,6 +34,7 @@ import VistaCrearActaEntrega from "./pages/paginaCliente/equiposComputo/page/cre
 import VistaCrearMantenimientoEquipo from "./pages/paginaCliente/equiposComputo/page/crear_mantenimiento";
 import { VerActaMantenimiento } from "./pages/paginaCliente/equiposComputo/page/VerActaMantenimiento";
 import VistaActasEntrega from "./pages/paginaCliente/equiposComputo/page/listar_acta_entrega";
+import DevolverEquipo from "./pages/paginaCliente/equiposComputo/page/DevolverEquipo";
 
 import CrearPersonalVista from "./pages/paginaCliente/personal/page/CrearPersonal";
 import GestionPersonalVista from "./pages/paginaCliente/personal/page/GestionPersonal";
@@ -355,6 +356,18 @@ function App() {
             element={
               permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_CONSOLIDADO_PEDIDOS) ? (
                 <InformeConsolidadoPedidos />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+
+          <Route
+            path={RUTAS.USER.EQUIPOS.DEVOLVER_EQUIPO}
+            element={
+              permisos.includes(PERMISOS.GESTION_EQUIPOS.DEVOLVER_EQUIPO) ? (
+                <DevolverEquipo />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
               )

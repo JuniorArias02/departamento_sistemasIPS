@@ -64,16 +64,17 @@ export const PERMISOS = {
 		VER_AVISOS: 'ver_avisos_actualizacion_web',
 	},
 	GESTION_EQUIPOS: {
-		MENU_ITEM: "menu_item_equipos_computo",  // Permiso para ver el menú principal
-		AGREGAR: "agregar_equipo",  // Agregar nuevo equipo
-		VER_FORMULARIO: "ver_formulario_equipo",  // Ver formulario de equipos
-		CREAR_ACTA: "crear_acta_entrega",  // Crear actas de entrega
+		MENU_ITEM: "menu_item_equipos_computo",
+		AGREGAR: "agregar_equipo",
+		VER_FORMULARIO: "ver_formulario_equipo",
+		CREAR_ACTA: "crear_acta_entrega",
 		CREAR_MANTENIMIENTO: "crear_mantenimiento_equipo",  // Crear mantenimientos
-		VER: "ver_equipos_computo",  // Ver listado de equipos
-		EDITAR: "editar_equipo",  // Editar equipos existentes
-		ELIMINAR: "eliminar_equipo",  // Eliminar equipos
-		EXPORTAR: "exportar_inventario_equipos",  // Exportar datos
-		VER_ACTA_MANTENIMIENTO:"ver_acta_mantenimiento"
+		VER: "ver_equipos_computo",
+		EDITAR: "editar_equipo",
+		ELIMINAR: "eliminar_equipo",
+		EXPORTAR: "exportar_inventario_equipos",
+		VER_ACTA_MANTENIMIENTO:"ver_acta_mantenimiento",
+		DEVOLVER_EQUIPO: "devolver_equipo"
 	},
 
 	GESTION_COMPRA_PEDIDOS: {

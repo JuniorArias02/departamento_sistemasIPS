@@ -64,7 +64,8 @@ export const RUTAS = {
       CREAR_ACTA_ENTREGA: `${DASHBOARD}/crear_acta_entrega`,
       CREAR_ACTA_MANTENIMIENTO: `${DASHBOARD}/crear_acta_mantenimiento`,
       VER_ACTA_MANTENIMIENTO: `${DASHBOARD}/ver_mantenimientos`,
-      VER_ACTAS_ENTREGA:`${DASHBOARD}/ver_actas_entrega`
+      VER_ACTAS_ENTREGA:`${DASHBOARD}/ver_actas_entrega`,
+      DEVOLVER_EQUIPO: `${DASHBOARD}/devolver_equipo`
     },
 
     GESTION_COMPRAS: {

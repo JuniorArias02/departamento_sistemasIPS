@@ -30,3 +30,5 @@ export const EXPORTAR_ACTA_ENTREGA_EQUIPOS = `${URL_PATH}export/exportar_acta_en
 
 
 export const ACTUALIZAR_FIRMAS = `${URL_PATH}controllers/cp_entrega_activos_fijos/actualizar_firmas.php`;
+
+export const DEVOLVER_EQUIPO = `${URL_PATH}controllers/pc_entrega/crear_devolucion.php`;

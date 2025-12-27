@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { RUTAS } from "../../../../const/routers/routers";
 import { listarActaEntrega, exportActaEntrega, actualizar_firmas } from "../../../../services/pc_equipos_services";
 import {
 	Loader2,
@@ -22,8 +24,10 @@ import {
 } from "lucide-react";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { IMAGEN_URL } from "../../../../const/endpoint/mantenimiento_endpoint";
+import Swal from "sweetalert2";
 
 const VistaActasEntrega = () => {
+	const navigate = useNavigate();
 	const [actas, setActas] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [editandoFirma, setEditandoFirma] = useState({
@@ -106,7 +110,12 @@ const VistaActasEntrega = () => {
 			setEditandoFirma({ id: null, tipo: null });
 		} catch (e) {
 			console.error(e);
-			alert("Error guardando firma");
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Ocurrió un error al intentar guardar la firma.',
+				confirmButtonColor: '#ef4444'
+			});
 		}
 	};
 
@@ -192,19 +201,19 @@ const VistaActasEntrega = () => {
 								className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-slate-100 overflow-hidden relative"
 							>
 								{/* Decoración Top */}
-								<div className={`absolute top-0 left-0 right-0 h-1 ${acta.devuelto ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+								<div className={`absolute top-0 left-0 right-0 h-1 ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
 
 								{/* Header Card */}
 								<div className="p-6 pb-4">
 									<div className="flex items-start justify-between mb-4">
 										<div>
 											<div className="flex items-center gap-3 mb-2">
-												<span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 ${acta.devuelto
-														? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
-														: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+												<span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 ${acta.estado === 'devuelto'
+													? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
+													: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
 													}`}>
-													<span className={`w-1.5 h-1.5 rounded-full ${acta.devuelto ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
-													{acta.devuelto ? 'Devuelto' : 'Activo'}
+													<span className={`w-1.5 h-1.5 rounded-full ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
+													{acta.estado}
 												</span>
 												<span className="text-xs text-slate-400 font-mono">#{acta.id.toString().padStart(4, '0')}</span>
 											</div>
@@ -425,14 +434,15 @@ const VistaActasEntrega = () => {
 											<Printer className="w-4 h-4" />
 										</button>
 									</div>
-
-									<button
-										onClick={() => alert("Funcionalidad en desarrollo")}
-										className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
-									>
-										<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
-										<span>Devolver Equipo</span>
-									</button>
+									{acta.estado === 'entregado' && (
+										<button
+											onClick={() => navigate(RUTAS.USER.EQUIPOS.DEVOLVER_EQUIPO, { state: { acta } })}
+											className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
+										>
+											<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
+											<span>Devolver Equipo</span>
+										</button>
+									)}
 								</div>
 							</div>
 						))}
