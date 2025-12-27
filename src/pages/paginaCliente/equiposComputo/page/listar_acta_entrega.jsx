@@ -20,7 +20,9 @@ import {
 	Eye,
 	Plus,
 	Pencil,
-	RotateCcw
+	RotateCcw,
+	Search,
+	X
 } from "lucide-react";
 import { FirmaInput } from "../../../appFirma/appFirmas";
 import { IMAGEN_URL } from "../../../../const/endpoint/mantenimiento_endpoint";
@@ -34,6 +36,7 @@ const VistaActasEntrega = () => {
 		id: null,
 		tipo: null
 	});
+	const [searchTerm, setSearchTerm] = useState("");
 
 	const cargarActas = async () => {
 		setLoading(true);
@@ -144,6 +147,22 @@ const VistaActasEntrega = () => {
 		});
 	};
 
+	// Filtrar actas por nombre de funcionario o código de inventario
+	const actasFiltradas = actas.filter((acta) => {
+		if (!searchTerm.trim()) return true;
+
+		const searchLower = searchTerm.toLowerCase().trim();
+		const nombreFuncionario = (acta.funcionario_nombre || "").toLowerCase();
+		const codigoInventario = (acta.inventario_equipo || "").toLowerCase();
+
+		return nombreFuncionario.includes(searchLower) || codigoInventario.includes(searchLower);
+	});
+
+	// Limpiar búsqueda
+	const clearSearch = () => {
+		setSearchTerm("");
+	};
+
 	return (
 		<div className="min-h-screen bg-slate-50/50 p-6 md:p-8 font-sans">
 			<div className="max-w-7xl mx-auto">
@@ -161,7 +180,27 @@ const VistaActasEntrega = () => {
 						</p>
 					</div>
 
-					{/* Stats o Filtros podrían ir aquí */}
+					{/* Filtro de Búsqueda */}
+					<div className="relative w-full md:w-96">
+						<div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+							<Search className="w-5 h-5 text-slate-400" />
+						</div>
+						<input
+							type="text"
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							placeholder="Buscar por funcionario o inventario..."
+							className="w-full pl-12 pr-12 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
+						/>
+						{searchTerm && (
+							<button
+								onClick={clearSearch}
+								className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+							>
+								<X className="w-5 h-5" />
+							</button>
+						)}
+					</div>
 				</div>
 
 				{/* Loading State Refinado */}
@@ -178,275 +217,316 @@ const VistaActasEntrega = () => {
 				)}
 
 				{/* Empty State Moderno */}
-				{!loading && actas.length === 0 && (
+				{!loading && actasFiltradas.length === 0 && (
 					<div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 shadow-sm">
 						<div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-							<FileText className="w-10 h-10 text-slate-400" />
+							{searchTerm ? (
+								<Search className="w-10 h-10 text-slate-400" />
+							) : (
+								<FileText className="w-10 h-10 text-slate-400" />
+							)}
 						</div>
 						<h3 className="text-xl font-bold text-slate-900 mb-2">
-							No se encontraron registros
+							{searchTerm ? "No se encontraron resultados" : "No se encontraron registros"}
 						</h3>
 						<p className="text-slate-500 max-w-sm mx-auto">
-							Actualmente no hay actas de entrega registradas en el sistema.
+							{searchTerm
+								? `No hay actas que coincidan con "${searchTerm}". Intenta con otro término de búsqueda.`
+								: "Actualmente no hay actas de entrega registradas en el sistema."
+							}
 						</p>
+						{searchTerm && (
+							<button
+								onClick={clearSearch}
+								className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+							>
+								Limpiar búsqueda
+							</button>
+						)}
 					</div>
 				)}
 
 				{/* Grid de Cards Premium */}
-				{!loading && actas.length > 0 && (
-					<div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-						{actas.map((acta) => (
-							<div
-								key={acta.id}
-								className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-slate-100 overflow-hidden relative"
-							>
-								{/* Decoración Top */}
-								<div className={`absolute top-0 left-0 right-0 h-1 ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+				{!loading && actasFiltradas.length > 0 && (
+					<>
+						{/* Contador de Resultados */}
+						<div className="mb-4 flex items-center justify-between">
+							<p className="text-sm text-slate-600">
+								{searchTerm ? (
+									<>
+										Mostrando <span className="font-bold text-blue-600">{actasFiltradas.length}</span> de <span className="font-semibold">{actas.length}</span> actas
+									</>
+								) : (
+									<>
+										Total: <span className="font-bold text-blue-600">{actas.length}</span> actas
+									</>
+								)}
+							</p>
+							{searchTerm && (
+								<button
+									onClick={clearSearch}
+									className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1 transition-colors"
+								>
+									<X className="w-4 h-4" />
+									Limpiar filtro
+								</button>
+							)}
+						</div>
 
-								{/* Header Card */}
-								<div className="p-6 pb-4">
-									<div className="flex items-start justify-between mb-4">
-										<div>
-											<div className="flex items-center gap-3 mb-2">
-												<span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 ${acta.estado === 'devuelto'
-													? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
-													: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
-													}`}>
-													<span className={`w-1.5 h-1.5 rounded-full ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
-													{acta.estado}
-												</span>
-												<span className="text-xs text-slate-400 font-mono">#{acta.id.toString().padStart(4, '0')}</span>
-											</div>
-											<h3 className="text-xl font-bold text-slate-800 leading-tight">
-												{acta.nombre_equipo}
-											</h3>
-										</div>
-										<div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-											<Package className="w-5 h-5 text-slate-400" />
-										</div>
-									</div>
+						<div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+							{actasFiltradas.map((acta) => (
+								<div
+									key={acta.id}
+									className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-slate-100 overflow-hidden relative"
+								>
+									{/* Decoración Top */}
+									<div className={`absolute top-0 left-0 right-0 h-1 ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
 
-									{/* Grid de Información */}
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mt-6">
-										{/* Columna Izquierda */}
-										<div className="space-y-4">
-											<div className="flex gap-3 items-start">
-												<div className="mt-0.5 bg-indigo-50 p-1.5 rounded-lg shrink-0">
-													<User className="w-4 h-4 text-indigo-500" />
-												</div>
-												<div>
-													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Funcionario</p>
-													<p className="text-sm font-medium text-slate-900">{acta.funcionario_nombre}</p>
-													<p className="text-xs text-slate-500 mt-0.5">CC: {acta.funcionario_cedula}</p>
-												</div>
-											</div>
-
-											<div className="flex gap-3 items-start">
-												<div className="mt-0.5 bg-violet-50 p-1.5 rounded-lg shrink-0">
-													<Laptop className="w-4 h-4 text-violet-500" />
-												</div>
-												<div>
-													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Detalles Equipo</p>
-													<p className="text-sm font-medium text-slate-900">{acta.equipo_marca} {acta.equipo_modelo}</p>
-													<p className="text-xs text-slate-500 mt-0.5 font-mono">SN: {acta.equipo_serial}</p>
-												</div>
-											</div>
-										</div>
-
-										{/* Columna Derecha */}
-										<div className="space-y-4">
-											<div className="flex gap-3 items-start">
-												<div className="mt-0.5 bg-amber-50 p-1.5 rounded-lg shrink-0">
-													<Calendar className="w-4 h-4 text-amber-500" />
-												</div>
-												<div>
-													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Fecha Entrega</p>
-													<p className="text-sm font-medium text-slate-900">{formatFecha(acta.fecha_entrega)}</p>
-												</div>
-											</div>
-
-											<div className="flex gap-3 items-start">
-												<div className="mt-0.5 bg-cyan-50 p-1.5 rounded-lg shrink-0">
-													<Hash className="w-4 h-4 text-cyan-500" />
-												</div>
-												<div>
-													<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Inventario</p>
-													<p className="text-sm font-medium text-slate-900 font-mono">{acta.inventario_equipo}</p>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									{/* Periféricos Modernos */}
-									{acta.perifericos && acta.perifericos.length > 0 && (
-										<div className="mt-6 pt-4 border-t border-slate-100">
-											<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-												Periféricos Incluidos
-												<span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">{acta.perifericos.length}</span>
-											</p>
-											<div className="flex flex-wrap gap-2">
-												{acta.perifericos.map((periferico, idx) => (
-													<span
-														key={idx}
-														className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 text-slate-600 border border-slate-100"
-													>
-														<span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-														{periferico.nombre}
-														<span className="text-slate-400 ml-0.5 text-[10px]">x{periferico.cantidad}</span>
+									{/* Header Card */}
+									<div className="p-6 pb-4">
+										<div className="flex items-start justify-between mb-4">
+											<div>
+												<div className="flex items-center gap-3 mb-2">
+													<span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 ${acta.estado === 'devuelto'
+														? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
+														: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+														}`}>
+														<span className={`w-1.5 h-1.5 rounded-full ${acta.estado === 'devuelto' ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
+														{acta.estado}
 													</span>
-												))}
+													<span className="text-xs text-slate-400 font-mono">#{acta.id.toString().padStart(4, '0')}</span>
+												</div>
+												<h3 className="text-xl font-bold text-slate-800 leading-tight">
+													{acta.nombre_equipo}
+												</h3>
+											</div>
+											<div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+												<Package className="w-5 h-5 text-slate-400" />
 											</div>
 										</div>
-									)}
 
-									{/* Sección de Firmas Refinada */}
-									<div className="mt-6">
-										<div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100">
-											<div className="grid grid-cols-2 gap-4">
-												{/* Firma Entrega */}
-												<div className="relative group/firma">
-													<div className="flex items-center justify-between mb-2">
-														<span className="text-xs font-semibold text-slate-400 uppercase">Firma Entrega</span>
-														{acta.firma_entrega && <CheckCircle className="w-3 h-3 text-emerald-500" />}
+										{/* Grid de Información */}
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mt-6">
+											{/* Columna Izquierda */}
+											<div className="space-y-4">
+												<div className="flex gap-3 items-start">
+													<div className="mt-0.5 bg-indigo-50 p-1.5 rounded-lg shrink-0">
+														<User className="w-4 h-4 text-indigo-500" />
 													</div>
-
-													{editandoFirma.id === acta.id && editandoFirma.tipo === "entrega" ? (
-														<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
-															<FirmaInput
-																value={acta.firma_entrega || ""}
-																onChange={(value) => handleFirmaChange(acta.id, "entrega", value)}
-																label=""
-																size="small"
-															/>
-															<div className="flex gap-2 mt-2">
-																<button
-																	onClick={finalizarEdicionFirma}
-																	className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
-																>
-																	Guardar
-																</button>
-																<button
-																	onClick={() => setEditandoFirma({ id: null, tipo: null })}
-																	className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
-																>
-																	Cancelar
-																</button>
-															</div>
-														</div>
-													) : (
-														<div
-															className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden group-hover/card:bg-white"
-															onClick={() => iniciarEdicionFirma(acta.id, "entrega")}
-														>
-															{acta.firma_entrega ? (
-																<img
-																	src={`${IMAGEN_URL}${acta.firma_entrega}`}
-																	alt="Firma entrega"
-																	className="h-full w-auto object-contain mix-blend-multiply opacity-90"
-																/>
-															) : (
-																<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
-																	<Plus className="w-5 h-5" />
-																	<span className="text-[10px] font-medium">Agregar</span>
-																</div>
-															)}
-														</div>
-													)}
+													<div>
+														<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Funcionario</p>
+														<p className="text-sm font-medium text-slate-900">{acta.funcionario_nombre}</p>
+														<p className="text-xs text-slate-500 mt-0.5">CC: {acta.funcionario_cedula}</p>
+													</div>
 												</div>
 
-												{/* Firma Recibe */}
-												<div className="relative group/firma">
-													<div className="flex items-center justify-between mb-2">
-														<span className="text-xs font-semibold text-slate-400 uppercase">Firma Recibe</span>
-														{acta.firma_recibe && <CheckCircle className="w-3 h-3 text-emerald-500" />}
+												<div className="flex gap-3 items-start">
+													<div className="mt-0.5 bg-violet-50 p-1.5 rounded-lg shrink-0">
+														<Laptop className="w-4 h-4 text-violet-500" />
+													</div>
+													<div>
+														<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Detalles Equipo</p>
+														<p className="text-sm font-medium text-slate-900">{acta.equipo_marca} {acta.equipo_modelo}</p>
+														<p className="text-xs text-slate-500 mt-0.5 font-mono">SN: {acta.equipo_serial}</p>
+													</div>
+												</div>
+											</div>
+
+											{/* Columna Derecha */}
+											<div className="space-y-4">
+												<div className="flex gap-3 items-start">
+													<div className="mt-0.5 bg-amber-50 p-1.5 rounded-lg shrink-0">
+														<Calendar className="w-4 h-4 text-amber-500" />
+													</div>
+													<div>
+														<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Fecha Entrega</p>
+														<p className="text-sm font-medium text-slate-900">{formatFecha(acta.fecha_entrega)}</p>
+													</div>
+												</div>
+
+												<div className="flex gap-3 items-start">
+													<div className="mt-0.5 bg-cyan-50 p-1.5 rounded-lg shrink-0">
+														<Hash className="w-4 h-4 text-cyan-500" />
+													</div>
+													<div>
+														<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Inventario</p>
+														<p className="text-sm font-medium text-slate-900 font-mono">{acta.inventario_equipo}</p>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										{/* Periféricos Modernos */}
+										{acta.perifericos && acta.perifericos.length > 0 && (
+											<div className="mt-6 pt-4 border-t border-slate-100">
+												<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+													Periféricos Incluidos
+													<span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">{acta.perifericos.length}</span>
+												</p>
+												<div className="flex flex-wrap gap-2">
+													{acta.perifericos.map((periferico, idx) => (
+														<span
+															key={idx}
+															className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 text-slate-600 border border-slate-100"
+														>
+															<span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+															{periferico.nombre}
+															<span className="text-slate-400 ml-0.5 text-[10px]">x{periferico.cantidad}</span>
+														</span>
+													))}
+												</div>
+											</div>
+										)}
+
+										{/* Sección de Firmas Refinada */}
+										<div className="mt-6">
+											<div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100">
+												<div className="grid grid-cols-2 gap-4">
+													{/* Firma Entrega */}
+													<div className="relative group/firma">
+														<div className="flex items-center justify-between mb-2">
+															<span className="text-xs font-semibold text-slate-400 uppercase">Firma Entrega</span>
+															{acta.firma_entrega && <CheckCircle className="w-3 h-3 text-emerald-500" />}
+														</div>
+
+														{editandoFirma.id === acta.id && editandoFirma.tipo === "entrega" ? (
+															<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
+																<FirmaInput
+																	value={acta.firma_entrega || ""}
+																	onChange={(value) => handleFirmaChange(acta.id, "entrega", value)}
+																	label=""
+																	size="small"
+																/>
+																<div className="flex gap-2 mt-2">
+																	<button
+																		onClick={finalizarEdicionFirma}
+																		className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
+																	>
+																		Guardar
+																	</button>
+																	<button
+																		onClick={() => setEditandoFirma({ id: null, tipo: null })}
+																		className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
+																	>
+																		Cancelar
+																	</button>
+																</div>
+															</div>
+														) : (
+															<div
+																className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden group-hover/card:bg-white"
+																onClick={() => iniciarEdicionFirma(acta.id, "entrega")}
+															>
+																{acta.firma_entrega ? (
+																	<img
+																		src={`${IMAGEN_URL}${acta.firma_entrega}`}
+																		alt="Firma entrega"
+																		className="h-full w-auto object-contain mix-blend-multiply opacity-90"
+																	/>
+																) : (
+																	<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
+																		<Plus className="w-5 h-5" />
+																		<span className="text-[10px] font-medium">Agregar</span>
+																	</div>
+																)}
+															</div>
+														)}
 													</div>
 
-													{editandoFirma.id === acta.id && editandoFirma.tipo === "recibe" ? (
-														<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
-															<FirmaInput
-																value={acta.firma_recibe || ""}
-																onChange={(value) => handleFirmaChange(acta.id, "recibe", value)}
-																label=""
-																size="small"
-															/>
-															<div className="flex gap-2 mt-2">
-																<button
-																	onClick={finalizarEdicionFirma}
-																	className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
-																>
-																	Guardar
-																</button>
-																<button
-																	onClick={() => setEditandoFirma({ id: null, tipo: null })}
-																	className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
-																>
-																	Cancelar
-																</button>
-															</div>
+													{/* Firma Recibe */}
+													<div className="relative group/firma">
+														<div className="flex items-center justify-between mb-2">
+															<span className="text-xs font-semibold text-slate-400 uppercase">Firma Recibe</span>
+															{acta.firma_recibe && <CheckCircle className="w-3 h-3 text-emerald-500" />}
 														</div>
-													) : (
-														<div
-															className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden"
-															onClick={() => iniciarEdicionFirma(acta.id, "recibe")}
-														>
-															{acta.firma_recibe ? (
-																<img
-																	src={`${IMAGEN_URL}${acta.firma_recibe}`}
-																	alt="Firma recibe"
-																	className="h-full w-auto object-contain mix-blend-multiply opacity-90"
+
+														{editandoFirma.id === acta.id && editandoFirma.tipo === "recibe" ? (
+															<div className="bg-white p-2 rounded-lg shadow-lg border border-slate-200 absolute bottom-0 left-0 right-0 z-10 animate-in fade-in zoom-in-95 duration-200">
+																<FirmaInput
+																	value={acta.firma_recibe || ""}
+																	onChange={(value) => handleFirmaChange(acta.id, "recibe", value)}
+																	label=""
+																	size="small"
 																/>
-															) : (
-																<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
-																	<Plus className="w-5 h-5" />
-																	<span className="text-[10px] font-medium">Agregar</span>
+																<div className="flex gap-2 mt-2">
+																	<button
+																		onClick={finalizarEdicionFirma}
+																		className="flex-1 bg-slate-900 text-white py-1.5 rounded-md text-xs font-medium hover:bg-slate-800"
+																	>
+																		Guardar
+																	</button>
+																	<button
+																		onClick={() => setEditandoFirma({ id: null, tipo: null })}
+																		className="flex-1 bg-slate-100 text-slate-600 py-1.5 rounded-md text-xs font-medium hover:bg-slate-200"
+																	>
+																		Cancelar
+																	</button>
 																</div>
-															)}
-														</div>
-													)}
+															</div>
+														) : (
+															<div
+																className="bg-white rounded-lg border border-slate-200 h-16 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:shadow-sm transition-all relative overflow-hidden"
+																onClick={() => iniciarEdicionFirma(acta.id, "recibe")}
+															>
+																{acta.firma_recibe ? (
+																	<img
+																		src={`${IMAGEN_URL}${acta.firma_recibe}`}
+																		alt="Firma recibe"
+																		className="h-full w-auto object-contain mix-blend-multiply opacity-90"
+																	/>
+																) : (
+																	<div className="flex flex-col items-center gap-1 text-slate-300 group-hover/firma:text-blue-400 transition-colors">
+																		<Plus className="w-5 h-5" />
+																		<span className="text-[10px] font-medium">Agregar</span>
+																	</div>
+																)}
+															</div>
+														)}
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
 
-								{/* Footer de Acciones Premium */}
-								<div className="bg-slate-50/50 p-4 border-t border-slate-100 flex flex-wrap gap-3 items-center justify-between">
-									<div className="flex gap-2">
-										<button
-											onClick={() => verDetalles(acta)}
-											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
-											title="Ver detalles"
-										>
-											<Eye className="w-4 h-4" />
-										</button>
-										<button
-											onClick={() => descargarActa(acta)}
-											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
-											title="Descargar PDF"
-										>
-											<Download className="w-4 h-4" />
-										</button>
-										<button
-											onClick={() => imprimirActa(acta)}
-											className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
-											title="Imprimir"
-										>
-											<Printer className="w-4 h-4" />
-										</button>
+									{/* Footer de Acciones Premium */}
+									<div className="bg-slate-50/50 p-4 border-t border-slate-100 flex flex-wrap gap-3 items-center justify-between">
+										<div className="flex gap-2">
+											<button
+												onClick={() => verDetalles(acta)}
+												className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
+												title="Ver detalles"
+											>
+												<Eye className="w-4 h-4" />
+											</button>
+											<button
+												onClick={() => descargarActa(acta)}
+												className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
+												title="Descargar PDF"
+											>
+												<Download className="w-4 h-4" />
+											</button>
+											<button
+												onClick={() => imprimirActa(acta)}
+												className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
+												title="Imprimir"
+											>
+												<Printer className="w-4 h-4" />
+											</button>
+										</div>
+										{acta.estado === 'entregado' && (
+											<button
+												onClick={() => navigate(RUTAS.USER.EQUIPOS.DEVOLVER_EQUIPO, { state: { acta } })}
+												className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
+											>
+												<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
+												<span>Devolver Equipo</span>
+											</button>
+										)}
 									</div>
-									{acta.estado === 'entregado' && (
-										<button
-											onClick={() => navigate(RUTAS.USER.EQUIPOS.DEVOLVER_EQUIPO, { state: { acta } })}
-											className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
-										>
-											<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
-											<span>Devolver Equipo</span>
-										</button>
-									)}
 								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					</>
 				)}
 			</div>
 		</div>
