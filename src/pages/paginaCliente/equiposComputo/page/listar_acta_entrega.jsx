@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { RUTAS } from "../../../../const/routers/routers";
-import { listarActaEntrega, exportActaEntrega, actualizar_firmas } from "../../../../services/pc_equipos_services";
+import { listarActaEntrega, exportActaEntrega, exportarActaDevolucion, actualizar_firmas } from "../../../../services/pc_equipos_services";
 import {
 	Loader2,
 	User,
@@ -124,8 +124,41 @@ const VistaActasEntrega = () => {
 
 
 
-	const descargarActa = (acta) => {
-		exportActaEntrega(acta.id);
+	const descargarActa = async (acta) => {
+		// Mostrar loading
+		Swal.fire({
+			title: 'Descargando...',
+			text: acta.estado === 'devuelto' ? 'Generando acta de devolución' : 'Generando acta de entrega',
+			allowOutsideClick: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+
+		try {
+			if (acta.estado === 'devuelto') {
+				await exportarActaDevolucion(acta.id);
+			} else {
+				await exportActaEntrega(acta.id);
+			}
+
+			// Éxito
+			Swal.fire({
+				icon: 'success',
+				title: '¡Descarga exitosa!',
+				text: 'El archivo se ha descargado correctamente',
+				timer: 2000,
+				showConfirmButton: false
+			});
+		} catch (error) {
+			// Error
+			Swal.fire({
+				icon: 'error',
+				title: 'Error al descargar',
+				text: 'Ocurrió un error al generar el archivo',
+				confirmButtonColor: '#ef4444'
+			});
+		}
 	};
 
 
@@ -516,12 +549,23 @@ const VistaActasEntrega = () => {
 										{acta.estado === 'entregado' && (
 											<button
 												onClick={() => navigate(RUTAS.USER.EQUIPOS.DEVOLVER_EQUIPO, { state: { acta } })}
-												className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn"
+												className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn cursor-pointer"
 											>
 												<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
 												<span>Devolver Equipo</span>
 											</button>
 										)}
+
+										{acta.estado === 'devuelto' && (
+											<button
+												onClick={() => navigate(RUTAS.USER.EQUIPOS.CREAR_ACTA_ENTREGA, { state: { acta } })}
+												className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg shadow-green-500/20 hover:shadow-green-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-medium text-sm group/btn cursor-pointer"
+											>
+												<RotateCcw className="w-4 h-4 group-hover/btn:-rotate-180 transition-transform duration-500" />
+												<span>Reasignar Equipo</span>
+											</button>
+										)}
+
 									</div>
 								</div>
 							))}

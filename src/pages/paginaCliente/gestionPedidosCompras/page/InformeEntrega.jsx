@@ -93,7 +93,7 @@ export function InformeEntrega() {
 			Swal.fire({
 				icon: "error",
 				title: "Oops...",
-				text: "Ocurrió un error al exportar el informe 😢",
+				text: "Ocurrió un error al exportar el informe ",
 			});
 		} finally {
 			setExporting(false);

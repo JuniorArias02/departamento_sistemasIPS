@@ -14,6 +14,7 @@ const BuscarResponsable = ({
 	name = "responsable_id",
 	value,
 	onChange,
+	defaultName = "", // Nueva prop para nombre inicial
 	label = "Responsable",
 	required = false,
 	reset = false,
@@ -79,13 +80,25 @@ const BuscarResponsable = ({
 		const precargar = async () => {
 			if (!value || selectedPerson?.id === value) return;
 
+			// Si tenemos un nombre por defecto y coincide con el estado inicial, lo usamos
+			// Esto evita llamar a buscarPersonalId si el usuario ya nos dio el nombre
+			if (defaultName && !selectedPerson && !query) {
+				setSelectedPerson({ id: value, nombre: defaultName, cedula: '' });
+				setQuery(defaultName);
+				setManualSelection(true);
+				return;
+			}
+
 			try {
-				const persona = await buscarPersonalId(value);
-				if (persona && !cancelado) {
+				const response = await buscarPersonalId(value);
+				// Manejo robusto de respuesta API (objeto directo o { data: ... })
+				const persona = response.data || response;
+
+				if (persona && (persona.id || persona.cedula) && !cancelado) {
 					setSelectedPerson(persona);
 					setQuery(`${persona.nombre} (${persona.cedula})`);
 					setResultados([]);
-					setIsOpen(false);        // 👈 evita que se abra
+					setIsOpen(false);
 					setManualSelection(true);
 				}
 			} catch (e) {
@@ -95,7 +108,7 @@ const BuscarResponsable = ({
 
 		precargar();
 		return () => (cancelado = true);
-	}, [value]);
+	}, [value, defaultName]);
 
 	const handleSelect = (persona) => {
 		onChange({ target: { name, value: persona.id } });

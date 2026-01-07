@@ -65,8 +65,11 @@ const FormularioEquipo = () => {
 		parlantes: "",
 		drive: "",
 		monitor: "",
+		monitor_id: "",
 		teclado: "",
+		teclado_id: "",
 		mouse: "",
+		mouse_id: "",
 		internet: "",
 		velocidad_red: "",
 		capacidad_disco: "",
@@ -94,7 +97,7 @@ const FormularioEquipo = () => {
 				numero_inventario: equipoComputoEdit.numero_inventario || "",
 				sede_id: equipoComputoEdit.sede_id || "",
 				area_id: equipoComputoEdit.area_id || "",
-				responsable_id: equipoComputoEdit.responsable_id || "",
+				responsable_id: equipoComputoEdit.responsable_nombre || "",
 				estado: equipoComputoEdit.estado || "",
 				fecha_entrega: equipoComputoEdit.fecha_entrega || "",
 				descripcion_general: equipoComputoEdit.descripcion_general || "",
@@ -113,8 +116,11 @@ const FormularioEquipo = () => {
 				parlantes: equipoComputoEdit.parlantes || "",
 				drive: equipoComputoEdit.drive || "",
 				monitor: equipoComputoEdit.monitor || "",
+				monitor_id: equipoComputoEdit.monitor_codigo || "",
 				teclado: equipoComputoEdit.teclado || "",
+				teclado_id: equipoComputoEdit.teclado_codigo || "",
 				mouse: equipoComputoEdit.mouse || "",
+				mouse_id: equipoComputoEdit.mouse_codigo || "",
 				internet: equipoComputoEdit.internet || "",
 				velocidad_red: equipoComputoEdit.velocidad_red || "",
 				capacidad_disco: equipoComputoEdit.capacidad_disco || "",
@@ -345,6 +351,7 @@ const FormularioEquipo = () => {
 						sedes={sedes}
 						areas={areas}
 						personal={personal}
+						equipoComputoEdit={equipoComputoEdit}
 					/>
 				)}
 

@@ -16,7 +16,7 @@ import {
 	ShoppingBag
 } from "lucide-react";
 import BuscarResponsable from "../../../../componentsUnive/BuscarResponsable";
-export default function TabGeneral({ form, handleChange, sedes, areas, personal }) {
+export default function TabGeneral({ form, handleChange, sedes, areas, personal, equipoComputoEdit }) {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div className="space-y-4">
@@ -139,7 +139,7 @@ export default function TabGeneral({ form, handleChange, sedes, areas, personal 
 					</label>
 					<div className="relative">
 						<select
-							name="sede_id"
+							name="sede_id" 
 							value={form.sede_id}
 							onChange={handleChange}
 							className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
@@ -179,10 +179,9 @@ export default function TabGeneral({ form, handleChange, sedes, areas, personal 
 				<div>
 					<div>
 						<BuscarResponsable
-							name="responsable_id"
 							value={form.responsable_id}
+							defaultName={equipoComputoEdit?.responsable_nombre}
 							onChange={handleChange}
-							label="Responsable"
 						/>
 					</div>
 				</div>

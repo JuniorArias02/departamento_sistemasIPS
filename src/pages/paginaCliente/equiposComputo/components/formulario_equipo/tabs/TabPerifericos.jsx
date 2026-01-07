@@ -8,66 +8,52 @@ import {
 	Gauge,
 	Package2
 } from 'lucide-react';
+import { InputPerifericos } from "../InputPerifericos";
 export default function TabPerifericos({ form, handleChange }) {
+
+	const handlePerifericoSelect = (tipo, item) => {
+		handleChange({
+			target: {
+				name: tipo,
+				value: item ? item.id : ''
+			}
+		});
+	};
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 			{/* Columna 1 */}
 			<div className="space-y-4">
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<Monitor className="mr-2 h-4 w-4" /> Monitor
-					</label>
-					<select
-						name="monitor"
-						value={form.monitor}
-						onChange={handleChange}
-						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					>
-						<option value="">Seleccione...</option>
-						<option value="si">Sí</option>
-						<option value="no">No</option>
-					</select>
+					<InputPerifericos
+						label="Monitor"
+						tipo="monitor_id"
+						id={form.monitor_id}
+						onSelect={handlePerifericoSelect}
+					/>
 				</div>
 
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<Keyboard className="mr-2 h-4 w-4" /> Teclado
-					</label>
-					<select
-						name="teclado"
-						value={form.teclado}
-						onChange={handleChange}
-						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					>
-						<option value="">Seleccione...</option>
-						<option value="si">Sí</option>
-						<option value="no">No</option>
-					</select>
+					<InputPerifericos
+						label="Teclado"
+						tipo="teclado_id"
+						id={form.teclado_id}
+						onSelect={handlePerifericoSelect}
+					/>
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<Mouse className="mr-2 h-4 w-4" /> Mouse
-					</label>
-					<select
-						name="mouse"
-						value={form.mouse}
-						onChange={handleChange}
-						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-					>
-						<option value="">Seleccione...</option>
-						<option value="si">Sí</option>
-						<option value="no">No</option>
-					</select>
+					<InputPerifericos
+						label="Mouse"
+						tipo="mouse_id"
+						id={form.mouse_id}
+						onSelect={handlePerifericoSelect}
+					/>
 				</div>
 
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-						<AudioLines className="mr-2 h-4 w-4" /> Parlantes
-					</label>
 					<select
 						name="parlantes"
 						value={form.parlantes}
@@ -75,11 +61,10 @@ export default function TabPerifericos({ form, handleChange }) {
 						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
 					>
 						<option value="">Seleccione...</option>
-						<option value="si">Sí</option>
-						<option value="no">No</option>
+						<option value="Si">Sí</option>
+						<option value="No">No</option>
 					</select>
 				</div>
-
 			</div>
 
 			{/* Columna 2 */}

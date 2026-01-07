@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREAR_EQUIPO,ACTUALIZAR_FIRMAS, EXPORTAR_ACTA_ENTREGA_EQUIPOS, OBTENER_EQUIPOS, LISTAR_ACTAS_ENTREGA, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS, BUSCAR_EQUIPO, SUBIR_IMAGEN, BUSCAR_EQUIPOS } from "../const/endpoint/pc_equipo_endpoint";
+import { CREAR_EQUIPO,ACTUALIZAR_FIRMAS,BUSCAR_PERIFERICO_CODIGO,  EXPORTAR_ACTA_ENTREGA_EQUIPOS, EXPORTAR_ACTA_DEVOLUCION_EQUIPOS, OBTENER_EQUIPOS, LISTAR_ACTAS_ENTREGA, OBTENER_TOTAL_EQUIPOS, EDITAR_EQUIPOS, BUSCAR_EQUIPO, SUBIR_IMAGEN, BUSCAR_EQUIPOS } from "../const/endpoint/pc_equipo_endpoint";
 
 
 export const crearEquipo = async (datos) => {
@@ -9,6 +9,18 @@ export const crearEquipo = async (datos) => {
 	} catch (error) {
 		console.error('Error al crear equipo', error);
 		return [];
+	}
+};
+
+export const buscarPerifericoCodigo = async (codigo) => {
+	try {
+		const response = await axios.get(
+			`${BUSCAR_PERIFERICO_CODIGO}?codigo=${encodeURIComponent(codigo)}`
+		);
+		return response.data;
+	} catch (error) {
+		console.error('Error al buscar periférico por código', error);
+		return { status: false, data: null };
 	}
 };
 
@@ -85,6 +97,23 @@ export const exportActaEntrega = async (entregaId) => {
 		const link = document.createElement('a');
 		link.href = url;
 		link.download = `acta_entrega_${entregaId}.xlsx`;
+		link.click();
+	} catch (error) {
+		console.error('Error al descargar acta', error);
+	}
+};
+
+export const exportarActaDevolucion = async (entregaId) => {
+	try {
+		const response = await axios.get(
+			`${EXPORTAR_ACTA_DEVOLUCION_EQUIPOS}?id_entrega=${entregaId}`,
+			{ responseType: 'blob' }
+		);
+
+		const url = window.URL.createObjectURL(new Blob([response.data]));
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = `acta_devolucion_${entregaId}.xlsx`;
 		link.click();
 	} catch (error) {
 		console.error('Error al descargar acta', error);

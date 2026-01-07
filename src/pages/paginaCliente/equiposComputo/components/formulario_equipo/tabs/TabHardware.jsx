@@ -12,6 +12,8 @@ import {
 
 
 } from "lucide-react";
+
+
 export default function TabHardware({ form, handleChange }) {
 
 	return (

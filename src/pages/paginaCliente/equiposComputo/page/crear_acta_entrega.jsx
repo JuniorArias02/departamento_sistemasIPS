@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { crearActaEntrega } from "../../../../services/pc_entregas_services";
 import { useApp } from "../../../../store/AppContext";
 import { FirmaInput } from "../../../appFirma/appFirmas";
@@ -10,13 +11,18 @@ import BuscarPerifericos from "../../componentsUnive/BuscarPerifericos";
 import Swal from 'sweetalert2';
 import {
   ClipboardList, Search, User, Calendar, Plus, Trash2, Save,
-  FileText, Edit3, Cable, List, Loader2, Info
+  FileText, Edit3, Cable, List, Loader2, Info, RotateCcw
 } from 'lucide-react';
 import BuscarResponsable from "../../componentsUnive/BuscarResponsable";
 
 
 const VistaCrearActaEntrega = () => {
   const { usuario } = useApp();
+  const location = useLocation();
+
+  // Detectar si estamos en modo reasignación
+  const actaReasignar = location.state?.acta;
+  const esReasignacion = !!actaReasignar;
 
   const [perifericoBusqueda, setPerifericoBusqueda] = useState("");
   const [perifericoSeleccionado, setPerifericoSeleccionado] = useState(null);
@@ -60,6 +66,40 @@ const VistaCrearActaEntrega = () => {
   });
 
   const [perifericos, setPerifericos] = useState([]);
+
+  // useEffect para cargar datos cuando es reasignación
+  useEffect(() => {
+    if (esReasignacion && actaReasignar) {
+      // Pre-cargar el equipo
+      setForm(prev => ({
+        ...prev,
+        equipo_id: actaReasignar.equipo_id || "",
+        // Pre-cargar periféricos si existen
+        perifericos: actaReasignar.perifericos?.map(p => ({
+          inventario_id: p.inventario_id || p.id,
+          nombre: p.nombre,
+          serial: p.serial,
+          marca: p.marca,
+          modelo: p.modelo,
+          cantidad: p.cantidad || 1,
+          observaciones: p.observaciones || ""
+        })) || []
+      }));
+
+      // Mostrar mensaje informativo
+      Swal.fire({
+        icon: 'info',
+        title: 'Modo Reasignación',
+        html: `
+          <p>Estás reasignando el equipo:</p>
+          <p class="font-bold text-blue-600">${actaReasignar.nombre_equipo || 'Equipo'}</p>
+          <p class="text-sm text-gray-600 mt-2">El equipo y periféricos ya están seleccionados. Solo debes elegir el nuevo funcionario y firmar.</p>
+        `,
+        confirmButtonColor: '#3b82f6',
+        timer: 4000
+      });
+    }
+  }, [esReasignacion, actaReasignar]);
 
 
   const agregarPeriferico = (item) => {
@@ -184,16 +224,23 @@ const VistaCrearActaEntrega = () => {
   };
   return (
     <div className="max-w-4xl mx-auto p-6 mt-5 bg-white rounded-2xl shadow-xl border border-gray-100">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl mb-8 border border-blue-100">
+      <div className={`bg-gradient-to-r ${esReasignacion ? 'from-green-50 to-emerald-50 border-green-100' : 'from-blue-50 to-indigo-50 border-blue-100'} p-5 rounded-xl mb-8 border`}>
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <ClipboardList className="text-blue-600" size={28} />
+          <div className={`${esReasignacion ? 'bg-green-100' : 'bg-blue-100'} p-2 rounded-lg`}>
+            {esReasignacion ? (
+              <RotateCcw className={`${esReasignacion ? 'text-green-600' : 'text-blue-600'}`} size={28} />
+            ) : (
+              <ClipboardList className="text-blue-600" size={28} />
+            )}
           </div>
-          Crear Acta de Entrega
+          {esReasignacion ? 'Reasignar Equipo' : 'Crear Acta de Entrega'}
         </h1>
         <p className="text-gray-600 flex items-center gap-2">
-          <Info className="h-4 w-4 text-blue-400" />
-          Complete todos los campos para generar el acta de entrega
+          <Info className={`h-4 w-4 ${esReasignacion ? 'text-green-400' : 'text-blue-400'}`} />
+          {esReasignacion
+            ? 'Selecciona el nuevo funcionario y completa las firmas para reasignar el equipo'
+            : 'Complete todos los campos para generar el acta de entrega'
+          }
         </p>
       </div>
 
@@ -210,12 +257,33 @@ const VistaCrearActaEntrega = () => {
             <div>
               <div className="relative">
                 <div className="mb-3">
-                  <BuscarEquipo
-                    name="equipo_id"
-                    value={form.equipo_id}
-                    onChange={handleChange}
-                    label="Equipo"
-                  />
+                  {esReasignacion ? (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Equipo (Pre-seleccionado)
+                      </label>
+                      <div className="border border-gray-300 bg-gray-50 p-3 rounded-xl">
+                        <p className="font-medium text-gray-800">{actaReasignar.nombre_equipo}</p>
+                        <p className="text-sm text-gray-600">
+                          {actaReasignar.equipo_marca} {actaReasignar.equipo_modelo}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          SN: {actaReasignar.equipo_serial} • Inv: {actaReasignar.inventario_equipo}
+                        </p>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <Info size={12} />
+                        El equipo no se puede cambiar en modo reasignación
+                      </p>
+                    </div>
+                  ) : (
+                    <BuscarEquipo
+                      name="equipo_id"
+                      value={form.equipo_id}
+                      onChange={handleChange}
+                      label="Equipo"
+                    />
+                  )}
                 </div>
                 <BuscarResponsable
                   name="funcionario_id"
@@ -278,7 +346,16 @@ const VistaCrearActaEntrega = () => {
             Gestión de Periféricos
           </h2>
 
-          <BuscarPerifericos onSelect={agregarPeriferico} />
+          {!esReasignacion && <BuscarPerifericos onSelect={agregarPeriferico} />}
+
+          {esReasignacion && form.perifericos.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-4">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <Info size={16} />
+                Los periféricos del acta anterior se han cargado automáticamente. Puedes eliminarlos si es necesario.
+              </p>
+            </div>
+          )}
 
           {form.perifericos.length > 0 && (
             <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl mt-4">
@@ -336,8 +413,17 @@ const VistaCrearActaEntrega = () => {
               </>
             ) : (
               <>
-                <Save size={18} />
-                Guardar Acta de Entrega
+                {esReasignacion ? (
+                  <>
+                    <RotateCcw size={18} />
+                    Reasignar Equipo
+                  </>
+                ) : (
+                  <>
+                    <Save size={18} />
+                    Guardar Acta de Entrega
+                  </>
+                )}
               </>
             )}
           </button>
