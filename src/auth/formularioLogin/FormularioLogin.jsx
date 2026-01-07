@@ -19,7 +19,7 @@ export default function FormularioLogin() {
   const [mostrarRecuperacion, setMostrarRecuperacion] = useState(false);
   const [bloqueadoHasta, setBloqueadoHasta] = useState(null);
   const [tiempoRestante, setTiempoRestante] = useState(0);
-  const [mostrarIntro, setMostrarIntro] = useState(true);
+  const [mostrarIntro, setMostrarIntro] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
