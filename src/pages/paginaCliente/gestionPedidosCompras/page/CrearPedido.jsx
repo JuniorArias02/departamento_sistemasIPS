@@ -45,6 +45,7 @@ export default function CrearPedido() {
 		elaborado_por: usuario.id,
 		elaborado_por_firma: "",
 		creador_por: usuario.id,
+		usuario_id: usuario.id,
 	});
 
 	const buscarYAsignarProducto = async (index) => {

@@ -54,6 +54,7 @@ const VistaVerEquipos = () => {
 		const fetchEquipos = async () => {
 			try {
 				const response = await obtenerEquiposComputo();
+				console.log(response);
 				if (response.status) {
 					setEquipos(response.data);
 				} else {

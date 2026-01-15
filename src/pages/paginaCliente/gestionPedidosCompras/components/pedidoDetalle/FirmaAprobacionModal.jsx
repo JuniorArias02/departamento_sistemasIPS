@@ -6,7 +6,7 @@ import {
   MessageCircle
 } from "lucide-react";
 import { FirmaInput } from "../../../../appFirma/appFirmas";
-import AgregarFirmaModal from "../crearPedido/AgregarFirmaModal";
+
 
 export const FirmaAprobacionModal = ({
   firmaAprobacion,
@@ -17,7 +17,7 @@ export const FirmaAprobacionModal = ({
   setShowFirmaAprobacionForm,
   handleAprobarPedido,
   manejarConfirmacion,
-  onObservacionChange 
+  onObservacionChange
 }) => {
   const [motivoAprobacion, setMotivoAprobacion] = useState("");
 
@@ -95,16 +95,11 @@ export const FirmaAprobacionModal = ({
           <div className="mb-6 flex justify-center">
             <button
               type="button"
-              onClick={() => setModalOpen(true)}
+              onClick={manejarConfirmacion}
               className="bg-gradient-to-r from-indigo-500 to-violet-600 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
             >
               Usar firma guardada
             </button>
-            <AgregarFirmaModal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              onConfirm={manejarConfirmacion}
-            />
           </div>
 
           {/* Botones de acción */}
@@ -123,9 +118,8 @@ export const FirmaAprobacionModal = ({
             <button
               onClick={handleConfirmarAprobacion}
               disabled={!firmaAprobacion || isSubmitting}
-              className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition-all ${
-                !firmaAprobacion ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+              className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition-all ${!firmaAprobacion ? "opacity-70 cursor-not-allowed" : ""
+                }`}
             >
               {isSubmitting ? (
                 <>

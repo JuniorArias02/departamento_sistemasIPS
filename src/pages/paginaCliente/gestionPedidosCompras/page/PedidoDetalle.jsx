@@ -60,10 +60,9 @@ export default function PedidoDetalle() {
   const [pdfFirmadoUrl, setPdfFirmadoUrl] = useState(null);
 
 
-  const manejarConfirmacion = async (contrasena) => {
+  const manejarConfirmacion = async () => {
     const res = await agregarFirmaPorClave({
       usuario_id: usuario.id,
-      contrasena,
     });
 
     if (res.status && res.firma) {
@@ -72,7 +71,6 @@ export default function PedidoDetalle() {
         : `data:image/png;base64,${res.firma}`;
 
       setFirmaAprobacion(firmaBase64);
-      setModalOpen(false);
     } else {
       await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
     }
