@@ -123,6 +123,13 @@ export default function FormularioInventario() {
         descripcion_accesorio: inventarioEdit.descripcion_accesorio || "",
       }));
     }
+
+
+    if (inventarioEdit?.sede_id) {
+      buscarDependenciaSede(inventarioEdit.sede_id).then((res) => {
+        setDependencias(res.data || []);
+      });
+    }
   }, [inventarioEdit]);
 
   useEffect(() => {

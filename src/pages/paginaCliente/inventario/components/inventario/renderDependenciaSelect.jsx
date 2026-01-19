@@ -30,4 +30,4 @@ const renderDependenciaSelect = ({ formData, handleChange, dependencias }) => (
 	</motion.div>
 );
 
-export default renderDependenciaSelect;
+export default renderDependenciaSelect; 
