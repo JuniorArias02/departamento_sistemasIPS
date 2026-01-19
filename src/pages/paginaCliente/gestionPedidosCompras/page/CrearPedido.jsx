@@ -139,7 +139,7 @@ export default function CrearPedido() {
 				throw new Error("Debes agregar tu firma");
 			}
 
-			
+
 			const ahora = new Date();
 			const hora = ahora.getHours();
 			const minutos = ahora.getMinutes();
@@ -222,10 +222,10 @@ export default function CrearPedido() {
 
 
 
-	const manejarConfirmacion = async (contrasena) => {
+	const manejarConfirmacion = async () => {
 		const res = await agregarFirmaPorClave({
 			usuario_id: usuario.id,
-			contrasena,
+			contrasena: "", // Sin contraseña
 		});
 
 		if (res.status && res.firma) {
@@ -236,7 +236,13 @@ export default function CrearPedido() {
 			// aquí la montas en el input del form
 			setForm((prev) => ({ ...prev, elaborado_por_firma: firmaBase64 }));
 
-			setModalOpen(false);
+			Swal.fire({
+				icon: "success",
+				title: "Firma cargada",
+				text: "Tu firma guardada se ha insertado correctamente",
+				timer: 2000,
+				showConfirmButton: false
+			});
 		} else {
 			await Swal.fire("Error", res.message || "No se pudo traer la firma", "error");
 		}
@@ -611,20 +617,16 @@ export default function CrearPedido() {
 
 						</div>
 
-						{/* Firma por contraseña */}
+						{/* Firma guardada - inserción directa */}
 						<button
 							type="button"
-							onClick={() => setModalOpen(true)}
+							onClick={manejarConfirmacion}
 							className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
 						>
 							Usar firma guardada
 						</button>
 
-						<AgregarFirmaModal
-							open={modalOpen}
-							onClose={() => setModalOpen(false)}
-							onConfirm={manejarConfirmacion}
-						/>
+
 					</div>
 				</div>
 
