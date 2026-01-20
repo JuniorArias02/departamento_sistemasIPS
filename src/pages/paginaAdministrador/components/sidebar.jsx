@@ -873,7 +873,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 								link.click();
 							}}
 							sidebarOpen={sidebarOpen}
-							delay={0.1}
+							delay={0.1}m
 						/>
 					</SidebarCollapsible>
 

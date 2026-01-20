@@ -93,7 +93,7 @@ export function InformActivosFijos() {
       text: "Informe general descargado correctamente",
     });
 
-    console.log("Descargando informe general...");
+    // console.log("Descargando informe general...");
   };
 
   return (

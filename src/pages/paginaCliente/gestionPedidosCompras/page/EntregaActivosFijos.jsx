@@ -187,10 +187,10 @@ export default function EntregaActivosFijos() {
     setIsLoading(true); // 🔒 BLOQUEA TODO
 
     try {
-      console.log("📦 Datos a enviar:", {
-        entrega_activos_id: form.entrega_activos_id,
-        items: form.items
-      });
+      // console.log("📦 Datos a enviar:", {
+      //   entrega_activos_id: form.entrega_activos_id,
+      //   items: form.items
+      // });
 
       const entrega = await guardarEntregaActivos({
         id: entregaEdit?.entrega_id || null,

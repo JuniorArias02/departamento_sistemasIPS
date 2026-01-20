@@ -4,13 +4,13 @@ import {
   Save, Loader2, Hash, Tag, Building2, User, Cpu, Settings,
   Barcode, MapPin, ChevronDown, ScrollText, FileText,
   CalendarCheck, DollarSign, Calendar, ShoppingCart,
-  Info, Paperclip, TrendingDown, Shield, PlusCircle
+  Info, Paperclip, TrendingDown, Shield, PlusCircle, X, Package
 } from "lucide-react";
 import { useApp } from "../../../store/AppContext";
 import { crearInventario, actualizarInventario, subirAdjunto } from "../../../services/inventario_services";
 import BackPage from "../components/BackPage";
 import { useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { listarSedes } from "../../../services/sedes_service";
 import { PERMISOS } from "../../../secure/permisos/permisos";
 import CentroCostoInput from "../inventario/components/centroCostoInput";
@@ -23,8 +23,9 @@ import renderInputField from "../inventario/components/inventario/renderInputFie
 import BuscarResponsable from "../componentsUnive/BuscarResponsable";
 import BuscarDependencia from "../componentsUnive/BuscarDependencia";
 import BuscarProductoServicio from "../componentsUnive/BuscarProductoServicio";
-import BuscarCodigoBarras from "../componentsUnive/BuscarCodigoBarras";
-// Configuración de campos del formulario
+import { RUTAS } from "../../../const/routers/routers";
+import { useNavigate } from "react-router-dom";
+
 
 
 const OPCIONES_SELECT = {
@@ -41,10 +42,12 @@ export default function FormularioInventario() {
   const { usuario, permisos } = useApp();
   const location = useLocation();
   const inventarioEdit = location.state?.inventario;
+  const navigate = useNavigate();
 
   const [sedes, setSedes] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [modalProductoOpen, setModalProductoOpen] = useState(false);
 
   const [formData, setFormData] = useState(obtenerEstadoInicial());
 
@@ -169,6 +172,8 @@ export default function FormularioInventario() {
       creado_por: usuario?.id || usuario?.nombre || "desconocido",
     };
 
+    console.log("Datos enviados al backend:", JSON.stringify(datosConUsuario, null, 2));
+
     let inventarioId = inventarioEdit?.id;
 
     try {
@@ -197,11 +202,18 @@ export default function FormularioInventario() {
       }
     } catch (err) {
       console.error(err);
+
+      const mensaje =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "No se pudo registrar el inventario";
+
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: err.message || "No se pudo registrar el inventario",
+        text: mensaje,
       });
+
     } finally {
       setLoading(false);
     }
@@ -238,349 +250,374 @@ export default function FormularioInventario() {
 
 
   return (
-    <motion.form
-      onSubmit={(e) => {
-        if (!puedeGuardar) {
-          e.preventDefault();
-          Swal.fire({
-            icon: 'warning',
-            title: 'Sin permisos',
-            text: 'No tienes permisos para guardar este activo.',
-            confirmButtonColor: '#6366F1'
-          });
-          return;
-        }
-        handleSubmit(e);
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="max-w-3xl mx-auto p-6 sm:p-8 bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] border border-gray-100 space-y-8"
-    >
-      {/* Encabezado */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 text-transparent">
-          {inventarioEdit ? "Editar Activo" : "Nuevo Activo inventario"}
-        </h2>
-        <p className="text-gray-500 mt-2">
-          {inventarioEdit ? "Actualiza los datos del activo" : "Registra un nuevo activo en el inventario"}
-        </p>
-      </div>
-
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-
-
-          {CAMPOS_FORMULARIO.informacionBasica.map(renderInputField)}
-
-          <BuscarProductoServicio
-            label="Nombre del Activo"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-          />
-
-          {CAMPOS_FORMULARIO.informacionBasica2.map(renderInputField)}
-
-          {renderSelectField({
-            name: "grupo",
-            label: "Grupo",
-            icon: <Tag size={18} className="text-gray-400" />,
-            options: OPCIONES_SELECT.grupo,
-            formData,
-            handleChange
-          })}
-
-          {renderSelectField({
-            name: "estado",
-            label: "Estado",
-            icon: <Settings size={18} className="text-gray-400" />,
-            options: OPCIONES_SELECT.estado,
-            formData,
-            handleChange
-          })}
-
-          {renderSelectField({
-            name: "tiene_accesorio",
-            label: "tiene accesorio",
-            icon: <ScrollText size={18} className="text-gray-400" />,
-            options: OPCIONES_SELECT.tieneAccesorio,
-            formData,
-            handleChange
-          })}
-
-
-
-          <CamposInputs
-            name="descripcion_accesorio"
-            label="descripcion Accesorios"
-            type="text"
-            icon={<ScrollText size={18} className="text-gray-400" />}
-            formData={formData}
-            handleChange={handleChange}
-          />
-
-          <BuscarResponsable
-            name="responsable_id"
-            value={formData.responsable_id}
-            onChange={handleChange}
-            label="Responsable"
-          />
-
-          <BuscarResponsable
-            name="coordinador_id"
-            value={formData.coordinador_id}
-            onChange={handleChange}
-            label="Coordinador"
-          />
-
-          <BuscarDependencia
-            name="proceso_id"
-            formSedeId={formData.sede_id}
-            value={formData.proceso_id}
-            onChange={handleChange}
-            labelSede="Seleccione una sede"
-            labelDependencia="Seleccione el proceso solicitante"
-            required
-            icon={
-              <div className="p-1.5 bg-indigo-100 rounded-md">
-                <User size={16} className="text-indigo-600" />
-              </div>
-            }
-          />
-
-          {/* Observaciones */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="md:col-span-2 space-y-1"
-          >
-            <label htmlFor="observaciones" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <FileText size={18} className="text-gray-400" />
-              <span>Observaciones</span>
-            </label>
-            <textarea
-              id="observaciones"
-              name="observaciones"
-              value={formData.observaciones || ''}
-              onChange={handleChange}
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="Ingrese observaciones relevantes"
-            />
-          </motion.div>
-
-        </div>
-
-        {/* Sección 2: Información financiera y depreciación */}
-        <div className="bg-gray-50 p-6 rounded-xl">
-          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
-            <DollarSign size={18} />
-            Información Financiera
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {CAMPOS_FORMULARIO.informacionFinanciera.map(renderInputField)}
-
-            {renderSelectField({
-              name: "vida_util",
-              label: "vida_util",
-              icon: <ScrollText size={18} className="text-gray-400" />,
-              options: OPCIONES_SELECT.vidaUtil,
-              formData,
-              handleChange
-            })}
-
-            {renderSelectField({
-              name: "vida_util_niff",
-              label: "vida_util_niff",
-              icon: <ScrollText size={18} className="text-gray-400" />,
-              options: OPCIONES_SELECT.vidaUtilNiff,
-              formData,
-              handleChange
-            })}
-
-            {renderDependenciaSelect({ formData, handleChange, dependencias })}
-
-            <CentroCostoInput
-              value={formData.centro_costo}
-              onChange={handleChange}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-1"
-            >
-              <label htmlFor="ubicacion" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                <MapPin size={18} className="text-gray-400" />
-                <span>Ubicación específica</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="ubicacion"
-                  name="ubicacion"
-                  value={formData.ubicacion || ''}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="Ingrese la ubicación"
-                />
-                <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </motion.div>
-
-            {/* Tipo de Bien */}
-            {renderSelectField({
-              name: "tipo_bien",
-              label: "Tipo de Bien",
-              icon: <ShoppingCart size={18} className="text-gray-400" />,
-              options: OPCIONES_SELECT.tipoBien,
-              formData,
-              handleChange
-            })}
-
-            {CAMPOS_FORMULARIO.informacionAdicional.map(renderInputField)}
-            {CAMPOS_FORMULARIO.depreciacion.map(renderInputField)}
-
-            {/* Tipo de Adquisición */}
-            {renderSelectField({
-              name: "tipo_adquisicion",
-              label: "Tipo de Adquisición",
-              icon: <ShoppingCart size={18} className="text-gray-400" />,
-              options: OPCIONES_SELECT.tipoAdquisicion,
-              formData,
-              handleChange
-            })}
-
-
-
-            {/* Fecha de calibrado */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-1"
-            >
-              <label htmlFor="calibrado" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                <CalendarCheck size={18} className="text-gray-400" />
-                <span>Fecha de Calibrado</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  id="calibrado"
-                  name="calibrado"
-                  value={formData.calibrado || ''}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                />
-                <CalendarCheck size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </motion.div>
-
-          </div>
-        </div>
-
-        {/* Sección 3: Información adicional */}
-        <div className="bg-gray-50 p-6 rounded-xl">
-          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
-            <Info size={18} />
-            Información Adicional
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Soporte/Documentación */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-1"
-            >
-              <label htmlFor="soporte" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                <Paperclip size={18} className="text-gray-400" />
-                <span>Soporte/Documentación</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="soporte"
-                  name="soporte"
-                  value={formData.soporte || ''}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="Referencia de soporte/documentación"
-                />
-                <Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </motion.div>
-
-            {/* Adjuntar soporte */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-1"
-            >
-              <label htmlFor="soporte_adjunto" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                <Paperclip size={18} className="text-gray-400" />
-                <span>Adjuntar soporte</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="file"
-                  id="soporte_adjunto"
-                  name="soporte_adjunto"
-                  onChange={(e) => setFormData({ ...formData, soporte_adjunto: e.target.files[0] })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                />
-                <Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-
-      {/* Botones de acción */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
+    <>
+      <motion.form
+        onSubmit={(e) => {
+          if (!puedeGuardar) {
+            e.preventDefault();
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sin permisos',
+              text: 'No tienes permisos para guardar este activo.',
+              confirmButtonColor: '#6366F1'
+            });
+            return;
+          }
+          handleSubmit(e);
+        }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="flex flex-col-reverse sm:flex-row justify-between gap-4 pt-4"
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="max-w-3xl mx-auto p-6 sm:p-8 bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] border border-gray-100 space-y-8"
       >
-        <BackPage
-          isEdit={!!inventarioEdit}
-          className="px-5 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors"
-        />
+        {/* Encabezado */}
+        <div className="space-y-4">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 text-transparent">
+              {inventarioEdit ? "Editar Activo" : "Nuevo Activo inventario"}
+            </h2>
+            <p className="text-gray-500 mt-2">
+              {inventarioEdit ? "Actualiza los datos del activo" : "Registra un nuevo activo en el inventario"}
+            </p>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading || !puedeGuardar}
-          className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-indigo-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <>
-              <Loader2 size={20} className="animate-spin" />
-              <span>Procesando...</span>
-            </>
-          ) : (
-            <>
-              {inventarioEdit ? (
-                <>
-                  <Save size={20} />
-                  <span>Actualizar Activo</span>
-                </>
-              ) : (
-                <>
-                  <PlusCircle size={20} />
-                  <span>Registrar Activo</span>
-                </>
-              )}
-            </>
+          {/* Botón crear producto/servicio */}
+          {!inventarioEdit && (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => navigate(RUTAS.USER.GESTION_COMPRAS.CREAR_PRODUCTO_SERVICIO)}
+                className="group relative px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center gap-2.5 font-medium"
+                title="Crear nuevo producto/servicio"
+              >
+                <div className="p-1 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+                  <Package size={18} />
+                </div>
+                <span>Crear Producto/Servicio</span>
+                <div className="absolute inset-0 rounded-xl bg-white/0 group-hover:bg-white/10 transition-colors"></div>
+              </button>
+            </div>
           )}
-        </button>
-      </motion.div>
-    </motion.form>
+        </div>
+
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+
+            {CAMPOS_FORMULARIO.informacionBasica.map(renderInputField)}
+
+            <BuscarProductoServicio
+              label="Nombre del Activo"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+            />
+
+            {CAMPOS_FORMULARIO.informacionBasica2.map(renderInputField)}
+
+            {renderSelectField({
+              name: "grupo",
+              label: "Grupo",
+              icon: <Tag size={18} className="text-gray-400" />,
+              options: OPCIONES_SELECT.grupo,
+              formData,
+              handleChange
+            })}
+
+            {renderSelectField({
+              name: "estado",
+              label: "Estado",
+              icon: <Settings size={18} className="text-gray-400" />,
+              options: OPCIONES_SELECT.estado,
+              formData,
+              handleChange
+            })}
+
+            {renderSelectField({
+              name: "tiene_accesorio",
+              label: "tiene accesorio",
+              icon: <ScrollText size={18} className="text-gray-400" />,
+              options: OPCIONES_SELECT.tieneAccesorio,
+              formData,
+              handleChange
+            })}
+
+
+
+            <CamposInputs
+              name="descripcion_accesorio"
+              label="descripcion Accesorios"
+              type="text"
+              icon={<ScrollText size={18} className="text-gray-400" />}
+              formData={formData}
+              handleChange={handleChange}
+            />
+
+            <BuscarResponsable
+              name="responsable_id"
+              value={formData.responsable_id}
+              onChange={handleChange}
+              label="Responsable"
+            />
+
+            <BuscarResponsable
+              name="coordinador_id"
+              value={formData.coordinador_id}
+              onChange={handleChange}
+              label="Coordinador"
+            />
+
+            <BuscarDependencia
+              name="proceso_id"
+              formSedeId={formData.sede_id}
+              value={formData.proceso_id}
+              onChange={handleChange}
+              labelSede="Seleccione una sede"
+              labelDependencia="Seleccione el proceso solicitante"
+              required
+              icon={
+                <div className="p-1.5 bg-indigo-100 rounded-md">
+                  <User size={16} className="text-indigo-600" />
+                </div>
+              }
+            />
+
+            {/* Observaciones */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="md:col-span-2 space-y-1"
+            >
+              <label htmlFor="observaciones" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <FileText size={18} className="text-gray-400" />
+                <span>Observaciones</span>
+              </label>
+              <textarea
+                id="observaciones"
+                name="observaciones"
+                value={formData.observaciones || ''}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                placeholder="Ingrese observaciones relevantes"
+              />
+            </motion.div>
+
+          </div>
+
+          {/* Sección 2: Información financiera y depreciación */}
+          <div className="bg-gray-50 p-6 rounded-xl">
+            <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
+              <DollarSign size={18} />
+              Información Financiera
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {CAMPOS_FORMULARIO.informacionFinanciera.map(renderInputField)}
+
+              {renderSelectField({
+                name: "vida_util",
+                label: "vida_util",
+                icon: <ScrollText size={18} className="text-gray-400" />,
+                options: OPCIONES_SELECT.vidaUtil,
+                formData,
+                handleChange
+              })}
+
+              {renderSelectField({
+                name: "vida_util_niff",
+                label: "vida_util_niff",
+                icon: <ScrollText size={18} className="text-gray-400" />,
+                options: OPCIONES_SELECT.vidaUtilNiff,
+                formData,
+                handleChange
+              })}
+
+              {renderDependenciaSelect({ formData, handleChange, dependencias })}
+
+              <CentroCostoInput
+                value={formData.centro_costo}
+                onChange={handleChange}
+              />
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-1"
+              >
+                <label htmlFor="ubicacion" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <MapPin size={18} className="text-gray-400" />
+                  <span>Ubicación específica</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="ubicacion"
+                    name="ubicacion"
+                    value={formData.ubicacion || ''}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="Ingrese la ubicación"
+                  />
+                  <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                </div>
+              </motion.div>
+
+              {/* Tipo de Bien */}
+              {renderSelectField({
+                name: "tipo_bien",
+                label: "Tipo de Bien",
+                icon: <ShoppingCart size={18} className="text-gray-400" />,
+                options: OPCIONES_SELECT.tipoBien,
+                formData,
+                handleChange
+              })}
+
+              {CAMPOS_FORMULARIO.informacionAdicional.map(renderInputField)}
+              {CAMPOS_FORMULARIO.depreciacion.map(renderInputField)}
+
+              {/* Tipo de Adquisición */}
+              {renderSelectField({
+                name: "tipo_adquisicion",
+                label: "Tipo de Adquisición",
+                icon: <ShoppingCart size={18} className="text-gray-400" />,
+                options: OPCIONES_SELECT.tipoAdquisicion,
+                formData,
+                handleChange
+              })}
+
+
+
+              {/* Fecha de calibrado */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-1"
+              >
+                <label htmlFor="calibrado" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <CalendarCheck size={18} className="text-gray-400" />
+                  <span>Fecha de Calibrado</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="calibrado"
+                    name="calibrado"
+                    value={formData.calibrado || ''}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  />
+                  <CalendarCheck size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+
+          {/* Sección 3: Información adicional */}
+          <div className="bg-gray-50 p-6 rounded-xl">
+            <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
+              <Info size={18} />
+              Información Adicional
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Soporte/Documentación */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="space-y-1"
+              >
+                <label htmlFor="soporte" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <Paperclip size={18} className="text-gray-400" />
+                  <span>Soporte/Documentación</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="soporte"
+                    name="soporte"
+                    value={formData.soporte || ''}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="Referencia de soporte/documentación"
+                  />
+                  <Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                </div>
+              </motion.div>
+
+              {/* Adjuntar soporte */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="space-y-1"
+              >
+                <label htmlFor="soporte_adjunto" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <Paperclip size={18} className="text-gray-400" />
+                  <span>Adjuntar soporte</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    id="soporte_adjunto"
+                    name="soporte_adjunto"
+                    onChange={(e) => setFormData({ ...formData, soporte_adjunto: e.target.files[0] })}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  />
+                  <Paperclip size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Botones de acción */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="flex flex-col-reverse sm:flex-row justify-between gap-4 pt-4"
+        >
+          <BackPage
+            isEdit={!!inventarioEdit}
+            className="px-5 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors"
+          />
+
+          <button
+            type="submit"
+            disabled={loading || !puedeGuardar}
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-indigo-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                <span>Procesando...</span>
+              </>
+            ) : (
+              <>
+                {inventarioEdit ? (
+                  <>
+                    <Save size={20} />
+                    <span>Actualizar Activo</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle size={20} />
+                    <span>Registrar Activo</span>
+                  </>
+                )}
+              </>
+            )}
+          </button>
+        </motion.div>
+
+      </motion.form>
+
+
+    </>
   );
 }

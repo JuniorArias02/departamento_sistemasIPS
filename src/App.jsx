@@ -52,7 +52,7 @@ import CrearDescuentoActivo from "./pages/paginaCliente/gestionPedidosCompras/pa
 import { InformeDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeDescuento";
 import { DetalleDescuento } from "./pages/paginaCliente/gestionPedidosCompras/page/DetalleDescuento";
 import { InformeConsolidadoPedidos } from "./pages/paginaCliente/gestionPedidosCompras/page/InformeConsolidadoPedidos";
-
+import {CrearProductoServicio} from "./pages/paginaCliente/gestionPedidosCompras/components/crearProducto/crearProductoServicio";
 
 
 // REPORTE
@@ -339,6 +339,17 @@ function App() {
             element={
               permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.CREAR_ENTREGA_SOLICITUD) ? (
                 <CrearEntregaPedido />
+              ) : (
+                <Navigate to={RUTAS.ERROR_404} replace />
+              )
+            }
+          />
+
+          <Route
+            path={RUTAS.USER.GESTION_COMPRAS.CREAR_PRODUCTO_SERVICIO}
+            element={
+              permisos.includes(PERMISOS.INVENTARIO.CREAR) ? (
+                <CrearProductoServicio />
               ) : (
                 <Navigate to={RUTAS.ERROR_404} replace />
               )

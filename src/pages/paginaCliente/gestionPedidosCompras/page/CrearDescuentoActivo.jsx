@@ -92,7 +92,7 @@ const CrearDescuentoActivo = () => {
 				personal_gestion_financiera: sanitizeNumber(formData.personal_gestion_financiera),
 				personal_talento_humano: sanitizeNumber(formData.personal_talento_humano),
 			};
-			console.log(payload)
+			// console.log(payload)
 			const res = await crear_descuento(payload);
 			if (!res?.id) {
 				Swal.fire("Error", "Error al crear la solicitud", "error");
