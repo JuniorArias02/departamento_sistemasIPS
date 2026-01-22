@@ -282,7 +282,7 @@ export default function PedidoDetalle() {
 
   const handleSaveCotizacion = (cotizacion) => {
     console.log("Cotización guardada:", cotizacion);
-    // aquí mandas el POST al backend
+    // aquí mandas el POST al backend 
   };
 
 

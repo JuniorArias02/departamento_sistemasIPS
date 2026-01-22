@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const renderInputField = ({ name, label, icon, type = "text", formData, handleChange }, index) => (
+const renderInputField = ({ name, label, icon, type = "text", formData, handleChange, autoComplete = "off" }, index) => (
   <motion.div
     key={name}
     initial={{ opacity: 0, y: 10 }}
@@ -24,6 +24,7 @@ const renderInputField = ({ name, label, icon, type = "text", formData, handleCh
         placeholder={`Ingrese ${label.toLowerCase()}`}
         step={type === "number" ? "0.01" : undefined}
         min={type === "number" ? "0" : undefined}
+        autoComplete={autoComplete}
       />
       <div className="absolute left-3 top-3.5">{icon}</div>
     </div>
