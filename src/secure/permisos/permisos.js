@@ -73,7 +73,7 @@ export const PERMISOS = {
 		EDITAR: "editar_equipo",
 		ELIMINAR: "eliminar_equipo",
 		EXPORTAR: "exportar_inventario_equipos",
-		VER_ACTA_MANTENIMIENTO:"ver_acta_mantenimiento",
+		VER_ACTA_MANTENIMIENTO: "ver_acta_mantenimiento",
 		DEVOLVER_EQUIPO: "devolver_equipo"
 	},
 
@@ -84,16 +84,17 @@ export const PERMISOS = {
 		VER_PROVEEDORE: 'ver_proveedores',
 		VER_SOLICITUDES_PEDIDOS: 'ver_solicitudes_pedidos',
 		VER_PEDIDOS_ENCARGADO: 'ver_pedidos_encargado',
-		VER_SOLICITUDES_DESCUENTO:'ver_solicitudes_descuento',
-		VER_ENTREGA_ACTIVOS_FIJOS:'ver_entrega_activos_fijos',
+		VER_SOLICITUDES_DESCUENTO: 'ver_solicitudes_descuento',
+		VER_ENTREGA_ACTIVOS_FIJOS: 'ver_entrega_activos_fijos',
 		LISTAR_PEDIDOS: 'listar_pedidos',
 		GESTIONAR_PEDIDO: 'gestionar_pedido',
 		VER_ENTREGA_SOLICITUD: 'ver_entrega_solicitud',
 		CREAR_ENTREGA_SOLICITUD: 'crear_entrega_solicitud',
 		CREAR_ENTREGA_ACTIVOS_FIJOS: 'crear_entrega_activos_fijos',
-		CREAR_DESCUENTO_FIJOS:'crear_descuento_fijos',
-		VER_CONSOLIDADO_PEDIDOS:'ver_consolidado_pedidos',
-		SUBIR_ORDEN_COMPRA:'subir_orden_compra',
+		CREAR_DESCUENTO_FIJOS: 'crear_descuento_fijos',
+		VER_CONSOLIDADO_PEDIDOS: 'ver_consolidado_pedidos',
+		SUBIR_ORDEN_COMPRA: 'subir_orden_compra',
+		ELIMINAR_ENTREGA_ACTIVOS_FIJOS: 'eliminar_entrega_activos_fijos',
 
 	},
 

@@ -20,3 +20,5 @@ export const OBTENER_FIRMAS = `${URL_PATH}controllers/cp_pedidos/obtenerFirma64.
 export const SUBIR_ADJUNTO = `${URL_PATH}controllers/cp_pedidos/agregarAdjunto.php`;
 
 export const DESCARGAR_ADJUNTO = `${URL_PATH}controllers/cp_pedidos/descargarAdjunto.php`;
+
+export const ACTUALIZAR_FIRMA_PEDIDO = `${URL_PATH}controllers/cp_pedidos/actualizar_firma_pedido.php`;

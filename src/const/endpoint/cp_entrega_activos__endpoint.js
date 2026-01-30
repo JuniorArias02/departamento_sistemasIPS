@@ -16,3 +16,5 @@ export const OBTENER_INVENTARIO_COORDINADOR = `${URL_PATH}controllers/cp_entrega
 
 
 export const GUARDAR_ITEMS_ENTREGA = `${URL_PATH}controllers/cp_entrega_activos_fijos_items/guardar_items_entrega.php`;
+
+export const ELIMINAR_ENTREGA_ACTIVOS = `${URL_PATH}controllers/cp_entrega_activos_fijos/eliminar_entrega_activos.php`;

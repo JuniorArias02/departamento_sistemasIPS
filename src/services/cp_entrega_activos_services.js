@@ -1,22 +1,24 @@
 import axios from "axios";
-import { DESCARGAR_ENTREGA_ACTIVOS, OBTENER_INVENTARIO_COORDINADOR, GUARDAR_ITEMS_ENTREGA, OBTENER_ENTREGA_ACTIVOS_ID, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
+import { DESCARGAR_ENTREGA_ACTIVOS, OBTENER_INVENTARIO_COORDINADOR, GUARDAR_ITEMS_ENTREGA, OBTENER_ENTREGA_ACTIVOS_ID, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS, ELIMINAR_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
 
-export const exportarInformeEntregaActivos = async (datos) => {
+export const exportarInformeEntregaActivos = async (datos, formato = "excel") => {
 	try {
 		const response = await axios.get(DESCARGAR_ENTREGA_ACTIVOS, {
-			params: datos, // 👈 aquí van tus datos, ej: { id: 6 }
+			params: { ...datos, formato }, // 👈 aquí van tus datos, ej: { id: 6, formato: 'excel' }
 			responseType: "blob",
 		});
 
+		const extension = formato === "pdf" ? "pdf" : "xlsx";
 		const url = window.URL.createObjectURL(new Blob([response.data]));
 		const link = document.createElement("a");
 		link.href = url;
-		link.setAttribute("download", "plantilla_entrega_activos_fijos.xlsx");
+		link.setAttribute("download", `plantilla_entrega_activos_fijos.${extension}`);
 		document.body.appendChild(link);
 		link.click();
 		link.remove();
 	} catch (error) {
 		console.error("Error al crear informe", error);
+		throw error;
 	}
 };
 
@@ -117,4 +119,13 @@ export const cargarItemsEntrega = async (entrega_activos_id) => {
 	}
 };
 
+export const eliminarEntregaActivos = async (entrega_id) => {
+	try {
+		const response = await axios.post(ELIMINAR_ENTREGA_ACTIVOS, { id: entrega_id });
+		return response.data;
+	} catch (error) {
+		console.error("Error al eliminar entrega de activos", error);
+		return { ok: false, mensaje: "Error al eliminar la entrega" };
+	}
+};
 

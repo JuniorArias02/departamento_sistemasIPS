@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { listarEntregasActivos, exportarInformeEntregaActivos } from "../../../../services/cp_entrega_activos_services";
-import { Download, Search, Filter, User, CreditCard, Briefcase, MapPin, Calendar, FileText, BadgeDollarSign, Pencil } from "lucide-react";
+import { listarEntregasActivos, exportarInformeEntregaActivos, eliminarEntregaActivos } from "../../../../services/cp_entrega_activos_services";
+import { Download, Search, Filter, User, CreditCard, Briefcase, MapPin, Calendar, FileText, BadgeDollarSign, Pencil, FileSpreadsheet, ChevronDown, Trash2 } from "lucide-react";
 import { URL_IMAGE } from "../../../../const/api";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs"
 import { RUTAS } from "../../../../const/routers/routers";
+import { useApp } from "../../../../store/AppContext";
+import { PERMISOS } from "../../../../secure/permisos/permisos";
 export function InformActivosFijos() {
   const navigate = useNavigate();
+  const { permisos } = useApp();
   const [entregas, setEntregas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [descargando, setDescargando] = useState(false);
   const [descargandoGeneral, setDescargandoGeneral] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null); // Para controlar qué dropdown está abierto
 
   const [filters, setFilters] = useState({
     sede: "",
@@ -33,6 +37,18 @@ export function InformActivosFijos() {
     cargarEntregas();
   }, []);
 
+  // Cerrar dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownOpen && !event.target.closest('.relative')) {
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+
 
 
   // Filtrar entregas basado en búsqueda y filtros
@@ -51,15 +67,16 @@ export function InformActivosFijos() {
   const sedesUnicas = [...new Set(entregas.map(e => e.sede_nombre))];
   const cargosUnicos = [...new Set(entregas.map(e => e.cargo_nombre))];
 
-  const handleDownload = async (id) => {
+  const handleDownload = async (id, formato = "excel") => {
     try {
       setDescargando(true);
-      await exportarInformeEntregaActivos({ id });
+      setDropdownOpen(null); // Cerrar el dropdown
+      await exportarInformeEntregaActivos({ id }, formato);
 
       Swal.fire({
         icon: "success",
         title: "¡Listo!",
-        text: "Informe descargado correctamente",
+        text: `Informe descargado correctamente en formato ${formato === "pdf" ? "PDF" : "Excel"}`,
       });
 
     } catch (error) {
@@ -71,6 +88,50 @@ export function InformActivosFijos() {
       console.error(error);
     } finally {
       setDescargando(false);
+    }
+  };
+
+  const handleDelete = async (entrega) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: `Se eliminará el acta de entrega de ${entrega.personal_nombre}. Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await eliminarEntregaActivos(entrega.entrega_id);
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Eliminado!',
+            text: response.mensaje || 'Acta eliminada correctamente',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          // Recargar lista
+          const res = await listarEntregasActivos();
+          if (res.ok) setEntregas(res.data);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.mensaje || 'No se pudo eliminar el acta'
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al eliminar el acta'
+        });
+        console.error(error);
+      }
     }
   };
 
@@ -206,14 +267,38 @@ export function InformActivosFijos() {
                           <BadgeDollarSign size={20} />
                         </button>
 
-                        <button
-                          onClick={() => handleDownload(entrega.entrega_id)}
-                          className="p-2 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-slate-200/60 text-slate-600 hover:text-slate-800 hover:from-slate-100 hover:to-slate-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
-                          disabled={descargando}
-                          title="Descargar documento"
-                        >
-                          <Download size={20} />
-                        </button>
+                        <div className="relative">
+                          <button
+                            onClick={() => setDropdownOpen(dropdownOpen === entrega.entrega_id ? null : entrega.entrega_id)}
+                            className="p-2 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-slate-200/60 text-slate-600 hover:text-slate-800 hover:from-slate-100 hover:to-slate-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                            disabled={descargando}
+                            title="Descargar documento"
+                          >
+                            <Download size={20} />
+                          </button>
+
+                          {/* Dropdown Menu */}
+                          {dropdownOpen === entrega.entrega_id && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50">
+                              <button
+                                onClick={() => handleDownload(entrega.entrega_id, "excel")}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-green-50 transition-colors text-slate-700 hover:text-green-700"
+                                disabled={descargando}
+                              >
+                                <FileSpreadsheet size={18} className="text-green-600" />
+                                <span className="text-sm font-medium">Descargar Excel</span>
+                              </button>
+                              <button
+                                onClick={() => handleDownload(entrega.entrega_id, "pdf")}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 transition-colors text-slate-700 hover:text-red-700 border-t border-slate-100"
+                                disabled={descargando}
+                              >
+                                <FileText size={18} className="text-red-600" />
+                                <span className="text-sm font-medium">Descargar PDF</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <button
                           onClick={() => handleEdit(entrega)}
                           className="p-2 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-slate-200/60 text-slate-600 hover:text-slate-800 hover:from-slate-100 hover:to-slate-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -222,6 +307,16 @@ export function InformActivosFijos() {
                         >
                           <Pencil size={20} />
                         </button>
+
+                        {permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.ELIMINAR_ENTREGA_ACTIVOS_FIJOS) && (
+                          <button
+                            onClick={() => handleDelete(entrega)}
+                            className="p-2 rounded-xl bg-gradient-to-b from-red-50 to-red-100/50 border border-red-200/60 text-red-600 hover:text-red-800 hover:from-red-100 hover:to-red-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                            title="Eliminar acta"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        )}
                       </div>
                     </div>
 

@@ -62,22 +62,22 @@ export default function InformesPedidos() {
 
 	const generarConsolidado = async () => {
 		if (!form.fecha_inicio || !form.fecha_fin) {
-		  Swal.fire({
-			icon: "warning",
-			title: "Fechas requeridas",
-			text: "Por favor selecciona ambas fechas",
-			confirmButtonColor: "#3B82F6",
-		  });
-		  return; 
+			Swal.fire({
+				con: "warning",
+				itle: "Fechas requeridas",
+				ext: "Por favor selecciona ambas fechas",
+				onfirmButtonColor: "#3B82F6",
+			});
+			return;
 		}
 		setCargandoConsolidado(true);
 		try {
-		  await exportarInformeFecha(form);
+			await exportarInformeFecha(form);
 		} finally {
 			setCargandoConsolidado(false);
 		}
-	  };
-	  
+	};
+
 	const generarReporte = async () => {
 		if (!form.fechaInicio || !form.fechaFin) {
 			const rest = await exportarInformeFecha(form);

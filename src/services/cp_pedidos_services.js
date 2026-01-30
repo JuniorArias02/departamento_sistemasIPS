@@ -1,5 +1,5 @@
 import axios from "axios";
-import { EXPORTAR_INFORME_PEDIDOS, DESCARGAR_ADJUNTO, SUBIR_ADJUNTO, EXPORTAR_CONSOLIDADO_PEDIDOS, OBTENER_FIRMAS, OBTENER_CONSOLIDADO_PEDIDOS, AGREGAR_OBSERVACIONES, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF } from "../const/endpoint/cp_pedidos_endpoint";
+import { EXPORTAR_INFORME_PEDIDOS, DESCARGAR_ADJUNTO, SUBIR_ADJUNTO, EXPORTAR_CONSOLIDADO_PEDIDOS, OBTENER_FIRMAS, OBTENER_CONSOLIDADO_PEDIDOS, AGREGAR_OBSERVACIONES, CREAR_PEDIDO, SUBIR_FIRMA, OBTENER_PEDIDOS, RECHAZAR_PEDIDO, APROBAR_PEDIDO, EXPORTAR_PEDIDO, EXPORTAR_PDF, ACTUALIZAR_FIRMA_PEDIDO } from "../const/endpoint/cp_pedidos_endpoint";
 
 
 export const obtenerAdjunto = async (id) => {
@@ -41,13 +41,7 @@ export const obtenerFirmas64 = async (pedidoId) => {
 		const data = response.data;
 
 		if (data.success && data.firmas) {
-			const firmasConPrefijo = {};
-			for (const [key, value] of Object.entries(data.firmas)) {
-				firmasConPrefijo[key] = value.startsWith("data:image")
-					? value
-					: `data:image/png;base64,${value}`;
-			}
-			return firmasConPrefijo;
+			return data.firmas;
 		}
 
 		return { responsable: null, compra: null };
@@ -93,6 +87,20 @@ export const subirFirmaPedido = async (formData) => {
 		return response.data;
 	} catch (error) {
 		console.error("Error al subir la firma", error);
+		return { status: false, message: "Fallo en la petición" };
+	}
+};
+
+export const actualizarFirmaPedido = async (datos) => {
+	try {
+		const response = await axios.post(ACTUALIZAR_FIRMA_PEDIDO, datos, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error("Error al actualizar la firma del pedido", error);
 		return { status: false, message: "Fallo en la petición" };
 	}
 };
@@ -198,15 +206,17 @@ export const exportarConsolidadoPedidos = async (datos) => {
 };
 
 
-export const exportarPedido = async (pedidoId) => {
+export const exportarPedido = async (pedidoId, formato = "excel") => {
 	try {
 		const response = await axios.post(
 			EXPORTAR_PEDIDO,
-			{ id: pedidoId },
+			{ id: pedidoId, formato }, // Enviamos el formato al backend
 			{ responseType: "blob" }
 		);
+
 		const header = response.headers["content-disposition"];
-		let fileName = "pedido.xlsx";
+		const extension = formato === "pdf" ? "pdf" : "xlsx";
+		let fileName = `pedido.${extension}`;
 
 		if (header) {
 			const match = header.match(/filename="?([^"]+)"?/);
@@ -214,10 +224,13 @@ export const exportarPedido = async (pedidoId) => {
 				fileName = match[1];
 			}
 		}
-		const blob = new Blob([response.data], {
-			type:
-				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		});
+
+		// Determinar el tipo MIME según el formato
+		const mimeType = formato === "pdf"
+			? "application/pdf"
+			: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+		const blob = new Blob([response.data], { type: mimeType });
 		const url = window.URL.createObjectURL(blob);
 		const link = document.createElement("a");
 		link.href = url;
@@ -225,7 +238,6 @@ export const exportarPedido = async (pedidoId) => {
 		document.body.appendChild(link);
 		link.click();
 		link.remove();
-
 		window.URL.revokeObjectURL(url);
 	} catch (error) {
 		console.error("Error al exportar el pedido:", error);
@@ -235,28 +247,7 @@ export const exportarPedido = async (pedidoId) => {
 	}
 };
 
-
+// Mantener esta función por compatibilidad, pero ahora llama a exportarPedido
 export const exportarPedidoPdf = async (pedidoId) => {
-	try {
-		const response = await axios.post(
-			EXPORTAR_PDF,
-			{ id: pedidoId },
-			{ responseType: "blob" }
-		);
-
-		const url = window.URL.createObjectURL(new Blob([response.data]));
-		const link = document.createElement("a");
-		link.href = url;
-		link.setAttribute("download", "pedido.pdf");
-		document.body.appendChild(link);
-		link.click();
-		link.remove();
-
-		return true;
-	} catch (error) {
-		console.error("Error al exportar el pedido:", error);
-		throw new Error(
-			error?.response?.data?.mensaje || "Error al exportar el pedido"
-		);
-	}
+	return exportarPedido(pedidoId, "pdf");
 };

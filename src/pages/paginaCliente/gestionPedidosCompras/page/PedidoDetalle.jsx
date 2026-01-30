@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import BackPage from "../../components/BackPage";
 import { URL_PATH } from "../../../../const/api";
-import { rechazarPedido, aprobarPedido, subirFirmaPedido, agregarAdjunto } from "../../../../services/cp_pedidos_services";
+import { rechazarPedido, aprobarPedido, subirFirmaPedido, agregarAdjunto, actualizarFirmaPedido } from "../../../../services/cp_pedidos_services";
 import { useApp } from "../../../../store/AppContext";
 import Swal from "sweetalert2";
 import { FirmaInput } from "../../../appFirma/appFirmas";
@@ -84,51 +84,165 @@ export default function PedidoDetalle() {
     setPdfData({ file, arrayBuffer, url });
   };
 
-  const handleFirmarYGuardar = async () => {
-    if (!pdfData) return Swal.fire("Atención", "Primero sube un PDF", "warning");
-
+  const handleFirmarDocumento = async () => {
     try {
+      // 1. Validar Permisos y Flujo
+      const isCompras = permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.SUBIR_ORDEN_COMPRA);
+      const isGerente = permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO); // Asumiendo este permiso para Gerente
+
+      // Si no es compras ni gerente con permisos, salir (aunque la UI debería ocultar el botón)
+      if (!isCompras && !isGerente) return;
+
+      // Regla: Gerente solo firma si Compras ya firmó (estado_compras === 'aprobado' o ya hay firma)
+      // Aquí usaremos la info del objeto data.
+      const firmaComprasYaExiste = data.estado_compras === "aprobado" || !!data.proceso_compra_firma;
+
+      if (isGerente && !firmaComprasYaExiste) {
+        return Swal.fire("Aviso", "El documento debe ser firmado primero por Compras.", "warning");
+      }
+
+      // 2. Obtener el PDF a firmar
+      // Si ya hay adjunto, lo descargamos. Si no (caso inicial Compras), usamos pdfData local si se acaba de subir.
+      let pdfArrayBuffer = null;
+
+      if (data.tiene_adjunto === "Sí" && data.adjunto_url) {
+        // Descargar el PDF actual del servidor (para firmar sobre él)
+        setLoading(true);
+        try {
+          const response = await fetch(`${URL_PATH}/${data.adjunto_url}`);
+          if (!response.ok) throw new Error("No se pudo descargar el documento actual.");
+          pdfArrayBuffer = await response.arrayBuffer();
+        } catch (e) {
+          setLoading(false);
+          return Swal.fire("Error", "No se pudo obtener el documento del servidor.", "error");
+        }
+      } else if (pdfData && pdfData.arrayBuffer) {
+        // Usamos el que acaba de subir el usuario (flujo inicial Compras)
+        pdfArrayBuffer = pdfData.arrayBuffer;
+      } else {
+        return Swal.fire("Atención", "No hay un documento PDF cargado para firmar.", "warning");
+      }
+
+      // 3. Obtener Firma del Usuario Actual
+      // Aquí llamamos al endpoint o usamos la firma en sesión. 
+      // Asumimos que "agregarFirmaPorClave" trae la firma del usuario logueado.
+      const resFirma = await agregarFirmaPorClave({ usuario_id: usuario.id });
+      if (!resFirma.status || !resFirma.firma) {
+        return Swal.fire("Error", "No se pudo obtener tu firma digital.", "error");
+      }
+      const miFirma = resFirma.firma; // Base64
+
       setLoading(true);
 
-      // 🔹 Usamos directamente el ArrayBuffer ya guardado
-      const bufferOriginal = pdfData.arrayBuffer;
-      const bufferClonado = bufferOriginal.slice(0);
-      const bufferParaAnalizar = bufferOriginal.slice(0);
+      // 4. Configurar Firma según Rol
+      // firmarPDF espera: (buffer, posiciones, [FirmaCompras, FirmaGerente], options)
+      // Slot 0: Compras (Derecha)
+      // Slot 1: Gerente (Izquierda)
 
-      // 🔹 Analizar PDF
-      const posiciones = (await analizarPDF(bufferParaAnalizar)).coincidencias || [];
-      const firmas = await obtenerFirmas64(data.id);
+      const posiciones = (await analizarPDF(pdfArrayBuffer.slice(0))).coincidencias || [];
+      if (posiciones.length === 0) {
+        setLoading(false);
+        return Swal.fire("Error", "No se encontró el marcador 'OBSERVACION' en el PDF para ubicar la firma.", "error");
+      }
 
-      // 🔹 Firmar PDF
-      const pdfFirmado = await firmarPDF(bufferClonado, posiciones, [
-        firmas.compra,
-        firmas.responsable,
-      ]);
+      let firmasToApply = [null, null];
+      let drawLayout = false;
 
-      // 🔹 Crear Blob y URL temporal para vista previa
-      const blob = new Blob([pdfFirmado], { type: "application/pdf" });
-      const urlTemporal = URL.createObjectURL(blob);
+      if (isCompras && !firmaComprasYaExiste) {
+        // Compras firma por primera vez
+        firmasToApply = [miFirma, null];
+        drawLayout = true; // Dibuja líneas la primera vez
+      } else if (isGerente) {
+        // Gerente firma (segundo lugar)
+        // Asumimos que Compras ya firmó y las líneas ya están (si el PDF descargado es el firmado).
+        firmasToApply = [null, miFirma];
+        drawLayout = false; // No redibujar líneas
+        // NOTA: Si el PDF original NO tenía líneas guardadas (porque firmarPDF guarda todo rasterizado o vectorial), 
+        // pdf-lib edita encima. Las líneas previas ya son parte del contenido de la página.
+      } else {
+        // Caso borde: Compras intenta firmar de nuevo?
+        if (isCompras && firmaComprasYaExiste) {
+          setLoading(false);
+          return Swal.fire("Aviso", "Este documento ya fue firmado por Compras.", "info");
+        }
+      }
 
-      // 👉 Mostrar en una nueva pestaña o iframe temporal
-      window.open(urlTemporal, "_blank");
+      // 5. Ejecutar Firma
+      const bufferClonado = pdfArrayBuffer.slice(0);
+      const pdfFirmadoBytes = await firmarPDF(bufferClonado, posiciones, firmasToApply, { drawLayout });
 
-      // 🔹 Subir PDF firmado
+      // 6. Subir Resultado
+      const blob = new Blob([pdfFirmadoBytes], { type: "application/pdf" });
+
       const formData = new FormData();
-      formData.append("archivo", blob, `pedido_${data.id}.pdf`);
+      // Usamos el mismo nombre o uno nuevo, el backend debería gestionar versión o reemplazo
+      formData.append("archivo", blob, `pedido_${data.id}_signed.pdf`);
       formData.append("pedido_id", data.id);
 
       const subida = await agregarAdjunto(formData);
+
       if (subida?.ruta) {
-        Swal.fire("Éxito", "PDF firmado, visualizado y subido correctamente", "success");
+        // 7. Registrar Firma en Base de Datos (Actualizar columnas)
+        await registrarFirmaEnBaseDeDatos(isCompras, isGerente, usuario.id);
+
+        Swal.fire("Éxito", "Documento firmado y registrado exitosamente.", "success");
+
+        // Limpiar estado local de PDF subido
         setPdfData(null);
+
+        // Recargar página para refrescar estado del pedido
+        window.location.reload();
       } else {
-        Swal.fire("Error", "No se pudo guardar el archivo", "error");
+        Swal.fire("Error", "No se pudo guardar el documento firmado.", "error");
       }
+
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Hubo un problema al firmar el PDF", "error");
+      Swal.fire("Error", "Ocurrió un error inesperado al firmar.", "error");
     } finally {
       setLoading(false);
+    }
+  };
+ 
+  const registrarFirmaEnBaseDeDatos = async (isCompras, isGerente, usuarioId) => {
+    try {
+      // Determinar tipo de firma según rol
+      const tipoFirma = isGerente
+        ? "responsable_aprobacion_firma"
+        : "proceso_compra_firma";
+
+      const response = await actualizarFirmaPedido({
+        id_pedido: data.id,
+        tipo_firma: tipoFirma,
+        id_usuario: usuarioId,
+      });
+
+      if (!response || !response.success) {
+        throw new Error(response?.mensaje || response?.error || "Error actualizando firma en BD");
+      }
+
+      if (!isGerente && data.estado_compras !== 'aprobado') {
+        await aprobarPedido({
+          id_pedido: data.id,
+          id_usuario: usuarioId,
+          tipo: "compra",
+          observacion: "Firmado digitalmente"
+        });
+      }
+
+      if (isGerente && data.estado_gerencia !== 'aprobado') {
+        await aprobarPedido({
+          id_pedido: data.id,
+          id_usuario: usuarioId,
+          tipo: "gerencia",
+          observacion: "Firmado digitalmente"
+        });
+      }
+
+    } catch (error) {
+      console.error("Error al registrar firma en BD:", error);
+      // No bloqueamos el flujo principal si falla esto, pero sería ideal notificar
+      Swal.fire("Advertencia", "El documento se guardó pero hubo un error actualizando el estado del pedido.", "warning");
     }
   };
 
@@ -656,10 +770,11 @@ export default function PedidoDetalle() {
       )}
 
       <div className="mb-6">
+        {/* Lógica para Compras: Subir y Firmar Plantilla */}
         {data.tiene_adjunto === "No" && data.estado_gerencia === "aprobado" && permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.SUBIR_ORDEN_COMPRA) && (
           <div className="mt-6 border-t border-gray-200 pt-4">
             <h3 className="text-lg font-semibold mb-3 text-gray-800">
-              Firmar automáticamente PDF
+              Cargar y Firmar Orden de Compra
             </h3>
 
             <UploadPdfAuto
@@ -669,7 +784,8 @@ export default function PedidoDetalle() {
 
             {pdfData && (
               <button
-                onClick={handleFirmarYGuardar}
+                type="button"
+                onClick={handleFirmarDocumento}
                 disabled={loading}
                 className={`
             mt-4 px-4 py-2 rounded-md 
@@ -677,26 +793,44 @@ export default function PedidoDetalle() {
             font-medium text-white
             ${loading
                     ? "bg-gray-400 cursor-not-allowed opacity-60"
-                    : "bg-[#4F39F6] hover:bg-[#4F39B6]/80 focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 focus:outline-none"
+                    : "bg-[#4F39F6] hover:bg-[#4F39B6]/80"
                   }
           `}
-                aria-busy={loading}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Procesando...
-                  </span>
-                ) : (
-                  "Agregar Firmas y Guardar"
-                )}
+                {loading ? "Procesando..." : "Firmar y Guardar Documento"}
               </button>
             )}
           </div>
         )}
+
+        {/* Lógica para Gerente: Firmar Documento existente */}
+        {data.tiene_adjunto === "Sí" &&
+          data.estado_compras === "aprobado" &&
+          data.estado_gerencia === "pendiente" && // O en proceso, pero debe estar pendiente de firma gerente
+          // Verificar permiso de Gerente (usando VER_PEDIDOS_ENCARGADO como proxy según analizamos, o el que corresponda)
+          permisos.includes(PERMISOS.GESTION_COMPRA_PEDIDOS.VER_PEDIDOS_ENCARGADO) &&
+          // Verificar que NO haya firmado ya (data.responsable_aprobacion_firma check)
+          !data.responsable_aprobacion_firma &&
+          (
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800">
+                Firma de Autorización (Gerencia)
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                El documento ya ha sido firmado por Compras. Proceda a agregar su firma de autorización.
+              </p>
+              <button
+                type="button"
+                onClick={handleFirmarDocumento}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition"
+              >
+                <PenTool size={18} />
+                {loading ? "Firmando..." : "Firmar Documento"}
+              </button>
+            </div>
+          )
+        }
       </div>
 
       {/* firma */}
