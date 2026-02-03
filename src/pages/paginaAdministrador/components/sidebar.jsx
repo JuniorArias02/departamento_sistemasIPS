@@ -875,6 +875,30 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 							sidebarOpen={sidebarOpen}
 							delay={0.1}m
 						/>
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar fondoApp v1"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = 'https://clinicalhouse.co/deparSistemApi/public/fondoAppv1.exe';
+								link.download = 'exe';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}m
+						/>
+						<SidebarSubItem
+							icon={<Download size={16} />}
+							text="Descargar restaurador de politicas"
+							onClick={() => {
+								const link = document.createElement('a');
+								link.href = 'https://clinicalhouse.co/deparSistemApi/public/RestaurarFondo.exe';
+								link.download = 'exe';
+								link.click();
+							}}
+							sidebarOpen={sidebarOpen}
+							delay={0.1}m
+						/>
 					</SidebarCollapsible>
 
 					{/* Cerrar sesión */}
