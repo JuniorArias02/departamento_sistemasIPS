@@ -76,7 +76,7 @@ export async function buscarProductoServicioCodigo(query) {
     );
 
     if (res.data.success && Array.isArray(res.data.data)) {
-      return res.data.data; 
+      return res.data.data;
     }
 
     return [];
@@ -96,9 +96,7 @@ export const crearInventario = async (datos) => {
     return response.data;
   } catch (error) {
     console.error("Error al crear inventario:", error);
-    throw new Error(
-      error?.response?.data?.mensaje || "Error al crear el inventario",
-    );
+    throw error;
   }
 };
 
@@ -107,10 +105,8 @@ export const actualizarInventario = async (id, datos) => {
     const response = await axios.post(CREAR_INVENTARIO, { id, ...datos });
     return response.data;
   } catch (error) {
-    console.error("Error al crear inventario:", error);
-    throw new Error(
-      error?.response?.data?.mensaje || "Error al crear el inventario",
-    );
+    console.error("Error al actualizar inventario:", error);
+    throw error;
   }
 };
 

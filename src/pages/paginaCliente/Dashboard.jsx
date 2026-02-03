@@ -11,7 +11,7 @@ import { RUTAS } from "../../const/routers/routers";
 import { PERMISOS } from '../../secure/permisos/permisos';
 import { useApp } from '../../store/AppContext';
 export default function Dashboard() {
-	const { permisos, } = useApp();
+	const { permisos, usuario } = useApp();
 	const navigate = useNavigate();
 
 	const [totales, setTotales] = useState({
@@ -81,13 +81,18 @@ export default function Dashboard() {
 	const iconos = [
 		<ClipboardList className="h-10 w-10 text-yellow-600" />,
 		<Wrench className="h-10 w-10 text-red-600" />,
-		<Monitor className="h-10 w-10 text-red-600" />   
+		<Monitor className="h-10 w-10 text-red-600" />
 	];
 
 	const opcionesConAnimacion = opciones.map(op => ({
 		...op,
 		totalAnimado: useContadorAnimado(op.total, 1000)
 	}));
+
+	// Filtrar opciones visibles basado en permisos
+	const opcionesVisibles = opcionesConAnimacion.filter(op =>
+		permisos.includes(op.permisoFormulario) || permisos.includes(op.permisoVerDatos)
+	);
 
 	return (
 		<motion.div
@@ -96,12 +101,11 @@ export default function Dashboard() {
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
 		>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
-				{opcionesConAnimacion
-					.filter(op =>
-						permisos.includes(op.permisoFormulario) || permisos.includes(op.permisoVerDatos)
-					)
-					.map((op, i) => (
+
+
+			{opcionesVisibles.length > 0 ? (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
+					{opcionesVisibles.map((op, i) => (
 						<motion.div
 							key={i}
 							className="relative bg-white p-6 rounded-3xl shadow-[0_8px_30px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_40px_-15px_rgba(59,130,246,0.3)] border border-white/20 hover:border-indigo-200/50 transition-all duration-300 cursor-pointer group overflow-hidden"
@@ -112,7 +116,6 @@ export default function Dashboard() {
 								duration: 0.6,
 								ease: [0.16, 1, 0.3, 1]
 							}}
-							whileHover={{ y: -5 }}
 						>
 							{/* Fondo decorativo sutil */}
 							<div className="absolute inset-0 bg-gradient-to-br from-white to-indigo-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -176,7 +179,61 @@ export default function Dashboard() {
 							</div>
 						</motion.div>
 					))}
-			</div>
+				</div>
+			) : (
+				/* Vista de Bienvenida cuando no hay permisos */
+				<motion.div
+					className="text-center space-y-8 max-w-2xl px-6"
+					initial={{ scale: 0.9, opacity: 0 }}
+					animate={{ scale: 1, opacity: 1 }}
+					transition={{ duration: 0.5 }}
+				>
+					<div className="relative inline-block">
+						<div className="absolute inset-0 bg-indigo-200 blur-2xl opacity-30 rounded-full"></div>
+						<img
+							src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png"
+							alt="Bienvenida"
+							className="w-48 h-48 mx-auto relative z-10 drop-shadow-xl animate-float"
+							style={{ animation: "float 6s ease-in-out infinite" }}
+						/>
+					</div>
+
+					<div className="space-y-4">
+						<h1 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
+							¡Hola {usuario?.nombre_completo}! 👋
+						</h1>
+						<p className="text-gray-500 text-lg md:text-xl leading-relaxed">
+							Bienvenido al Sistema de Gestión del Departamento de Sistemas.
+							<br />
+							<span className="text-sm text-gray-400">
+								Actualmente no tienes accesos directos configurados en el panel principal.
+								<br />Navega por el menú para acceder a tus opciones disponibles.
+							</span>
+						</p>
+					</div>
+
+					<motion.div
+						className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
+						whileHover={{ y: -2 }}
+					>
+						<div className="flex items-center gap-3 text-gray-600">
+							<div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+								<Monitor size={20} />
+							</div>
+							<p className="text-sm font-medium">Sistema Institucional IPS</p>
+						</div>
+					</motion.div>
+				</motion.div>
+			)}
+
+			<style>{`
+				@keyframes float {
+					0% { transform: translateY(0px); }
+					50% { transform: translateY(-15px); }
+					100% { transform: translateY(0px); }
+				}
+			`}</style>
 		</motion.div>
+
 	);
 }

@@ -201,17 +201,30 @@ export default function FormularioInventario() {
         setFormData(obtenerEstadoInicial());
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error al guardar inventario:", err);
 
-      const mensaje =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        "No se pudo registrar el inventario";
+      // Extraer el mensaje de error del backend
+      let mensaje = "No se pudo registrar el inventario";
+      let detalles = "";
+
+      if (err?.response?.data) {
+        const data = err.response.data;
+        mensaje = data.error || data.message || data.msg || mensaje;
+
+        // Si hay campos faltantes, agregarlos al mensaje
+        if (data.campos_faltantes && Array.isArray(data.campos_faltantes)) {
+          detalles = "\n\nCampos faltantes:\n• " + data.campos_faltantes.join("\n• ");
+        }
+      } else if (err?.message) {
+        mensaje = err.message;
+      }
 
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: mensaje,
+        title: "Error al guardar",
+        html: `<div style="text-align: left;">${mensaje}${detalles}</div>`,
+        confirmButtonText: "Entendido",
+        width: '500px'
       });
 
     } finally {

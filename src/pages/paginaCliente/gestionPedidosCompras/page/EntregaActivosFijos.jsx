@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FirmaInput } from "../../../appFirma/appFirmas";
-import { subirFirmaActa, crearEntregaActivos, guardarItemsEntrega, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega, buscarInventarioEntrega } from '../../../../services/cp_entrega_activos_services';
+import { subirFirmaActa, usarFirmaGuardada, crearEntregaActivos, guardarItemsEntrega, subirItemsEntrega, guardarEntregaActivos, cargarItemsEntrega, buscarInventarioEntrega } from '../../../../services/cp_entrega_activos_services';
 import { User, Package, FileSignature, Search, Plus, Trash2, Check } from 'lucide-react';
 import BuscarResponsable from '../../componentsUnive/BuscarResponsable';
 import BuscarCoordinador from '../../componentsUnive/BuscarCoordinador';
@@ -10,11 +10,13 @@ import BuscarDependencia from '../../componentsUnive/BuscarDependencia';
 import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Circle } from 'lucide-react';
+import { useApp } from '../../../../store/AppContext';
 
 export default function EntregaActivosFijos() {
   const location = useLocation();
   const navigate = useNavigate();
   const entregaEdit = location.state?.entrega;
+  const { usuario } = useApp();
 
   const [sedes, setSedes] = useState([]);
   const [resetInventario, setResetInventario] = useState(false);
@@ -101,6 +103,23 @@ export default function EntregaActivosFijos() {
 
     cargarInventario();
   }, [form.responsable_id, form.coordinador_id, form.proceso_solicitante]);
+
+  const handleUsarFirmaGuardada = async () => {
+    if (!usuario?.id) return;
+    try {
+      const blob = await usarFirmaGuardada(usuario.id);
+      if (blob) {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          setForm(prev => ({ ...prev, firma_quien_entrega: reader.result }));
+        };
+      }
+    } catch (error) {
+      console.error("Error al usar firma guardada:", error);
+    }
+  };
+
 
 
   function base64ToBlob(base64) {
@@ -409,6 +428,14 @@ export default function EntregaActivosFijos() {
                   onChange={(value) => setForm({ ...form, firma_quien_entrega: value })}
                   label="Firma de quien entrega"
                 />
+                <button
+                  type="button"
+                  onClick={handleUsarFirmaGuardada}
+                  className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                >
+                  <FileSignature size={16} />
+                  Usar firma guardada
+                </button>
               </div>
 
               <div className="space-y-2">

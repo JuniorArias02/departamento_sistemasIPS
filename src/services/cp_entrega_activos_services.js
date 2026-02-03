@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DESCARGAR_ENTREGA_ACTIVOS, OBTENER_INVENTARIO_COORDINADOR, GUARDAR_ITEMS_ENTREGA, OBTENER_ENTREGA_ACTIVOS_ID, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS, ELIMINAR_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
+import { DESCARGAR_ENTREGA_ACTIVOS, USAR_FIRMA, OBTENER_INVENTARIO_COORDINADOR, GUARDAR_ITEMS_ENTREGA, OBTENER_ENTREGA_ACTIVOS_ID, SUBIR_ITEM_ENTREGA, SUBIR_FIRMA_ENTREGA_ACTIVOS, CREAR_ENTREGA_ACTIVOS, OBTENER_ENTREGA_ACTIVOS, ELIMINAR_ENTREGA_ACTIVOS } from "../const/endpoint/cp_entrega_activos__endpoint";
 
 export const exportarInformeEntregaActivos = async (datos, formato = "excel") => {
 	try {
@@ -106,6 +106,22 @@ export const subirFirmaActa = async (formData) => {
 		return { status: false, message: "Fallo en la petición" };
 	}
 };
+
+export const usarFirmaGuardada = async (idUsuario) => {
+	try {
+		const response = await axios.post(
+			USAR_FIRMA,
+			{ id: idUsuario },
+			{ responseType: 'blob' }
+		);
+		return response.data;
+
+	} catch (error) {
+		console.error("Error al usar la firma guardada", error);
+		return null;
+	}
+};
+
 
 export const cargarItemsEntrega = async (entrega_activos_id) => {
 	try {
